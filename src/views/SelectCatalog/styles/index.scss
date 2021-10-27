@@ -1,0 +1,242 @@
+#app {
+    height: 100%;
+    overflow: auto !important;
+}
+.el-loading-spinner {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    -webkit-animation: typing 1s linear infinite alternate;
+    -moz-animation: Typing 1s linear infinite alternate;
+    animation: typing 1s linear infinite alternate;
+    margin: -10px auto; /* Not necessary- its only for layouting*/
+    position: relative;
+    left: -40px;
+  }
+  @-webkit-keyframes typing {
+    0% {
+      background-color: rgba(247, 111, 73, 1);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
+        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+    }
+    25% {
+      background-color: rgba(247, 111, 73, 0.4);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
+        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+    }
+    75% {
+      background-color: rgba(247, 111, 73, 0.4);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
+        80px 0px 0px 0px rgba(247, 111, 73, 1);
+    }
+  }
+
+  @-moz-keyframes typing {
+    0% {
+      background-color: rgba(247, 111, 73, 1);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
+        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+    }
+    25% {
+      background-color: rgba(247, 111, 73, 0.4);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
+        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+    }
+    75% {
+      background-color: rgba(247, 111, 73, 0.4);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
+        80px 0px 0px 0px rgba(247, 111, 73, 1);
+    }
+  }
+  @keyframes typing {
+    0% {
+      background-color: rgba(247, 111, 73, 1);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
+        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+    }
+    25% {
+      background-color: rgba(247, 111, 73, 0.4);
+      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
+        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+    }
+    75% {
+      background-color: rgba(0, 184, 220, 0.4);
+      box-shadow: 40px 0px 0px 0px rgba(249, 54, 0, 0.2),
+        80px 0px 0px 0px rgb(2, 243, 130);
+    }
+  }
+  .el-loading-spinner .circular {
+    display: none; //隐藏之前element-ui默认的loading动画
+  }
+.SelectCatalog {
+    .twoBackground {
+        background-image: url(~@/assets/SelectCatalog_a.jpg);
+        background-repeat: no-repeat;
+        padding-left: 15px;
+        padding-top: 3px;
+    }
+    .el-input-group__append {
+        background: rgb(36, 115, 183);
+    }
+    .next {
+        position: fixed;
+        left: 90%;
+        top: 50%;
+        display: none;
+    }
+    .Topping {
+        position: fixed;
+        left: 90%;
+        top: 80%;
+        display: none;
+        opacity: 0.8;
+        p {
+            font-weight: bold;
+        }
+    }
+    p {
+        margin: 1px !important;
+        padding: 1px !important;
+    }
+    .el-tabs__item {
+        border: 3px solid #dfdfdf !important;
+        background: rgb(249, 249, 249);
+    }
+    .el-tabs__active-bar {
+        background-color: #8a909600 !important;
+    }
+    .divtest:visited {}
+    .header {
+        height: 80px !important;
+        .header_left {
+            display: flex;
+            div:nth-child(2) {
+                margin-left: 5px;
+            }
+        }
+        .selectButton {
+            border: 0px !important;
+            color: white;
+            background: rgb(36, 115, 183);
+        }
+        .selectButton:focus {
+            outline: 0;
+        }
+        .selectButton:hover {
+            cursor: pointer;
+        }
+        h1 {
+            margin-top: 30px;
+            font-weight: bold;
+        }
+        background: rgb(242, 242, 242);
+        border-bottom: 2px solid rgb(223, 223, 223);
+        .el-input-group {
+            margin: 25px auto;
+        }
+    }
+    .main {
+        .one {
+            display: flex;
+            flex-wrap: wrap;
+            .el-button {
+                border-radius: 0px !important;
+                margin: 5px;
+            }
+        }
+        .two {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgb(223, 223, 223);
+            div:nth-child(n+1) {
+                display: flex;
+                align-items: center;
+            }
+            div:nth-child(1) {
+                width: 80px;
+                height: 34px;
+                text-align: center;
+                line-height: 34px;
+                font-size: 14px;
+                padding-left: 18px;
+                background: #0066cc;
+                color: white;
+                margin: 5px !important;
+            }
+            margin: 20px 0 0 0px;
+            .el-link--default {
+                margin: 5px !important;
+            }
+        }
+        .thrre {
+            margin: 20px 0 0 10px;
+            h2 {
+                font-weight: bold;
+            }
+            h3 {
+                font-weight: bold;
+            }
+            .htmlPane {
+                height: 100%;
+                border: 0px solid whitesmoke;
+                border-radius: 1px;
+                padding: 5px;
+                word-wrap: break-word;
+                white-space: normal //overflow-y: auto;
+            }
+            .table {
+                border: 1px solid #999;
+                .table_row1 {
+                    background: rgb(223, 231, 249);
+                    display: flex;
+                    align-items: center;
+                    .table_row1_col1 {
+                        font-weight: bold;
+                        font-size: 13px;
+                        border-right: 1px solid #999;
+                    }
+                    .table_row1_col2 {
+                        .Resort {
+                            height: 380px !important;
+                            border: 1px solid whitesmoke;
+                            border-radius: 1px;
+                            padding: 5px;
+                            overflow-y: auto;
+                        }
+                        .el-row {
+                            font-weight: bold;
+                            font-size: 13px;
+                        }
+                    }
+                }
+                .table_row2 {
+                    .table_row2_col1 {
+                        border-right: 1px solid rgb(223, 223, 223);
+                        .el-row {
+                            border-bottom: 1px solid rgb(223, 223, 223);
+                        }
+                    }
+                    // .table_row2_col2 {}
+                    // .table_row2_col3 {}
+                    .summary {
+                        display: flex;
+                        flex-wrap: wrap;
+                    }
+                    .spanABC {
+                        width: 25px;
+                        height: 25px;
+                        background: #eee;
+                        border: 1px solid #999;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .spanABC:hover {
+                        background: white;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "code": 200,
+    "para": {
+        "title": "三甲医院平台",
+        "refDocInner": "172.226.17.210:800",
+        "refDocOuter": "122.226.17.210:85",
+        "refDocInner2": "172.226.17.210:800",
+        "refDocOuter2": "122.226.17.210:85",
+        "pwd": "123456",
+        "pwd2": "123456",
+        "refDoc": "国标参考资料",
+        "refDoc2": "省标参考资料",
+        "menu_one": "自评人员审核",
+        "menu_two": "主管人员审核",
+        "menu_three": "监管人员审核",
+        "menu": false,
+        "rule": 1,
+        "search": 1,
+        "refer": 2,
+        "km_statistics_a": "责任科室",
+        "ArticleCount": 1,
+        "defaultPassword": "12345678",
+        "hr": "81.71.27.37:89",
+        "Resort": false,
+        "//": "注释，Resort：评审查阅考评办法是否显示,false显示，true不显示"
+    }
+}
