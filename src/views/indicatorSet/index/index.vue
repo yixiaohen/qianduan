@@ -125,7 +125,7 @@
               />
               <el-table-column
                 width="350"
-                label="数据库源"
+                label="数据库类型"
                 align="center"
               >
                 <template slot-scope="{row,$index}">
@@ -134,7 +134,7 @@
                     v-for="item in sourceData"
                     v-show="currentEdit!== $index "
                   >
-                    {{ row.conn_id === item.conn_id ? item.sqlcon : '' }}</span>
+                    {{ row.conn_id === item.conn_id ? item.type : '' }}</span>
                   <el-select
                     v-show="currentEdit === $index "
                     v-model="row.conn_id"
@@ -148,20 +148,41 @@
                     <el-option
                       v-for="item in sourceData"
                       :key="item.conn_id"
-                      :label="item.sqlcon"
+                      :label="item.type"
                       :value="item.conn_id"
                     >
-                      <span style="float: left">{{ item.sqlcon }}</span>
-                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type }}</span>
+                      <span style="float: left">{{ item.type }}</span>
+                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.remarks.slice(0,12) }}</span>
                     </el-option>
                   </el-select>
 
                 </template>
 
               </el-table-column>
+              <!--              <el-table-column-->
+              <!--                width="150"-->
+              <!--                prop="type"-->
+              <!--                align="center"-->
+              <!--                label="数据库类型"-->
+              <!--              >-->
+
+              <!--              </el-table-column>-->
+              <el-table-column
+                width="150"
+                label="数据库备注"
+                align="center"
+              >
+                <template slot-scope="{row,$index}">
+                  <span
+                    v-for="item in sourceData"
+                    v-show="currentEdit!== $index "
+                  >
+                    {{ row.conn_id === item.conn_id ? item.remarks : '' }}</span>
+                </template>
+              </el-table-column>
               <el-table-column
                 prop="name"
-                label="参数"
+                label="参数名称"
                 align="center"
               >
                 <template slot-scope="{ row, $index }">
@@ -174,7 +195,7 @@
               <el-table-column
                 prop="para_value"
                 align="center"
-                label="参数值"
+                label="参数数值"
               >
                 <template slot-scope="{ row, $index }">
                   <el-input v-show="currentEdit === $index " v-model="row.para_value" size="mini" />
@@ -270,7 +291,7 @@
             <!--              @current-change="handleCurrentChange"-->
             <div v-else>
               <div style="width: 100%;text-align: right">
-                <el-button type="success" @click="isShowParaTab=true">返回</el-button>
+                <el-button type="success" @click="backParamList">返回</el-button>
               </div>
               <el-form
                 ref="dynamicValidateForm"
@@ -361,6 +382,14 @@
                         type="danger"
                       >删除
                       </el-button>
+                      <el-button
+                        v-if="sqlCurrentEdit===index"
+                        slot="reference"
+                        size="mini"
+                        type="info"
+                        @click="offEdit"
+                      >取消
+                      </el-button>
                     </el-popconfirm>
                   </div>
                 </el-form-item>
@@ -398,6 +427,11 @@
                 align="center"
               />
               <el-table-column
+                prop="formulaObj"
+                label="公式编译目标码"
+                align="center"
+              />
+              <el-table-column
                 prop="name"
                 label="指标名称"
                 width="180"
@@ -408,11 +442,7 @@
                 label="指标公式"
                 align="center"
               />
-              <el-table-column
-                prop="formulaObj"
-                label="公式编译目标码"
-                align="center"
-              />
+
               <el-table-column
                 prop="iattribute"
                 label="指标属性"
@@ -488,6 +518,17 @@
           </el-select>
         </el-form-item>
         <el-form-item
+          label="公式编译目标码"
+          prop="formulaObj"
+        >
+          <el-input
+            v-model="dynamicValidateForm.formulaObj"
+            style="width:30vh"
+            size="small"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item
           label="指标名称"
           prop="name"
         >
@@ -511,17 +552,7 @@
             clearable
           />
         </el-form-item>
-        <el-form-item
-          label="公式编译目标码"
-          prop="formulaObj"
-        >
-          <el-input
-            v-model="dynamicValidateForm.formulaObj"
-            style="width:30vh"
-            size="small"
-            clearable
-          />
-        </el-form-item>
+
         <el-form-item
           label="指标属性"
           prop="iattribute"
@@ -1035,6 +1066,7 @@ export default {
     editSql(index, item) {
       this.isShowInput = false;
       this.sqlCurrentEdit = index;
+      this.isShowBtn = true; // 新增sql按钮不可用
       this.isAddOrUpate = 1; // 为1代表进入更新sql状态
       this.editSqlId = item.id;
     },
@@ -1066,7 +1098,6 @@ export default {
     },
     // 插入新增参数取值，sql
     submitForm(index, item) {
-      console.log('当前行数据', item);
       this.isShowInput = false;// 将input框隐藏起来
       this.sqlCurrentEdit = -1;// 将input框和保存按钮隐藏起来
       if (this.isAddOrUpate !== 0) { // 如果isAddOrUpate不为0 证明已经点击了编辑按钮就是修改sql,不然就是添加sql
@@ -1075,6 +1106,19 @@ export default {
         this.InsertParaSql(index, item);
       }
 
+      this.isShowBtn = false; // 新增sql按钮可用
+    },
+    // 取消编辑sql
+    offEdit() {
+      this.isShowInput = false;// 将input框隐藏起来
+      this.sqlCurrentEdit = -1;// 将input框和保存按钮隐藏起来
+      this.isShowBtn = false; // 新增sql按钮可用
+    },
+    // 返回参数列表
+    backParamList() {
+      this.isShowParaTab = true; // 转换页面
+      this.isShowInput = false;// 将input框隐藏起来
+      this.sqlCurrentEdit = -1;// 将input框和保存按钮隐藏起来
       this.isShowBtn = false; // 新增sql按钮可用
     },
     // 删除sql

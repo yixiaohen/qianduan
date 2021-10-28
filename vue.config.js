@@ -13,11 +13,15 @@ const port = 1314;
 // const IP = '127.0.0.1';
 // const backPort = 369;
 
-const IP = '192.168.2.11';
+// 公司服务器
+const IP = '81.71.27.37';
 const backPort = 81;
 
-// const IP = '192.168.2.22';
-// const backPort = 8090;
+// const IP = '192.168.2.11';
+// const backPort = 81;
+
+// const IP = '192.168.2.21';
+// const backPort = 80;
 
 module.exports = {
   publicPath: './',

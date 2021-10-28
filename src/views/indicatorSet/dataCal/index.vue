@@ -13,14 +13,15 @@
           :prop="item.TimingTime"
         >
           <el-time-picker
-            :clearable="false"
             v-model="item.TimingTime"
+            :clearable="false"
             style="margin-right: 10px"
             size="mini"
             arrow-control
             format="HH:mm:ss"
             value-format="HH:mm:ss"
             placeholder="任意时间点"
+            @change="getTimingTime"
           >
           </el-time-picker>
           <br>
@@ -59,6 +60,7 @@ import {
 export default {
   data() {
     return {
+      TimingTime:'', // 获取当前选定的时间，用来判断更改前后时间一致性是否
       isShowCal: false,
       setTimimg: [ // 定时时间数据
         {
@@ -77,6 +79,11 @@ export default {
     this.SelectTiming();
   },
   methods: {
+    // 获取当前改变的时间
+    getTimingTime(time) {
+      this.TimingTime = time;
+      console.log( this.TimingTime);
+    },
     // 立即出发全部计算
     calculate() {
       try {
@@ -97,7 +104,8 @@ export default {
         const { data, code } = await SelectTiming();
         if (code === 200) {
           this.setTimimg = data;
-          this.setTimimg2 = data;
+          this.setTimimg2 = JSON.parse(JSON.stringify(data)); // 要想用到 this.setTimimg2对别 this.setTimimg，就要深拷贝，使得改变了setTimimg，不会再改变setTimimg2，这样就可以对比前后的时间
+          console.log('初始时间',this.setTimimg2);
         }
       } catch (e) {
         console.log(e);
@@ -118,7 +126,7 @@ export default {
           if (item.TimingTime === null) { // 如果更新时清空了时间
             this.$message.warning('更新不能为空！');
             console.log(item.TimingTime);
-          } else if (item.TimingTime === this.setTimimg2[index].TimingTime) { // 如果更新前后时间一致，更新失败
+          } else if (this.TimingTime === this.setTimimg2[index].TimingTime) { // 如果更新前后时间一致，更新失败
             this.$message.warning('更新前后时间一致，更新失败！');
           } else {
             console.log(item.TimingTime);

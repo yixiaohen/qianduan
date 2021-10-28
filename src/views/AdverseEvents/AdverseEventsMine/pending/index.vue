@@ -2,58 +2,50 @@
   <el-card class="box-card-view">
     <div slot="header" class="clearfix">
       <el-form label-position="left" :inline="true" size="mini">
+<!--        <el-form-item>-->
+<!--          <el-input-->
+<!--            v-model="listQuery.EventName"-->
+<!--            placeholder="姓名"-->
+<!--            style="width: 150px"-->
+<!--            size="mini"-->
+<!--            clearable-->
+<!--          />-->
+<!--        </el-form-item>-->
         <el-form-item>
-          <el-input
-            v-model="listQuery.EventName"
-            placeholder="姓名"
-            style="width: 150px"
-            size="mini"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="info"
-            icon="el-icon-search"
-            :loading="listLoading"
-            size="mini"
-          >搜索
-          </el-button>
-          <!--          通用事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(tongyong=0)"
-          >通用事件
-          </el-button>
-          <!--          医疗器械(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(qixie=1)"
-          >医疗器械(不良)事件（特定）
-          </el-button>
-          <!--          护理安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(huli=2)"
-          >护理安全(不良)事件（特定）
-          </el-button>
-          <!--          医疗安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(yiliao=3)"
-          >医疗安全(不良)事件（特定）
-          </el-button>
-          <!--          药品安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(yaopin=4)"
-          >药品安全(不良)事件（特定）
-          </el-button>
+<!--          <el-button-->
+<!--            type="info"-->
+<!--            icon="el-icon-search"-->
+<!--            :loading="listLoading"-->
+<!--            size="mini"-->
+<!--          >搜索-->
+<!--          </el-button>-->
+          <el-radio-group  v-model="eventTitle"    type="success" size="mini" @change="edChangeL(eventTitle)">
+            <el-radio-button
+              size="mini"
+              :label="0"
+            >通用事件
+            </el-radio-button>
+
+            <el-radio-button
+              size="mini"
+              :label="1"
+            >医疗器械(不良)事件（特定）
+            </el-radio-button>
+            <el-radio-button
+              :label="2"
+            >护理安全(不良)事件（特定）
+            </el-radio-button>
+
+            <el-radio-button
+              :label="3"
+            >医疗安全(不良)事件（特定）
+            </el-radio-button>
+
+            <el-radio-button
+              :label="4"
+            >药品安全(不良)事件（特定）
+            </el-radio-button>
+          </el-radio-group>
 
 
         </el-form-item>
@@ -212,7 +204,7 @@
                 />
                 <el-table-column
                   prop="ReviewDeptName"
-                  label="部门"
+                  label="负责审核的部门"
                   align="center"
                   width="150"
                 />
@@ -419,7 +411,7 @@
                 />
                 <el-table-column
                   prop="ReviewDeptName"
-                  label="部门"
+                  label="负责审核的部门"
                   align="center"
                   width="150"
                 />
@@ -629,7 +621,7 @@
                 />
                 <el-table-column
                   prop="ReviewDeptName"
-                  label="部门"
+                  label="负责审核的部门"
                   align="center"
                   width="150"
                 />
@@ -837,7 +829,7 @@
                 />
                 <el-table-column
                   prop="ReviewDeptName"
-                  label="部门"
+                  label="负责审核的部门"
                   align="center"
                   width="150"
                 />
@@ -1055,7 +1047,7 @@
                 />
                 <el-table-column
                   prop="ReviewDeptName"
-                  label="部门"
+                  label="负责审核的部门"
                   align="center"
                   width="150"
                 />
@@ -1199,7 +1191,7 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="事件改派"
+      title="修改负责审核的部门"
       :visible.sync="dialogUpdateDeptID"
       :width="device === 'desktop' ? '30%' : '90%'"
     >
@@ -1247,7 +1239,7 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="新增流程"
+      title="新增负责审核的部门流程"
       :visible.sync="dialogInsertReviewStep"
       :width="device === 'desktop' ? '30%' : '90%'"
     >
@@ -1329,6 +1321,7 @@ export default {
   },
   data() {
     return {
+      eventTitle: 0,// 默认展示的报告页面，
       // UpdateStatusRow: null, // 进行选中所要审核的条目的数据
       btnLoading: false, // 按钮等待圈
       yiJian: {},
@@ -1446,6 +1439,7 @@ export default {
   created() {
     if (this.$route.query.temNamePending) { // 从待处理报告查看详情点进去后，返回按钮回原来的事件类，传一个标识，判断要显示哪类表
       this.temNameL = this.$route.query.temNamePending;
+      this.eventTitle = this.$route.query.temNamePending;
     }
     // 要显示哪类表，加获取哪类表的数据
     if (this.temNameL === 0) {

@@ -12,41 +12,34 @@
           </el-button>
         </el-form-item>
         <el-form-item>
-          <!--          通用事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(tongyong=0)"
-          >通用事件
-          </el-button>
-          <!--          医疗器械(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(qixie=1)"
-          >医疗器械(不良)事件（特定）
-          </el-button>
-          <!--          护理安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(huli=2)"
-          >护理安全(不良)事件（特定）
-          </el-button>
-          <!--          医疗安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(yiliao=3)"
-          >医疗安全(不良)事件（特定）
-          </el-button>
-          <!--          药品安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(yaopin=4)"
-          >药品安全(不良)事件（特定）
-          </el-button>
+          <el-radio-group  v-model="eventTitle"    type="success" size="mini" @change="edChangeL(eventTitle)">
+            <el-radio-button
+              size="mini"
+              :label="0"
+            >通用事件
+            </el-radio-button>
+
+            <el-radio-button
+              size="mini"
+              :label="1"
+            >医疗器械(不良)事件（特定）
+            </el-radio-button>
+            <el-radio-button
+              :label="2"
+            >护理安全(不良)事件（特定）
+            </el-radio-button>
+
+            <el-radio-button
+              :label="3"
+            >医疗安全(不良)事件（特定）
+            </el-radio-button>
+
+            <el-radio-button
+              :label="4"
+            >药品安全(不良)事件（特定）
+            </el-radio-button>
+          </el-radio-group>
+
         </el-form-item>
         <el-form-item widht="60">
           <el-select v-model="value" placeholder="标记为" @change="mark(1)">
@@ -675,6 +668,7 @@ export default {
 
   data() {
     return {
+      eventTitle: 0,// 默认展示的报告页面，
       temNameL: 0,
       reportData: [], // 固定模板数据
       listQueryYiLiao: {

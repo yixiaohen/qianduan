@@ -17,3 +17,12 @@ export function SelectIValue1(data) {
     params: data
   });
 }
+
+// 图表展示所选年与前一年的数据以及目标值
+export function SelectBIVaule1(data) {
+  return request({
+    url: '/I_TargetValue/SelectBIVaule1',
+    method: 'get',
+    params: data
+  });
+}

@@ -260,7 +260,7 @@ import splitPane from 'vue-splitpane';
 import { mapGetters } from 'vuex';
 import echarts from 'echarts';
 import IndexNavTree from '@/views/indicator/components/IndexNavTree';
-import { SelectIValue1 } from '@/api/indicator/I_TargetValue';
+import { SelectBIVaule1, SelectIValue1 } from '@/api/indicator/I_TargetValue';
 import { InsertObjValue, SelectObjValue, UpdateObjValue } from '@/api/indicator/I_ObjValue';
 
 export default {
@@ -270,6 +270,7 @@ export default {
   },
   data() {
     return {
+      chartData: [], // 图表数据
       dateType: '月度', // 改变统计视图的值
       targetNum: 0, // 要对比的目标值数
       targetTitle: '添加目标值', // 添加目标值对话框标题
@@ -460,29 +461,36 @@ export default {
         this.number = 'Number3';
       }
       this.targetData = [];
+      this.chartData = [];
       this.isShowTH = false; // 开始查询的时候先恢复初始，不显示表
+      try {
+        const { data } = await SelectIValue1({
+          index_id: this.nodeValue.index_id,
+          year: this.indexYear || 2021,
+          number: this.number,
+          num: this.downloadValue
+        });
+        this.targetData = data;
+        if (this.targetData.length > 0) {
+          this.isShowTH = true; // 如果表有数据，就显示表头
+        }
+        // 查询图表数据
+        const data1 = await SelectBIVaule1({
+          index_id: this.nodeValue.index_id,
+          year: this.indexYear || 2021,
+          number: this.number,
+          num: this.downloadValue,
+          monthOr: this.dateType
+        });
+        this.chartData = data1.data;
 
-      const { data } = await SelectIValue1({
-        index_id: this.nodeValue.index_id,
-        year: this.indexYear || 2021,
-        number: this.number,
-        num: this.downloadValue
-      });
-      this.targetData = data;
-      if (this.targetData.length > 0) {
-        this.isShowTH = true; // 如果表有数据，就显示表头
+        this.zhuXingTu();
+        console.log('目标值数据', this.targetData);
+      } catch (e) {
+        console.log(e);
       }
-      this.zhuXingTu();
-      // if (this.targetDataMon.length === 0) {
-      //   this.targetData.map((item) => {
-      //     this.targetDataMon.push(item.Months);
-      //     this.Number1.push(item.Number1);
-      //     this.Number2.push(item.Number2);
-      //     this.Number3.push(item.Number3);
-      //   });
-      // }
 
-      console.log('目标值数据', this.targetData);
+
     },
     // 打开添加目标值对话框
     openAddTargetDia() {
@@ -571,30 +579,35 @@ export default {
     zhuXingTu() {
       var chartDom = this.$refs.zhuXingTu;
       var myChart = echarts.init(chartDom);
-      const data1 = this.targetData[0];
-      const data2 = [];
-      let data22 = [];
-      const data3 = [];
-      let data33 = [];
-      var i;
+      const data1 = this.chartData;
+      const xAxisName = []; // x轴刻度的名字如1到12月
+      var nowMonth = []; // 本年本月的数据
+      var lastMonth = []; // 上年对应的月的数据
       console.log('data1', data1);
-      for (i in data1) {
-        data2.push(i);
-        data3.push(data1[i]);
-      }
-      if (this.dateType === '月度') { // 展示12个月
-        data22 = data2.slice(0, 12);
-        data33 = data3.slice(0, 12);
-      } else { // 展示季度
-        data22 = data2.slice(12, 16);
-        data33 = data3.slice(12, 16);
-      }
+      data1.map((item) => {
+        xAxisName.push(item['月份/季度']);
+        nowMonth.push(item['本年']);
+        lastMonth.push(item['上年']);
+      });
+      // if (this.dateType === '月度') { // 展示12个月
+      //   xAxisName = data2.slice(0, 12);
+      //   nowMonth = data3.slice(0, 12);
+      //   lastMonth = data3.slice(0, 12);
+      // } else { // 展示季度
+      //   xAxisName = data2.slice(12, 16);
+      //   nowMonth = data3.slice(12, 16);
+      //   lastMonth = data3.slice(12, 16);
+      // }
       var option;
       option = {
+        legend: {
+          data: ['上一年', '本年']
+        },
         xAxis: {
           show: true, // 是否显示 x 轴
           type: 'category',
-          data: data22
+          axisLabel: { interval: ''},
+          data: xAxisName
         },
         yAxis: {
           type: 'value'
@@ -608,7 +621,11 @@ export default {
         },
         series: [
           {
-            barWidth: 40, // 柱形图宽度
+            name: '上一年',
+            barWidth: 20, // 柱形图宽度
+            // barGap: '5%',
+            // barCategoryGap:'50%',/*多个并排柱子设置柱子之间的间距*/
+
             markLine: { // 预警线
               symbol: 'none',
               data: [
@@ -627,11 +644,50 @@ export default {
                 }
               ]
             },
-            data: data33,
+            data: lastMonth,
             type: 'bar',
             itemStyle: { // 上方显示数值
               normal: {
-                color: '#13ce66',
+                // color: '#13ce66',
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: 'black',
+                    fontSize: 12
+                  }
+                }
+              }
+            }
+          },
+          {
+            name: '本年',
+            barWidth: 20, // 柱形图宽度
+            markLine: { // 预警线
+              symbol: 'none',
+              data: [
+                {
+                  silent: false, // 鼠标悬停事件  true没有，false有
+                  lineStyle: { // 警戒线的样式  ，虚实  颜色
+                    type: 'solid',
+                    color: '#FA3934'
+                  },
+                  label: {
+                    position: 'end',
+                    formatter: '目标值' + this.targetNum,
+                    fontSize: '12'
+                  },
+                  yAxis: this.targetNum // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
+                }
+              ]
+            },
+            data: nowMonth,
+            // barGap: '5%',
+            // barCategoryGap:'50%',/*多个并排柱子设置柱子之间的间距*/
+            type: 'bar',
+            itemStyle: { // 上方显示数值
+              normal: {
+                // color: '#13ce66',
                 label: {
                   show: true, // 开启显示
                   position: 'top', // 在上方显示
@@ -643,6 +699,8 @@ export default {
               }
             }
           }
+
+
         ]
       };
       option && myChart.setOption(option);

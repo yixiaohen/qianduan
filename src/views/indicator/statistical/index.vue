@@ -95,7 +95,9 @@ export default {
           this.monitorData.map((item) => {
             this.monitoNameData.push(item.name);
           });
+
           this.$nextTick(async() => {
+
             await this.Monitor(); // 查询监测组别
           });
 
@@ -133,10 +135,11 @@ export default {
           }
         );
         if (code === 200) {
-          this.igroupnameData = [];
-          this.igroupCountData = [];
           this.MonitorData = data.DataList;
           this.pagination.Total = data.Total; // 获取总条数
+          this.igroupnameData = []; // 点击tab栏，先把上一栏的图标刻度名称、上月，本月数据先清空再更新数组
+          this.igroupCountData = [];
+          this.igroupLCountData = [];
           this.MonitorData.map((item) => {
             this.igroupnameData.push(item['指标名称']);
             this.igroupCountData.push(item['本月']);
@@ -158,5 +161,9 @@ export default {
   display: flex;
   height: 100%;
   overflow: auto;
+}
+
+.el-tabs__nav-wrap {
+  background-color: #e7faf0;
 }
 </style>

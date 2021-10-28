@@ -3,6 +3,7 @@
 
     <div slot="header" class="clearfix">
       <el-select
+        v-if="!seeControl"
         v-model="event"
         size="mini"
         placeholder="请选择"
@@ -17,38 +18,32 @@
           :value="item.EventID"
         />
       </el-select>
+      <el-radio-group v-if="!seeControl" v-model="eventTitle"    type="success" size="mini" @change="edChangeS(eventTitle)">
+        <el-radio-button
+          size="mini"
+          :disabled="seeControl"
+          :label="1"
+        >医疗器械(不良)事件（特定）
+        </el-radio-button>
+        <el-radio-button
+          :label="2"
+          :disabled="seeControl"
+        >护理安全(不良)事件（特定）
+        </el-radio-button>
 
-      <el-button
-        size="mini"
-        type="success"
-        :disabled="seeControl"
+        <el-radio-button
+          :label="3"
+          :disabled="seeControl"
+        >医疗安全(不良)事件（特定）
+        </el-radio-button>
 
-        @click="edChangeS(qixie=1)"
-      >医疗器械(不良)事件（特定）
-      </el-button>
-      <el-button
-        size="mini"
-        type="success"
-        :disabled="seeControl"
-        @click="edChangeS(huli=2)"
-      >护理安全(不良)事件（特定）
-      </el-button>
+        <el-radio-button
+          :label="4"
+          :disabled="seeControl"
+        >药品安全(不良)事件（特定）
+        </el-radio-button>
+      </el-radio-group>
 
-      <el-button
-        size="mini"
-        type="success"
-        :disabled="seeControl"
-        @click="edChangeS(yiliao=3)"
-      >医疗安全(不良)事件（特定）
-      </el-button>
-
-      <el-button
-        size="mini"
-        type="success"
-        :disabled="seeControl"
-        @click="edChangeS(yaopin=4)"
-      >药品安全(不良)事件（特定）
-      </el-button>
 
       <el-button
         size="mini"
@@ -872,7 +867,7 @@
         </div>
 
 
-          <div class="div1"><span>提交审核的科室部门：</span>
+        <div class="div1"><span>提交审核的科室部门：</span>
           <defaultDepts
             v-model="HuLi.FindDepartmentID"
             :disabled="seeControl"
@@ -880,7 +875,7 @@
             w="300px"
             @getDefaultDeptsValue="getDefaultDeptsValue2"
           />
-          </div>
+        </div>
 
       </div>
       <table
@@ -1538,7 +1533,7 @@
 
       <!--      第23行-->
       <div class="tableHeader">
-        <div><span> 报告人签名：</span></div>
+        <div style="line-height: 26px;height: 26px;margin-top: 4px;margin-right: 4px">报告人签名：</div>
         <div>
           <el-input v-model.trim="yiLiaoAnQuan.Sign" :disabled="seeControl" />
         </div>
@@ -1546,12 +1541,12 @@
 
 
 
-        <div><span> 科室：</span></div>
+        <div style="line-height: 26px;height: 26px;margin-top: 4px;margin-right: 4px">科室：</div>
         <div>
           <el-input v-model="yiLiaoAnQuan.InpatientDept" :disabled="seeControl" />
         </div>
 
-        <div><span> 联系号码：</span></div>
+        <div style="line-height: 26px;height: 26px;margin-top: 4px;margin-right: 4px"> 联系号码：</div>
         <div>
           <el-input v-model.number="yiLiaoAnQuan.Cal" :disabled="seeControl" />
         </div>
@@ -2362,20 +2357,20 @@
 
         <div>
           报告人职业（医疗机构）:
-          <el-radio  v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="医生" />
+          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="医生" />
           <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="药师" />
           <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="护士" />
           <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="其他" />
         </div>
 
         <div>
-       报告人职务职称（企业）
+          报告人职务职称（企业）
           <el-input v-model="yaoPin.ProfessionEnter" :disabled="seeControl" />
         </div>
 
         <div>
           报告人签名：
-          <el-input  v-model.trim="yaoPin.ReportSign" :disabled="seeControl" />
+          <el-input v-model.trim="yaoPin.ReportSign" :disabled="seeControl" />
         </div>
 
       </div>
@@ -2484,12 +2479,12 @@
           <div style="width: 25vh">
             <td><el-input v-model="yaoPin.Monitor" :disabled="seeControl" size="mini" style="width: 20vh;height: 2vh" />
             </td>
-            <td><el-tag type="info"  style="width: 150px">
+            <td><el-tag type="info" style="width: 150px">
               药品不良反应监测中心
             </el-tag></td>
           </div>
           <div style="width: 25vh">
-            <el-tag type="info"  style="width: 70px">通信地址：
+            <el-tag type="info" style="width: 70px">通信地址：
               <el-input
                 v-model="yaoPin.MailAddress"
                 :disabled="seeControl"
@@ -2499,7 +2494,7 @@
             </el-tag>
           </div>
           <div style="width: 25vh">
-            <el-tag type="info"  style="width: 50px">邮 编：
+            <el-tag type="info" style="width: 50px">邮 编：
               <el-input
                 v-model="yaoPin.PostalCode"
                 :disabled="seeControl"
@@ -2509,7 +2504,7 @@
             </el-tag>
           </div>
           <div>
-            <el-tag type="info"  style="width: 50px">电 话：
+            <el-tag type="info" style="width: 50px">电 话：
               <el-input v-model="yaoPin.Phone" :disabled="seeControl" size="mini" style="width: 33.5vh;height: 2vh" />
             </el-tag>
           </div>
@@ -2570,6 +2565,7 @@ export default {
   components: { defaultDepts },
   data() {
     return {
+      eventTitle: null,// 默认展示的报告页面，
       x: 1,
       seeControl: false,
       seeControl2: false,
@@ -3026,6 +3022,7 @@ export default {
     // 使得点击通用事件那个下拉选择框能跳到相应模板
     dianji() {
       this.temName = 0;
+      this.eventTitle = null; // 不选中特定的报告表
     },
     // 验证
     // 将获取的值进行替换去除非数字和点号
@@ -4261,8 +4258,9 @@ html, body, table, tr, td, input, el-input {
   padding: 0;
   margin:0;
 }
-
-
+//.el-select .el-input__inner:focus{
+//  background-color: red;
+//}
 .tableHeaderKy {
   width: 80%;
   display: flex;

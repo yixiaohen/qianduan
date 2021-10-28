@@ -96,9 +96,6 @@ export default {
           text: this.igroupname,
           subtext: ''
         },
-        tooltip: {
-          trigger: 'axis'
-        },
         legend: {
           data: ['上个月', '本月']
         },
@@ -106,13 +103,14 @@ export default {
           show: true,
           feature: {
             dataView: { show: true, readOnly: false },
-            magicType: { show: true, type: ['line', 'bar'] },
+            // magicType: { show: true, type: ['line', 'bar'] },
             restore: { show: true },
             saveAsImage: { show: true }
           }
         },
         xAxis: [
           {
+            show: true, // 是否显示 x 轴
             type: 'category',
             data: this.igroupnameData,
             axisLabel: { interval: ''}
@@ -129,7 +127,6 @@ export default {
             type: 'bar',
             itemStyle: { // 上方显示数值
               normal: {
-                // color: '#13ce66',
                 label: {
                   show: true, // 开启显示
                   position: 'top', // 在上方显示

@@ -62,17 +62,16 @@
                         <el-select
                           v-model="defaultSelect"
                           placeholder="请选择"
-                          @change="searchYear"
                           size="mini"
                           clearable
+                          @change="searchYear"
                         >
                           <el-option
                             v-for="(item,index) in allYear"
                             :key="index"
                             :label="item.year"
                             :value="item.year"
-                          >
-                          </el-option>
+                          />
                         </el-select>
                       </td>
                     </el-col>
@@ -104,10 +103,7 @@
                           width="100px"
                           align="center"
                           sortable
-
-                        >
-
-                        </el-table-column>
+                        />
                         <el-table-column
                           prop="Months"
                           label="月份/季度"
@@ -139,7 +135,6 @@
                           prop="Cover"
                           label="是否覆盖"
                           align="center"
-
                         />
                         <!--                        <el-table-column-->
                         <!--                          prop="DataBasePort"-->
@@ -196,13 +191,14 @@
         <el-form-item
           label="年份"
           prop="Year"
-          size="medium"
         >
-          <el-input
+          <el-date-picker
             v-model="indexAllot.Year"
-            style="width:30vh"
             size="small"
-            clearable
+            type="year"
+            format="yyyy"
+            value-format="yyyy"
+            placeholder="选择年"
           />
         </el-form-item>
         <el-form-item
@@ -214,10 +210,9 @@
             <el-option
               v-for="(item,index) in MonthsValue"
               :key="index"
-              :label="item"
-              :value="item"
-            >
-            </el-option>
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
 
         </el-form-item>
@@ -297,7 +292,7 @@
         <el-button
           type="primary"
           :loading="IndexSourceLoading"
-          @click="addIndexAllot()"
+          @click="addIndexAllot"
         >确定
         </el-button>
       </div>
@@ -345,11 +340,11 @@ export default {
         IndexAllocID: 0,
         index_id: 0,
         DeptID: 0,
-        Year: '',
+        Year: null,
         Months: '',
-        Number1: 0,
-        Number2: 0,
-        Number3: 0,
+        Number1: null,
+        Number2: null,
+        Number3: null,
         AllocUserID: window.userInfo[0].UserID, // 分配人id
         // AllocTime: "2021-10-14T07:51:52.880Z",
         Remarks: '', // 备注
@@ -357,8 +352,22 @@ export default {
         DeptIDs: 0// 批量增加
       },
       MonthsValue: [ // 供Months选择的值
-        '01', '02', '03', '04', '05', '06', '07', '08', '09', '10',
-        '11', '12', '1季度', '2季度', '3季度', '4季度'
+        { label: '一月', value: '01' },
+        { label: '二月', value: '02' },
+        { label: '三月', value: '03' },
+        { label: '四月', value: '04' },
+        { label: '五月', value: '05' },
+        { label: '六月', value: '06' },
+        { label: '七月', value: '07' },
+        { label: '八月', value: '08' },
+        { label: '九月', value: '09' },
+        { label: '十月', value: '10' },
+        { label: '十一月', value: '11' },
+        { label: '十二月', value: '12' },
+        { label: '第一季度', value: '1季度' },
+        { label: '第二季度', value: '2季度' },
+        { label: '第三季度', value: '3季度' },
+        { label: '第四季度', value: '4季度' }
       ],
       indexAllotData: [], // 指标分配数据列表
       isUseAllot: true, // 是否禁用指标分配按钮，true为可以使用
@@ -378,17 +387,12 @@ export default {
       parameterData: [], // 指标中的参数数据
       configIndexTitle: '新增指标分配', // 添加和编辑指标的对话框的标题值
       rules: { // 对话框检验规则
-        name: [
-          //   { required: true, message: '请输入指标名称', trigger: 'blur' }
-          // ],
-          // formulaObj: [
-          //   { required: true, message: '请输入公式编译目标码', trigger: 'blur' }
-          // ],
-          // iattribute: [
-          //   { required: true, message: '请输入指标属性', trigger: 'blur' }
-          // ],
-          // idefinition: [
-          //   { required: true, message: '请输入指标定义', trigger: 'blur' }
+        formulaObj: [
+          { type: 'number', message: '必须为数字值' }
+        ],
+        Year: [
+          {  required: true, message: '请选择年份', trigger: 'change' }
+
         ]
       },
       dynamicValidateForm: { // 添加和编辑指标对话框数据
@@ -401,39 +405,22 @@ export default {
       },
       showConfig: false, // 默认添加指标分配弹窗为隐藏
       IndexSourceLoading: false, // 添加指标确定按钮等待进度圈默认为关闭
-      pickerOptions: { // 时间选择器的快捷选项
-        shortcuts: [{
-          text: '最近一周',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit('pick', [start, end]);
-          }
-        }, {
-          text: '最近一个月',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-            picker.$emit('pick', [start, end]);
-          }
-        }, {
-          text: '最近三个月',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-            picker.$emit('pick', [start, end]);
-          }
-        }]
-      },
       listLoading: false,
       nodeValue: '',
       currentEdit: -1 // 判断是否显示input框
     };
   },
   methods: {
+    test1(addDia) {
+      this.$refs[addDia].validate((valid) => {
+        if (valid) {
+          console.log('aaaaaa');
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
     // 数据源列表分页当前页
     handleCurrentChange(index) {
       this.listQuery.pageIndex = index;
@@ -455,7 +442,6 @@ export default {
       this.selectYear = year; // 传过来的参数赋值给当前选中的年份
       this.listQuery.pageIndex = 1; // 重置页码为1
       this.SelectIndexAlloc(); // 刷新列表
-
     },
     // 获取选中的科室id数组
     getDefaultDeptsValue(value) {

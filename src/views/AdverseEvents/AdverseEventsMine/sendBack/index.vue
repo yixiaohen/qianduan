@@ -2,59 +2,52 @@
   <el-card class="send_back">
     <div slot="header" class="clearfix">
       <el-form label-position="left" :inline="true" size="mini">
+<!--        <el-form-item>-->
+<!--          <el-input-->
+<!--            v-model="listQuery.EventName"-->
+<!--            placeholder="姓名"-->
+<!--            style="width: 150px"-->
+<!--            size="mini"-->
+<!--            clearable-->
+<!--          />-->
+<!--        </el-form-item>-->
         <el-form-item>
-          <el-input
-            v-model="listQuery.EventName"
-            placeholder="姓名"
-            style="width: 150px"
-            size="mini"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="info"
-            icon="el-icon-search"
-            :loading="listLoading"
-            size="mini"
-          >搜索
-          </el-button>
+<!--          <el-button-->
+<!--            type="info"-->
+<!--            icon="el-icon-search"-->
+<!--            :loading="listLoading"-->
+<!--            size="mini"-->
+<!--          >搜索-->
+<!--          </el-button>-->
+          <el-radio-group  v-model="eventTitle"    type="success" size="mini" @change="edChangeL(eventTitle)">
+            <el-radio-button
+              size="mini"
+              :label="0"
+            >通用事件
+            </el-radio-button>
 
-          <!--          通用事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(tongyong=0)"
-          >通用事件
-          </el-button>
-          <!--          医疗器械(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(qixie=1)"
-          >医疗器械(不良)事件（特定）
-          </el-button>
-          <!--          护理安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(huli=2)"
-          >护理安全(不良)事件（特定）
-          </el-button>
-          <!--          医疗安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(yiliao=3)"
-          >医疗安全(不良)事件
-          </el-button>
-          <!--          药品安全(不良)事件按钮-->
-          <el-button
-            size="mini"
-            type="success"
-            @click="edChangeL(yaopin=4)"
-          >药品安全(不良)事件（特定）
-          </el-button>
+            <el-radio-button
+              size="mini"
+              :label="1"
+            >医疗器械(不良)事件（特定）
+            </el-radio-button>
+            <el-radio-button
+              :label="2"
+            >护理安全(不良)事件（特定）
+            </el-radio-button>
+
+            <el-radio-button
+              :label="3"
+            >医疗安全(不良)事件（特定）
+            </el-radio-button>
+
+            <el-radio-button
+              :label="4"
+            >药品安全(不良)事件（特定）
+            </el-radio-button>
+          </el-radio-group>
+
+
         </el-form-item>
       </el-form>
     </div>
@@ -191,7 +184,7 @@
                 <el-table-column type="index"/>
                 <el-table-column
                   prop="CreateUserName"
-                  label="创建人"
+                  label="审核人"
                   align="center"
                 />
                 <el-table-column
@@ -364,7 +357,7 @@
                 <el-table-column type="index"/>
                 <el-table-column
                   prop="CreateUserName"
-                  label="创建人"
+                  label="审核人"
                   align="center"
                 />
                 <el-table-column
@@ -539,7 +532,7 @@
                 <el-table-column type="index"/>
                 <el-table-column
                   prop="CreateUserName"
-                  label="创建人"
+                  label="审核人"
                   align="center"
                 />
                 <el-table-column
@@ -711,7 +704,7 @@
                 <el-table-column type="index"/>
                 <el-table-column
                   prop="CreateUserName"
-                  label="创建人"
+                  label="审核人"
                   align="center"
                 />
                 <el-table-column
@@ -894,7 +887,7 @@
                 <el-table-column type="index"/>
                 <el-table-column
                   prop="CreateUserName"
-                  label="创建人"
+                  label="审核人"
                   align="center"
                 />
                 <el-table-column
@@ -994,6 +987,7 @@ export default {
   components: { splitPane },
   data() {
     return {
+      eventTitle: 0,// 默认展示的报告页面，
       EventReportID: 0,
       dialogSelectOpinion: false, // 查询反馈意见对话框
       /* 反馈意见 */
@@ -1072,6 +1066,7 @@ export default {
   created() {
     if (this.$route.query.temNameSend_back) { // 从被退回报告查看详情点进去后，返回按钮回原来的事件类，传一个标识，判断要显示哪类表
       this.temNameL = this.$route.query.temNameSend_back;
+      this.eventTitle = this.$route.query.temNameSend_back;
     }
     // 要显示哪类表，加获取哪类表的数据
     if (this.temNameL === 0) {

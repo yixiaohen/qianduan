@@ -1,298 +1,172 @@
 <template>
   <el-container>
     <el-header>
-      <div>
-        <el-button class="el-icon-circle-plus" type="primary" size="mini" @click="openAddCycleDia">添加周期
-        </el-button>
+      <div class="block">
+        <span>选择日期：</span>
+        <el-date-picker
+          v-model="ShowLogTime"
+          type="daterange"
+          size="mini"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          @change="changeSelectAllLog"
+        />
       </div>
     </el-header>
     <el-main>
       <el-table
-        :data="cycleListData"
+        :data="LogListData"
         border
-        size="mini"
+        height="70vh"
+        size="small"
+        highlight-current-row
       >
         <el-table-column
           type="index"
           label="序号"
+          width="50px"
           align="center"
+          :show-overflow-tooltip="cellOverflow"
         />
         <el-table-column
-          prop="Type"
-          label="类型"
+          prop="Title"
+          label="日志名称"
+          width="220px"
           align="center"
+          sortable
+          :show-overflow-tooltip="cellOverflow"
         />
         <el-table-column
-          prop="Cycle"
-          label="周期"
+          prop="S"
+          label="具体内容"
           align="center"
+          :show-overflow-tooltip="cellOverflow"
         />
         <el-table-column
-          prop="Num"
-          label="单位数"
+          prop="UserName"
+          label="触发者"
+          width="100px"
           align="center"
+          :show-overflow-tooltip="cellOverflow"
         />
         <el-table-column
-          prop="Starway"
-          label="开始方式"
+          label="产生时间"
           align="center"
-        />
+          width="200px"
+          :show-overflow-tooltip="cellOverflow"
+        >
+          <template slot-scope="{ row }">
+            {{ row.CreateTime ? row.CreateTime.replace('T', ' ') : '' }}
+          </template>
+        </el-table-column>
 
         <el-table-column
           align="center"
           label="操作"
+          width="150px"
         >
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" icon="el-icon-edit" @click="openEdiCycleDia(scope.row)">编辑
-            </el-button>
-            <el-button type="danger" size="mini" icon="el-icon-delete" @click="cycleDelBtn(scope.row)">删除
+            <el-button type="danger" size="mini" icon="el-icon-delete" @click="LogDelBtn(scope.row)">删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-dialog
-        :title="cycleRecord.configIndexTitle"
-        :visible.sync="cycleRecord.visible"
-        width="30%"
-      >
-        <el-form
-          ref="cycleFormData"
-          :model="cycleFormData"
-          label-width="80px"
-        >
-          <el-form-item
-            label="类型"
-            prop="Type"
-            size="small"
-          >
-            <el-select v-model="cycleFormData.Type" placeholder="请选择">
-              <el-option
-                v-for="(item,index) in [{value:'固定'},{value:'浮动'}]"
-                :key="index"
-                :label="item.value"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            label="周期"
-            prop="Cycle"
-            size="small"
-          >
-            <el-select v-model.number="cycleFormData.Cycle" placeholder="请选择">
-              <el-option
-                v-for="(item,index) in [{value:'日'},{value:'月'},{value:'周'},{value:'年'}]"
-                :key="index"
-                :label="item.value"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            label="单位数"
-            prop="cycle"
-          >
-            <el-input
-              v-model.number="cycleFormData.Num"
-              style="width:50%"
-              size="small"
-              clearable
-            />
-          </el-form-item>
-          <el-form-item
-            label="开始方式"
-            prop="cycle"
-          >
-            <el-input
-              v-model="cycleFormData.Starway"
-              style="width:50%"
-              size="small"
-              clearable
-            />
-          </el-form-item>
-
-        </el-form>
-        <!--      添加周期确认按钮-->
-        <div v-if="cycleRecord.configIndexTitle==='添加周期'" slot="footer" class="dialog-footer">
-          <el-button
-            @click="cycleRecord.visible = false"
-          >
-            取消
-          </el-button>
-          <el-button
-            type="primary"
-            :loading="cycleRecord.Loading"
-            @click="InsertiCycle"
-          >新增
-          </el-button>
-        </div>
-
-        <!--      更新周期确认按钮-->
-        <div v-else slot="footer" class="dialog-footer">
-          <el-button @click="cycleRecord.visible = false">
-            取消
-          </el-button>
-          <el-button
-            type="primary"
-            :loading="cycleRecord.Loading"
-            @click="cycleEdiBtn"
-          >更新
-          </el-button>
-        </div>
-
-      </el-dialog>
+      <!--折叠-->
+      <span>展开 </span>
+      <el-switch v-model="cellOverflow" style="margin: 6px 0"/>
+      <span> 折叠</span>
+      <!--                        分页-->
+      <div class="block">
+        <el-pagination
+          :page-sizes="pagination.pageSizes"
+          :page-size="pagination.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :current-page="listQuery.pageIndex"
+          :total="pagination.Total"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+        />
+        <!-- :current-page="listQuery.pageIndex"为当前页-->
+      </div>
     </el-main>
-    <el-footer></el-footer>
+    <el-footer/>
   </el-container>
 </template>
 
 <script>
-import { DeleteiCycle, InsertiCycle, SelectiCycle } from '@/api/indicatorSet/I_Cycle';
+import { ExecuteNonQuery, GetAll } from '@/api/indicatorSet/I_Log';
 
 export default {
   data() {
     return {
-      cycleListData: [{
-        Cycleid: 0, // 周期id
-        Type: '', // 周期类型
-        Cycle: '', // 周期内容
+      cellOverflow: false, // 折叠表格
+      ShowLogTime: [
+        new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
+        new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate()], // 选择查询执行日志的日期
+      LogListData: [{
+        Logid: 0, // 执行日志id
+        Type: '', // 执行日志类型
+        Log: '', // 执行日志内容
         Num: 0,
         Starway: 0
-      }], // 周期表格数据
-      cycleFormData: {
-        Cycleid: 0, // 周期id
-        Type: '', // 周期类型
-        Cycle: '', // 周期内容
-        Num: 0,
-        Starway: 0
-      }, // 周期表单数据
-      cycleRecord: { // 周期的记录
-        visible: false, // 是否展示添加或者修改对话框
-        configIndexTitle: '添加周期', // 对话框标题
-        Loading: false // 确认按钮等待圈控制
+      }], // 执行日志表格数据
+      listQuery: { // 分页数据
+        pageIndex: 1,
+        pageSize: 10
       },
-      pickerOptions: { // 时间选择器的快捷选项
-        shortcuts: [{
-          text: '最近一周',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit('pick', [start, end]);
-          }
-        }, {
-          text: '最近一个月',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-            picker.$emit('pick', [start, end]);
-          }
-        }, {
-          text: '最近三个月',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-            picker.$emit('pick', [start, end]);
-          }
-        }]
-      },
-      value2: '',
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1518 弄',
-        zip: 200333
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1517 弄',
-        zip: 200333
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1519 弄',
-        zip: 200333
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
-      }]
+      pagination: { // 分页数据
+        pageIndex: 1,
+        pageSize: 10,
+        pageSizes: [5, 10, 20, 50, 100, 200],
+        Total: null
+      }
     };
   },
   created() {
-    this.SelectiCycle();
+    this.selectAllLog();
   },
   methods: {
-    // 查询全部周期
-    async SelectiCycle() {
+    // 查询全部执行日志
+    changeSelectAllLog() {
+      this.listQuery.pageIndex = 1; // 只要查新的数据把重新设置页码
+      this.selectAllLog();
+    },
+    async selectAllLog() {
       try {
-        const { data, code } = await SelectiCycle();
+        const { data, code } = await GetAll({
+          pageIndex: this.listQuery.pageIndex,
+          pageSize: this.listQuery.pageSize,
+          StartTime: this.ShowLogTime[0],
+          EndTime: this.ShowLogTime[1]
+        });
         if (code === 200) {
-          this.cycleListData = data;
+          this.LogListData = data.DataList;
+          this.pagination.Total = data.Total; // 获取总条数
         }
       } catch (e) {
         console.log(e);
       }
     },
-    // 打开添加周期对话框
-    openAddCycleDia() {
-      this.cycleRecord.visible = true; // 打开对话框
-      this.cycleRecord.configIndexTitle = '添加周期'; // 对话框标题
-    },
-    // 添加单个周期
-    async InsertiCycle() {
-      this.cycleRecord.configIndexTitle = '添加周期'; // 对话框标题
-      try {
-        const { code } = await InsertiCycle(this.cycleFormData);
-        if (code === 200) {
-          await this.SelectiCycle();
-          this.$message.success('添加成功');
-          this.cycleRecord.visible = false; // 关闭对话框
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    openEdiCycleDia(row) {
-      this.cycleRecord.visible = true; // 打开对话框
-      this.cycleFormData = row; // 传入该条周期数据
-      this.cycleRecord.configIndexTitle = '修改周期'; // 对话框标题
-    },
-    // 编辑更新周期
-    async cycleEdiBtn(row) {
-      try {
-        const { code } = await InsertiCycle(this.cycleFormData);
-        if (code === 200) {
-          this.$message.success('更新成功');
-          this.cycleRecord.visible = false; // 关闭对话框
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    // 删除单条周期
-    async cycleDelBtn(row) {
-      this.$confirm('此操作将永久删除该周期, 是否继续?', '提示', {
+    // 删除单条执行日志
+    async LogDelBtn(row) {
+      console.log(row);
+      this.$confirm('此操作将永久删除该执行日志<' + row.Title + '>是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'error'
       }).then(async() => {
-        const { code } = await DeleteiCycle({ Cycleid: row.Cycleid });
+        const { code } = await ExecuteNonQuery(
+          {
+            CmdType: 3, // 3为删除日志
+            LogDto: {
+              ID: row.ID
+            }
+          }
+        );
         if (code === 200) {
-          this.SelectiCycle(); // 刷新列表
+          this.selectAllLog(); // 刷新列表
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -304,23 +178,42 @@ export default {
           message: '已取消删除'
         });
       });
+    },
+    // 列表分页当前页
+    // 全部信息列表分页当前页
+    handleCurrentChange(index) {
+      this.listQuery.pageIndex = index;
+      this.selectAllLog(); // 跳转页面后刷新列表
+    },
+    // 全部信息列表分页一页多少显示条数据
+    handleSizeChange(page) {
+      this.listQuery.pageSize = page;
+      this.selectAllLog(); // 跳转页面后刷新列表
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+//分页栏距离表格
+.block {
+  margin-top: 10px;
+}
+
 .el-container {
   .el-header {
     height: auto !important;
-    div{
+
+    div {
       margin-top: 10px;
     }
   }
+
   .el-main {
     padding-top: 6px;
-    padding-left: 20px ;
-    padding-right: 20px ;
+    padding-left: 20px;
+    padding-right: 20px;
+
     .el-table {
     }
   }
