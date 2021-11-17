@@ -21,6 +21,14 @@
                 @click="addIndexDia(node=0)"
               >添加指标
               </el-button>
+              <el-button
+                :loading="importStandardLoading"
+                type="warning"
+                size="mini"
+                icon="el-icon-plus"
+                @click="importStandard"
+              >导入评审标准
+              </el-button>
             </div>
             <el-tree
               ref="dirTree"
@@ -39,11 +47,29 @@
                 class="custom-tree-node"
               >
 
-                <span>
+                <span v-if="data.children.length > 0" style="font-size: 14px;font-weight: bolder">
+
                   <svg-icon
-                    icon-class="Green_folder"
+                    v-if="data.imported===1"
+                    icon-class="importDir"
+                  />
+                  <svg-icon
+                    v-else
+                    icon-class="treeFileDir"
                   />
                   {{ node.label }}</span>
+
+                <span v-else style="font-size: 12px">
+                  <svg-icon
+                    v-if="data.imported===1"
+                    icon-class="importFile"
+                  />
+                  <svg-icon
+                    v-else
+                    icon-class="treeFile"
+                  />
+                  {{ node.label }}
+                </span>
                 <span v-show="treeCurrentEdit===node.key" class="border-left">
                   <el-link
                     class="custom-tree-node-link"
@@ -143,6 +169,7 @@
                     style="width: 350px"
                     clearable
                     filterable
+                    @focus="offLoading"
                   >
 
                     <el-option
@@ -152,7 +179,7 @@
                       :value="item.conn_id"
                     >
                       <span style="float: left">{{ item.type }}</span>
-                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.remarks.slice(0,12) }}</span>
+                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.remarks.slice(0, 12) }}</span>
                     </el-option>
                   </el-select>
 
@@ -319,13 +346,15 @@
                         :label="item2.Type+' | '+item2.Cycle +' | '+item2.Num"
                       >
                         <span style="float: left">{{ item2.Type }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item2.Cycle + ' | ' + item2.Num }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 13px">{{
+                          item2.Cycle + ' | ' + item2.Num
+                        }}</span>
                       </el-option>
                     </el-select>
                     <br>
                     <span>sql语句: </span>
                     <el-tag v-if="sqlCurrentEdit!==index" type="success">
-                      {{ item.sqlsen|| '暂无' }}
+                      {{ item.sqlsen || '暂无' }}
                     </el-tag>
                     <el-input
                       v-else
@@ -488,105 +517,222 @@
 
     <!--添加指标弹框-->
     <el-dialog :title="configIndexTitle" :visible.sync="showConfig">
-      <el-form ref="addDia" :model="dynamicValidateForm" label-width="120px" status-icon>
-        <el-form-item
-          label="周期"
-        >
-          <el-select v-model="dynamicValidateForm.Cycle_ID" placeholder="请选择" size="mini">
-            <el-option
-              v-for="item in cycle"
-              :key="item.Cycleid"
-              :value="item.Cycleid"
-              :label="item.Type+' | '+item.Cycle +' | '+item.Num"
+      <el-form
+        ref="addDia"
+        :model="dynamicValidateForm"
+        label-width="160px"
+        status-icon
+        :close-on-click-modal="false"
+      >
+        <el-row>
+          <el-col :span="12">
+            <el-form-item
+              label="周期"
             >
-              <span style="float: left">{{ item.Type }}</span>
-              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.Cycle + ' | ' + item.Num }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="监测组别"
-          prop="name"
-        >
-          <el-select v-model="dynamicValidateForm.Igroupid" placeholder="请选择" size="mini">
-            <el-option
-              v-for="item in monitor"
-              :key="item.id"
-              :value="item.Igroupid"
-              :label="item.Igroupname"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="公式编译目标码"
-          prop="formulaObj"
-        >
-          <el-input
-            v-model="dynamicValidateForm.formulaObj"
-            style="width:30vh"
-            size="small"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item
-          label="指标名称"
-          prop="name"
-        >
-          <el-input
-            v-model="dynamicValidateForm.name"
-            style="width:30vh"
-            size="small"
-            clearable
-          />
-        </el-form-item>
+              <el-select
+                v-model="dynamicValidateForm.Cycle_ID"
+                filterable
+                clearable
+                style="width:62%"
+                placeholder="请选择"
+                size="mini"
+              >
+                <el-option
+                  v-for="item in cycle"
+                  :key="item.Cycleid"
+                  :value="item.Cycleid"
+                  :label="
+                    item.Starway === 0 ? item.Type+' | '+'结束日期往前' +
+                      ' | '+
+                      item.Cycle +
+                      ' | '+
+                      item.Num : item.Starway === 10 ?item.Type+ ' | '+'当年' +
+                      ' | '+
+                      item.Cycle +
+                      ' | '+
+                      item.Num : item.Starway === 11 ?item.Type+ ' | '+'当季' +
+                        ' | '+
+                        item.Cycle +
+                        ' | '+
+                        item.Num : item.Starway === 12 ? item.Type+' | '+'当月' +
+                          ' | '+
+                          item.Cycle +
+                          ' | '+
+                          item.Num : item.Starway
+                  "
+                >
+                  <span style="float: left">{{ item.Type }}</span>
+                  <span
+                    style="float: right; color: #8492a6; font-size: 13px"
+                  >{{
+                    item.Starway === 0 ? '结束日期往前' : item.Starway === 10 ? '当年' : item.Starway === 11 ? '当季' : item.Starway === 12 ? '当月' : item.Starway
+                  }}{{ ' | ' + item.Cycle + ' | ' + item.Num }}</span>
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="监测组别"
+              prop="name"
+            >
+              <el-select
+                v-model="dynamicValidateForm.Igroupid"
+                style="width:62%"
+                placeholder="请选择"
+                size="mini">
+                <el-option
+                  v-for="item in monitor"
+                  :key="item.id"
+                  :value="item.Igroupid===0?null:item.Igroupid"
+                  :label="item.Igroupname"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item
+              label="公式编译目标码"
+              prop="formulaObj"
+            >
+              <el-input
+                v-model="dynamicValidateForm.formulaObj"
+                style="width:62%"
+                size="small"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="指标名称"
+              prop="name"
+            >
+              <el-input
+                v-model="dynamicValidateForm.name"
+                style="width:62%"
+                size="small"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+
+          <el-col :span="12">
+            <el-form-item
+              label="指标属性"
+              prop="iattribute"
+            >
+              <el-input
+                v-model="dynamicValidateForm.iattribute"
+                style="width:62%"
+                size="small"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="指标参考值"
+              prop="index_refvalue"
+            >
+              <el-input
+                v-model="dynamicValidateForm.index_refvalue"
+                style="width:62%"
+                size="small"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="24">
+            <el-form-item
+              label="指标定义"
+              prop="idefinition"
+            >
+              <el-input
+                v-model="dynamicValidateForm.idefinition"
+                style="width:30%"
+                size="small"
+                clearable
+              />
+              <el-select
+                v-model="dynamicValidateForm.type"
+                style="width:28%"
+                size="small"
+                clearable
+                placeholder="定义精确到(默认全院)"
+              >
+                <el-option
+                  v-for="item in [
+                    {
+                      label: '全院',
+                      value: 0
+                    },
+                    {
+                      label: '科室',
+                      value: 1
+                    }
+                  ]"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.label"
+                />
+              </el-select>
+              <el-select
+                v-model="dynamicValidateForm.para"
+                style="width:30%"
+                size="small"
+                clearable
+                placeholder="是否记录参数值明细(默认否)"
+              >
+                <el-option
+                  v-for="item in [
+                    {
+                      label: '否',
+                      value: 0
+                    },
+                    {
+                      label: '是',
+                      value: 1
+                    }
+                  ]"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.label"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item
+              label="指标公式"
+              prop="formula"
+            >
+              <el-input
+                v-model="dynamicValidateForm.formula"
+                style="width:86%"
+                size="small"
+                clearable
+                type="textarea"
+              />
+            </el-form-item>
+          </el-col>
+
+        </el-row>
 
 
-        <el-form-item
-          label="指标公式"
-          prop="formula"
-        >
-          <el-input
-            v-model="dynamicValidateForm.formula"
-            style="width:30vh"
-            size="small"
-            clearable
-          />
-        </el-form-item>
-
-        <el-form-item
-          label="指标属性"
-          prop="iattribute"
-        >
-          <el-input
-            v-model="dynamicValidateForm.iattribute"
-            style="width:30vh"
-            size="small"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item
-          label="指标定义"
-          prop="idefinition"
-        >
-          <el-input
-            v-model="dynamicValidateForm.idefinition"
-            style="width:30vh"
-            size="small"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item
-          label="指标参考值"
-          prop="index_refvalue"
-        >
-          <el-input
-            v-model="dynamicValidateForm.index_refvalue"
-            style="width:30vh"
-            size="small"
-            clearable
-          />
-        </el-form-item>
       </el-form>
+
       <!--      添加指标确认按钮-->
       <div v-if="configIndexTitle==='添加指标'" slot="footer" class="dialog-footer">
         <el-button @click="showConfig = false">取 消</el-button>
@@ -615,7 +761,15 @@
 <script>
 import splitPane from 'vue-splitpane';
 import { mapGetters } from 'vuex';
-import { DeleteIndex, Get, InsertIndex, SelectIndexPara, SelectIndexs, UpdateIndex } from '@/api/indicatorSet/I_Index';
+import {
+  DeleteIndex,
+  Get,
+  InsertI_DataByHis_Ha_Catalog,
+  InsertIndex,
+  SelectIndexPara,
+  SelectIndexs,
+  UpdateIndex
+} from '@/api/indicatorSet/I_Index';
 import { DeletePara, InsertPara, UpdatePara } from '@/api/indicatorSet/I_Para';
 import { SelectConn } from '@/api/indicatorSet/I_Conn';
 import { DeleteParaSql, InsertParaSql, ParaSqlMove, SelectParaSql, UpdateParaSql } from '@/api/indicatorSet/I_ParaSql';
@@ -629,6 +783,7 @@ export default {
   components: { splitPane },
   data() {
     return {
+      importStandardLoading: false, // 导入评审标准按钮等待
       isShowinfo: false, // 是否展示计算指标后的提示信息
       indexInfo: '', // 指标计算后的提示信息
       nowSqlRow: {},
@@ -661,6 +816,7 @@ export default {
       isShowInput: true, // 是否显示sql编辑的input框
       paraDynamicValidateForm: [
         {
+          index_id: 0,
           para_id: '',
           idx: '',
           sqlsen: '',
@@ -694,6 +850,8 @@ export default {
         formulaObj: '', // 公式编译目标码
         iattribute: '', // 指标属性
         idefinition: '', // 指标定义
+        type: 0, // 指标定义是否精确到科室，默认为0全院，1为是
+        para: 0, // 是否记录参数值明细。0否，1是
         index_refvalue: '', // 指标参考值
         Igroupid: null, // 监测组别id
         paralist: [ // 参数
@@ -741,7 +899,7 @@ export default {
     ...mapGetters(['device'])
   },
   created() {
-    this.SelectIndex();
+    this.SelectIndex(); // 指标导航树数据
     this.SelectConn(); // 开始获取数据源数据
     this.SelectiCycle(); // 开始获取周期数据
     this.SelectMonGroup(); // 获取指标值要选择的监测组别数据
@@ -777,9 +935,11 @@ export default {
           this.treeLoading = false;
         } else {
           this.$message.error('加载出现错误');
+          this.treeLoading = false;
         }
       } catch (e) {
         console.log(e);
+        this.treeLoading = false;
       }
     },
     // 获取指标中要选择的周期数据
@@ -827,6 +987,27 @@ export default {
           this.$message.success('计算完成，请在监测数据中查看相关信息。');
         }
       } catch (e) {
+        console.log(e);
+      }
+    },
+    // 导入评审标准
+    async importStandard() {
+      try {
+        this.importStandardLoading = true; // 开启等待圈
+        const { data, code } = await InsertI_DataByHis_Ha_Catalog();
+        if (code === 200) {
+          if (data === -1) {
+            this.$message.warning('已导入相同数据，请勿重复导入');
+            this.importStandardLoading = false; // 关闭等待圈
+          } else {
+            this.$message.success('导入成功');
+            this.importStandardLoading = false; // 关闭等待圈
+            await this.SelectIndex(); // 刷新指标导航树数据
+          }
+        }
+      } catch (e) {
+        this.$message.error('出现问题，导入失败');
+        this.importStandardLoading = false; // 关闭等待圈
         console.log(e);
       }
     },
@@ -913,6 +1094,10 @@ export default {
     /* 指标结束 */
 
     /* 参数开始 */
+    // 点击下拉框无论怎么样都先关闭完成等待按钮的圈
+    offLoading() {
+      this.finishParaLoading = false;
+    },
     // 根据指标id查询参数
     async SelectIndexPara() {
       try {
@@ -966,7 +1151,7 @@ export default {
             para_id: row.para_id,
             name: row.name,
             para_value: row.para_value,
-            conn_id: row.conn_id
+            conn_id: row.conn_id === '' ? 0 : row.conn_id
           });
           if (code === 200) {
             this.isEdit = 2; // 标识为正在编辑
@@ -1082,7 +1267,9 @@ export default {
     },
     // 插入新增参数取值，sql
     async InsertParaSql(index, item) {
-      const { code } = await InsertParaSql(this.paraDynamicValidateForm[index]);
+      const para = this.paraDynamicValidateForm[index];
+      para['index_id'] = this.nowSqlRow.index_id; // 要将指标id存上
+      const { code } = await InsertParaSql(para);
       if (code === 200) {
         this.$message.success('成功');
         await this.SelectParaSql(item); // 保存之后就重新获取当前的sql列表
@@ -1169,8 +1356,10 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 @import 'index.scss';
+// 导出等待条样式
+@import "src/styles/loading.scss";
 
 .el-table--scrollable-y .el-table__body-wrapper {
   overflow: scroll;
@@ -1206,15 +1395,29 @@ export default {
 .lineTree {
   overflow: auto;
   margin-top: 2px;
+  font-size: 16px;
   border-top: 1px solid #c0bebe;
   //border-bottom: 1px dotted #c0bebe;
-
-  .el-tree-node__content {
-    border-bottom: 1px solid rgb(235, 235, 235);
-  }
+  // 设置树形的下划线
+  //.el-tree-node__content {
+  //  border-bottom: 1px solid rgb(235, 235, 235);
+  //}
 }
 
 .el-icon-s-order {
   color: #FFBA00;
+}
+
+
+/* 改变被点击节点背景颜色，字体颜色 */
+.el-tree-node:focus > .el-tree-node__content {
+  background-color: #1890ff !important;
+  color: #fff !important;
+}
+
+/*节点失焦时的背景颜色*/
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+  background-color: #1890ff !important;
+  color: #fff !important;
 }
 </style>

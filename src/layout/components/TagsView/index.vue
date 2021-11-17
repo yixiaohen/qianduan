@@ -18,7 +18,11 @@
           class="el-icon-close"
           @click.prevent.stop="closeSelectedTag(tag)"
         />
+
       </router-link>
+<!--      <el-button-->
+<!--        @click="openMenu()"-->
+<!--      >关闭</el-button>-->
     </scroll-pane>
     <ul
       v-show="visible"
@@ -43,6 +47,8 @@ export default {
   components: { ScrollPane },
   data() {
     return {
+      // tag:null,
+      // event:null
       visible: false,
       top: 0,
       left: 0,
@@ -236,9 +242,10 @@ export default {
         margin-right: 1px;
       }
       &.active {
-        background-color: #42b983;
+        background-color: #409EFF;
         color: #fff;
-        border-color: #42b983;
+        border-color: #409EFF;
+        box-shadow: 3px 3px 1px #8c939d;
         &::before {
           content: '';
           background: #fff;

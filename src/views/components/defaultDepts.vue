@@ -7,6 +7,7 @@
     size="mini"
     @change="selectText"
 
+
     @clear="clear"
   >
     <!--至少写一个el-option，否则无法显示tree  -->
@@ -33,7 +34,7 @@
         show-checkbox
         node-key="DeptID"
         check-on-click-node
-        :check-strictly="true"
+        :check-strictly="checkStrictly"
         :default-checked-keys="dept_value"
         :default-expanded-keys="[1]"
         :filter-node-method="filterNode"
@@ -58,6 +59,7 @@ export default {
       type: Boolean,
       default: false
     },
+
     value: {
       default: 0
     },
@@ -72,6 +74,7 @@ export default {
   },
   data() {
     return {
+      checkStrictly: false, // false为,选中父级，将子级叶子全选，true就不会选子级叶子
       width: this.w,
       num: '',
       dept_value:

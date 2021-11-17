@@ -422,11 +422,11 @@
 
         <el-row type="flex" :gutter="16">
           <el-col :span="12">
-            <el-card shadow="never" :style="{ height: '410px' }">
-              <div slot="title">人员列表</div>
+            <el-card shadow="never" :style="{ height: '450px', overflow: 'auto'}">
+              <div slot="title"    style="height:300px">人员列表</div>
               <select-deptor-user
                 ref="userTree"
-                :height="400"
+                :height="280"
                 @getSelectDeptorUser="getSelectDeptorUser"
               />
             </el-card>
@@ -434,7 +434,7 @@
           <el-col :span="12">
             <el-card
               shadow="never"
-              :style="{ height: '410px', overflow: 'auto' }"
+              :style="{ height: '450px', overflow: 'auto' }"
             >
               <div slot="title">已选中人员列表</div>
               <div>{{ names }}</div>
@@ -658,7 +658,6 @@ export default {
               this.$message.warning('考试时长低于0,请重新设置再发布');
               return;
             }
-            debugger;
             const usersTree = this.usersTree;
             const form = this.taskFormData;
             form.Uids = usersTree.join(',');

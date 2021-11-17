@@ -22,7 +22,7 @@
                 <el-alert
                   :closable="false"
                   title="指标"
-                  type="success"
+                  type="info"
                   style="font-weight: bolder;"
                 />
 
@@ -39,10 +39,10 @@
               <div class="middle">
                 <div class="targetVis">
                   <div>指标名称：
-                    <el-tag v-if="nodeValue.name!==''">{{ nodeValue.name }}</el-tag>
+                    <span v-if="nodeValue.name!==''">{{ nodeValue.name }}</span>
                   </div>
                   <div>指标编码：
-                    <el-tag v-if="nodeValue.formulaObj!==''">{{ nodeValue.formulaObj }}</el-tag>
+                    <span v-if="nodeValue.formulaObj!==''">{{ nodeValue.formulaObj }}</span>
                   </div>
                   <div>
                     <el-button
@@ -67,8 +67,7 @@
                   <el-table
                     :data="fwmListData"
                     border
-                    style="width: 100%"
-                    max-height="650"
+                    style="width:100%;height:calc(100vh - 220px)"
                     highlight-current-row
                   >
                     <el-table-column
@@ -130,6 +129,7 @@
                   <!--                        分页-->
                   <div class="block">
                     <el-pagination
+                      style="margin: 6px 0 0 0"
                       :page-sizes="pagination.pageSizes"
                       :page-size="pagination.pageSize"
                       layout="total, sizes, prev, pager, next, jumper"
@@ -320,15 +320,43 @@
               <el-form-item
                 label="周期类型"
               >
-                <el-select v-model="GraFormData.Cycleid" placeholder="请选择" size="mini">
+                <el-select
+                  v-model="GraFormData.Cycleid"
+                  filterable
+                  clearable
+                  style="width:50%"
+                  placeholder="请选择"
+                  size="mini">
                   <el-option
                     v-for="item in cycle"
                     :key="item.Cycleid"
                     :value="item.Cycleid"
-                    :label="item.Type+' | '+item.Cycle +' | '+item.Num"
+                    :label="
+                      item.Starway === 0 ? item.Type+' | '+'结束日期往前' +
+                        ' | '+
+                        item.Cycle +
+                        ' | '+
+                        item.Num : item.Starway === 10 ?item.Type+ ' | '+'当年' +
+                        ' | '+
+                        item.Cycle +
+                        ' | '+
+                        item.Num : item.Starway === 11 ?item.Type+ ' | '+'当季' +
+                          ' | '+
+                          item.Cycle +
+                          ' | '+
+                          item.Num : item.Starway === 12 ? item.Type+' | '+'当月' +
+                            ' | '+
+                            item.Cycle +
+                            ' | '+
+                            item.Num : item.Starway
+                    "
                   >
                     <span style="float: left">{{ item.Type }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.Cycle+' | '+item.Num }}</span>
+                    <span
+                      style="float: right; color: #8492a6; font-size: 13px"
+                    >{{
+                      item.Starway === 0 ? '结束日期往前' : item.Starway === 10 ? '当年' : item.Starway === 11 ? '当季' : item.Starway === 12 ? '当月' : item.Starway
+                    }}{{ ' | ' + item.Cycle + ' | ' + item.Num }}</span>
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -910,7 +938,6 @@ export default {
     },
     // 查询全部粒度
     async SelectGra(row) {
-
       try {
         const { data, code } = await SelectPaSize({
           anticDeployID: row.AnticDeployID,
@@ -1018,7 +1045,7 @@ export default {
   line-height: 34px;
   padding-left: 50px;
   justify-content: flex-start;
-  background-color: #e7faf0;
+  background-color: #f4f4f5;
 
   div {
     width: 33.3%;

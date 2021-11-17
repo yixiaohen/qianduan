@@ -56,12 +56,57 @@
         <div class="rightTop">
           <span>列表</span>
         </div>
+        <div class="serach" style="font-weight: bolder;">
+          <span class="demonstration">查找:</span>
+          <el-radio-group v-model="isYearOrMonth" size="mini" @change="isYearOrMonthc">
+            <el-radio-button :label="1">按年份</el-radio-button>
+            <el-radio-button :label="2">按年月</el-radio-button>
+          </el-radio-group>
+          <el-date-picker
+            v-if="isYearOrMonth===1"
+            v-model="selectYear"
+            :clearable="false"
+            type="year"
+            size="mini"
+            style="width: 120px"
+            placeholder="选择年"
+            value-format="yyyy"
+            format="yyyy"
+          />
+          <span v-if="isYearOrMonth===1" class="demonstration">年</span>
+          <el-button v-if="isYearOrMonth===1" type="primary" size="mini" @click="SelectYearClick">搜索</el-button>
+          <el-date-picker
+            v-if="isYearOrMonth===2"
+            v-model="selectYear"
+            :clearable="false"
+            type="year"
+            size="mini"
+            style="width: 120px"
+            placeholder="选择年"
+            value-format="yyyy"
+            format="yyyy"
+          />
+          <span v-if="isYearOrMonth===2" class="demonstration">年</span>
+          <el-date-picker
+            v-if="isYearOrMonth===2"
+            v-model="selectMonth"
+            :clearable="false"
+            type="month"
+            size="mini"
+            format="MM"
+            style="width: 120px"
+            value-format="MM"
+            placeholder="选择月"
+          />
+          <span v-if="isYearOrMonth===2" class="demonstration">月</span>
+          <el-button v-if="isYearOrMonth===2" type="primary" size="mini" @click="SelectMonthClick()">搜索</el-button>
+        </div>
         <el-card>
           <div class="rightContent">
             <el-radio-group v-model="radio" size="mini" @change="Switch">
-              <el-radio-button label="已超标" />
-              <el-radio-button label="不合格" />
-              <el-radio-button label="已逾期" />
+              <el-radio-button label="A">已超标</el-radio-button>
+              <el-radio-button label="B">合格</el-radio-button>
+              <el-radio-button label="C">已逾期</el-radio-button>
             </el-radio-group>
           </div>
           <el-table
@@ -73,35 +118,30 @@
             highlight-current-row
           >
             <el-table-column
-              prop="AnticDeployName"
+              prop="name"
               label="指标名称"
               width="180"
               align="center"
             />
+
             <el-table-column
-              prop="Granularity"
-              label="粒度"
-              width="180"
+              prop="Number1"
+              label="指标预警值1"
               align="center"
             />
             <el-table-column
-              prop="LowerLimit"
-              label="上限"
+              prop="Number2"
+              label="指标预警值2"
               align="center"
             />
             <el-table-column
-              prop="UpperLimit"
-              label="下限"
-              align="center"
-            />
-            <el-table-column
-              prop="AnticState"
+              prop="state"
               label="状态"
               align="center"
             >
               <template slot-scope="{ row }">
                 <el-tag type="danger">
-                  {{ row.AnticState }}
+                  {{ row.state }}
                 </el-tag>
               </template>
 
@@ -140,22 +180,28 @@ export default {
   },
   data() {
     return {
+      /* 搜索 */
+      isYearOrMonth: 2, // 按照年份还是年月查找数据，这里默认展示按年月
+      selectYear: '', // 选中的年份
+      selectMonth: '', // 选中的月份
       /* 图表 */
       ChartWarShow: [], // 图表预警信息率
       overproof: 0, // 超标率
       qualified: 0, // 不合格率
       overdue: 0, // 已逾期率
       /* 列表 */
-      radio: '已超标',
+      radio: 'A',
       forecastData: [
         {
           AnticDeployID: 33, // 指标id
-          AnticDeployName: '实际开放床位', // 指标名称
-          ParticleSizeID: null, // 粒度id
-          Granularity: '', // 粒度名
-          UpperLimit: 2, // 上限
-          LowerLimit: 0, // 下限
-          AnticState: '已超标' // 状态
+          AnticDeployName: '', // 指标名称
+          // ParticleSizeID: null, // 粒度id
+          // Granularity: '', // 粒度名
+          // UpperLimit: 2, // 上限
+          // LowerLimit: 0, // 下限
+          year: '',
+          month: '',
+          AnticState: '' // 状态
         }
       ], // 列表数据
       listQuery: { // 分页数据
@@ -172,13 +218,51 @@ export default {
   },
   created() {
     this.AnticStateRadio();
+
+
   },
   methods: {
+    /* 搜索 */
+    // 切换查找条件，年份还是月份切换之后的处理事件
+    isYearOrMonthc() {
+      const times = new Date();
+      this.selectYear = times.getFullYear() + ''; // 初始获取年份
+      this.selectMonth = times.getMonth() + ''; // 初始获取年份
+      // this.selectMonth = ''; // 搜索月份框置为空
+    },
+    SelectYearClick() {
+      console.log('点击了1');
+      console.log( this.selectYear);
+      console.log( this.selectMonth);
+      if (this.selectYear === null || this.selectMonth === null) {
+        const times = new Date();
+        this.selectYear = times.getFullYear() + ''; // 初始获取年份
+        this.selectMonth = null;
+      }
+      this.$nextTick(() => {
+        this.SelectAnticState();
+      });
+
+    },
+    SelectMonthClick() {
+      console.log('点击了2');
+      console.log( this.selectYear);
+      console.log( this.selectMonth);
+      if (this.selectYear === null || this.selectMonth === null) {
+        const times = new Date();
+        this.selectYear = times.getFullYear() + ''; // 初始获取年份
+        this.selectMonth = times.getMonth() + ''; // 初始获取年份
+      }
+      this.$nextTick(() => {
+        this.SelectAnticState();
+      });
+    },
     /* 图表开始 */
     // 查询图表数据
     async AnticStateRadio() {
       try {
         const { data, code } = await AnticStateRadio();
+
         if (code === 200) {
           this.ChartWarShow = data;
           console.log(this.ChartWarShow[0]);
@@ -192,6 +276,15 @@ export default {
 
           this.overdue = this.ChartWarShow['已逾期率'] * 100;
           this.overdue = this.overdue.toFixed(2) * 1;
+          this.$nextTick(() => {
+            /* 加载数据时就初始化年月*/
+            const times = new Date();
+            /* 一定要注意，日期组件不能用数值，一定要转为字符串！！ */
+            this.selectYear = times.getFullYear() + ''; // 初始获取年份
+            this.selectMonth = times.getMonth() + ''; // 默认展示上个月的数据所以不需要加1
+
+            this.SelectAnticState();
+          });
         }
       } catch (e) {
         console.log(e);
@@ -201,15 +294,17 @@ export default {
     /* 列表开始 */
     // 获取不同列表数据
     async SelectAnticState() {
-
       try {
         const { data, code } = await SelectAnticState(
           {
             AnticState: this.radio,
+            year: this.selectYear,
+            month: this.selectMonth,
             pageIndex: this.listQuery.pageIndex,
             pageSize: this.listQuery.pageSize
           }
         );
+
         if (code === 200) {
           this.forecastData = data.DataList;
           this.pagination.Total = data.Total; // 获取总条数
@@ -243,45 +338,51 @@ export default {
 
 <style lang="scss" scoped>
 //分页栏距离表格
-.block{
+.block {
   margin-top: 10px;
 }
+
 .container {
   border: 1px solid #eee;
   margin: 10px;
   display: flex;
   justify-content: center;
+
   .left {
     width: 30%;
     display: flex;
     flex-direction: column;
+
     .leftContent {
-      border: 1px solid #b3d3c2;
+      border: 0.5px solid #d0d0d0;
       border-top: none;
+
       .leftContentHeader {
         height: 40px;
         font-size: 16px;
         font-weight: bolder;
         padding-top: 8px;
         padding-left: 20px;
-        border: 1px solid #b3d3c2;
-        border-left: none;
-        border-right: none;
-        background-color: #e7faf0;
+        border: 0.5px solid #d0d0d0;
+        //border-left: none;
+        //border-right: none;
+        background-color: #f4f4f5;
       }
 
       .leftContentTop {
         text-align: center;
         font-weight: bolder;
         font-size: 16px;
-        border-bottom: 1px solid #b3d3c2;
+        border-bottom: 0.5px solid #d0d0d0;
       }
+
       .leftContentBottom {
         width: 200px;
-        height: 204px;
+        height: 214px;
         margin: 0 auto;
         padding-top: 30px;
         text-align: center;
+
         .progress {
           height: 200px;
           margin: 0 auto;
@@ -289,24 +390,34 @@ export default {
       }
     }
   }
+
   .right {
     width: 70%;
-    border-bottom: 1px solid #b3d3c2;
-    border-right: 1px solid #b3d3c2;
+    border-bottom: 0.5px solid #d0d0d0;
+    border-right: 0.5px solid #d0d0d0;
+
     .rightTop {
       height: 40px;
       font-size: 16px;
       font-weight: bolder;
       padding-top: 8px;
       padding-left: 20px;
-      background-color: #e7faf0;
-      border: 1px solid #b3d3c2;
+      background-color: #f4f4f5;
+      border: 0.5px solid #d0d0d0;
       border-left: none;
+    }
+
+    .serach {
+      margin-left: 20px;
+
+      .demonstration {
+        margin-right: 4px;
+      }
     }
 
     .el-card {
       .rightContent {
-        border-bottom: 1px solid #b3d3c2;
+        border-bottom: 0.5px solid #f4f4f5;
         padding-bottom: 8px;
       }
 

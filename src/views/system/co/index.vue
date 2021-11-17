@@ -3,6 +3,7 @@
     <div class="top-container">
       <div class="top-container-head">
         <el-select
+          style="margin-top: 6px;"
           v-model="h_id"
           placeholder="请选择"
           size="mini"
@@ -20,7 +21,7 @@
         <el-table
           size="mini"
           :data="h_tb"
-          style="width:100%"
+          style="width:100%;margin-top: 6px"
           height="calc(100vh - 180px)"
           row-key="vcItemID"
           border

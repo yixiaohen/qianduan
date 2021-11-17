@@ -55,6 +55,7 @@
                 prop="CatalogCode"
                 label="编号"
                 width="160"
+                sortable
               />
               <el-table-column
                 prop="CatalogName"
@@ -180,7 +181,7 @@
                     min-width="300"
                   >
                     <template slot-scope="{row}">
-                      <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '" />
+                      <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '"/>
                     </template>
                   </el-table-column>
                   <el-table-column
@@ -336,7 +337,7 @@
               label="分值"
               prop="Fraction"
             >
-              <el-input v-model="ExpertHandbooks.Fraction" />
+              <el-input v-model="ExpertHandbooks.Fraction"/>
             </el-form-item>
             <el-form-item
               label="扣分原因"
@@ -519,10 +520,10 @@
         </el-form-item>
 
         <el-form-item label="评审标准">
-          <el-checkbox v-model="installFormCatalog.IsCriterion" />
+          <el-checkbox v-model="installFormCatalog.IsCriterion"/>
         </el-form-item>
         <el-form-item label="核心条款">
-          <el-checkbox v-model="installFormCatalog.IsPoint" />
+          <el-checkbox v-model="installFormCatalog.IsPoint"/>
         </el-form-item>
       </el-form>
       <div
@@ -561,7 +562,7 @@
           />
         </el-form-item>
         <el-form-item label="条款编号">
-          <el-input v-model="updateFormCatalog.CatalogCode" />
+          <el-input v-model="updateFormCatalog.CatalogCode"/>
         </el-form-item>
         <el-form-item
           label="章节内容"
@@ -613,10 +614,10 @@
         </el-form-item>
 
         <el-form-item label="评审标准">
-          <el-checkbox v-model="updateFormCatalog.IsCriterion" />
+          <el-checkbox v-model="updateFormCatalog.IsCriterion"/>
         </el-form-item>
         <el-form-item label="核心条款">
-          <el-checkbox v-model="updateFormCatalog.IsPoint" />
+          <el-checkbox v-model="updateFormCatalog.IsPoint"/>
         </el-form-item>
       </el-form>
       <div
@@ -818,7 +819,7 @@
           />
         </el-form-item>
         <el-form-item label="扣分分数">
-          <el-input v-model="PenaltiesFrom.PenaltiesFraction" />
+          <el-input v-model="PenaltiesFrom.PenaltiesFraction"/>
         </el-form-item>
       </el-form>
       <div
@@ -853,9 +854,11 @@ import { SelectExpert } from '@/api/ButtonType';
 import { SelectChildrenExpert } from '@/api/Expert';
 import { debounce } from '@/utils';
 import filePreview from '@/views/components/file/filePreview';
+import { sortS } from '@/views/mixin/sortmixin';
 
 export default {
   components: { splitPane, filePreview },
+  mixins: [sortS],
   data() {
     return {
       CatalogVersion: window.CatalogVersion,
@@ -886,6 +889,7 @@ export default {
         CatalogType: 1,
         Fraction: 0,
         CatalogID: 0,
+        sort: 0,
         SerialNo: '',
         CatalogCode: '',
         CatalogName: '',
@@ -1550,7 +1554,12 @@ export default {
               //   arr.push(e < 10 ? '0' + e : e);
               // } // 这个是如果是个位数，前面加0
               if (!isNaN(parseInt(e))) { // 前面都加上级章节，比如c,加完就成了c1,c2之类的条款
+                // 如果是直接点击左上角的添加，this.rowObject.CatalogCode这个是为不明确的，就赋值为空
+                if (!this.rowObject.CatalogCode) {
+                  this.rowObject.CatalogCode = '';
+                }
                 arr.push(e < 10 ? this.rowObject.CatalogCode + e : this.rowObject.CatalogCode + e);
+                console.log('我第一', this.rowObject.CatalogCode);
               }
             });
           } else {
@@ -1560,11 +1569,18 @@ export default {
               // } // 这个是如果是个位数，前面加0
               if (!isNaN(parseInt(e))) { //  如果不是最底层条款，前面不加任何东西
                 arr.push(e < 10 ? e : e);
+                console.log('我第二');
               }
             });
           }
+          console.log('此时CatalogCode', this.installFormCatalog.CatalogCode);
+          console.log('此时arr', arr.join('.'));
+          console.log('此时SerialNo', this.installFormCatalog.SerialNo);
+          this.installFormCatalog.sort = 0;
           this.installFormCatalog.SerialNo =
             arr.join('.') || this.installFormCatalog.CatalogCode;
+          console.log('后来的SerialNo', this.installFormCatalog.SerialNo);
+
           // this.installFormCatalog.CatalogCode = this.rowObject.CatalogCode + this.installFormCatalog.CatalogCode ;
           this.installFormCatalog.IsCriterion =
             this.installFormCatalog.IsCriterion === true ? 1 : 0;
@@ -1717,7 +1733,7 @@ export default {
           data.map((item) => {
             item.hasChildren = true;
           });
-          this.tableData = data;
+          this.tableData = sortS.sortw(data);
         }
       } catch (error) {
         console.log(error);

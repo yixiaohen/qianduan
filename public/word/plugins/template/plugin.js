@@ -405,7 +405,8 @@
         return map(templates, function (t) {
           return {
             text: t.text,
-            value: t.text
+            value: t.text,
+            selected: t.selected
           };
         });
       };

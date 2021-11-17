@@ -307,8 +307,8 @@
                 class="CatalogName"
                 @click="history(row)"
               >{{
-                row.CatalogCode
-              }}</span>
+                  row.CatalogCode
+               }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -401,10 +401,10 @@
               <p v-if="gradeType">
                 {{
                   scope.row.Matter_Solution[
-                    scope.row.Matter_Solution.length - 1
-                  ] &&
-                    scope.row.Matter_Solution[
-                      scope.row.Matter_Solution.length - 1
+                  scope.row.Matter_Solution.length - 1
+                    ] &&
+                  scope.row.Matter_Solution[
+                  scope.row.Matter_Solution.length - 1
                     ].Grade
                 }}
               </p>
@@ -965,8 +965,8 @@
                   disabled
                 >
                   <template slot="prepend">{{
-                    MaterialReaultForm.CatalogCode
-                  }}
+                      MaterialReaultForm.CatalogCode
+                                           }}
                   </template>
                 </el-input>
               </el-form-item>
@@ -1141,8 +1141,8 @@
               width="180"
             >
               <template slot-scope="{ row }">{{
-                row.pointCode + row.pointItem
-              }}
+                  row.pointCode + row.pointItem
+                                             }}
               </template>
             </el-table-column>
             <el-table-column
@@ -1234,8 +1234,8 @@
             disabled
           >
             <template slot="prepend">{{
-              seeStatusViewForm.CatalogCode
-            }}
+                seeStatusViewForm.CatalogCode
+                                     }}
             </template>
           </el-input>
         </el-form-item>
@@ -1316,7 +1316,7 @@
             <el-button
               size="mini"
               icon="el-icon-search"
-              type="info"
+              type="primary"
               @click="dialogFormVisibleView = true"
             >查看详情
             </el-button>

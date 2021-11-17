@@ -44,7 +44,7 @@
             @keyup.enter.native="SelectinstHome('搜索')"
           />
         </el-form-item>
-             <el-form-item>
+        <el-form-item>
           <el-cascader
             ref="addDia"
             v-model="searchCatalogData.instTypeID"
@@ -1194,6 +1194,7 @@ export default {
   },
   data() {
     return {
+      nowFileList: [], // 现在附件的内容
       FileStatus: [
         {
           label: '资料上传状态(全部)',
@@ -2076,6 +2077,10 @@ export default {
 
     /* 归档bigin */
     Archive(row) {
+      // 下面这个转化是由于归档材料后，他的附件url有/Annex/file，而上传评审资料那里，也加了/Annex/file，所以在归档前去掉/Annex/file
+      row.FileList.map((item) => {
+        item.FileUrl = item.FileUrl.replace(/Annex\/file\/|\//g, '');
+      });
       try {
         this.titleArchive = row.instTitle;
         this.submitData.Title = row.instTitle;
@@ -2116,13 +2121,13 @@ export default {
                 <th>审核人</th>
                 <th>审核时间</th>
 			      </tr>
-            <tr align="left">
-                <td>${formData.instTitle}</td>
-                <td>${formData.instTypeName}</td>
-                <td>${formData.instUpUserName}</td>
-                <td>${formData.instUpTime}</td>
-                <td >${this.instUpUserName}</td>
-                <td>${this.instAuditTime}</td>
+            <tr align="center">
+                <td>${formData.instTitle || ''}</td>
+                <td>${formData.instTypeName || ''}</td>
+                <td>${formData.instUpUserName || ''}</td>
+                <td>${formData.instUpTime || ''}</td>
+                <td>${this.instUpUserName || ''}</td>
+                <td>${this.instAuditTime} || ''}</td>
             </tr>
           </table>`;
         try {

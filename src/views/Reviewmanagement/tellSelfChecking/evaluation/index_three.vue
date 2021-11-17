@@ -338,8 +338,8 @@
                 class="CatalogName"
                 @click="history(row)"
               >{{
-                row.CatalogCode
-              }}</span>
+                  row.CatalogCode
+               }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -448,10 +448,10 @@
               <p v-if="gradeType">
                 {{
                   scope.row.Matter_Solution[
-                    scope.row.Matter_Solution.length - 1
-                  ] &&
-                    scope.row.Matter_Solution[
-                      scope.row.Matter_Solution.length - 1
+                  scope.row.Matter_Solution.length - 1
+                    ] &&
+                  scope.row.Matter_Solution[
+                  scope.row.Matter_Solution.length - 1
                     ].Grade
                 }}
               </p>
@@ -886,8 +886,8 @@
               :show-overflow-tooltip="cellOverflow"
             >
               <template slot-scope="{ row }">{{
-                row.CreatDate.replace('T', ' ')
-              }}
+                  row.CreatDate.replace('T', ' ')
+                                             }}
               </template>
             </el-table-column>
             <el-table-column
@@ -1184,8 +1184,8 @@
               width="180"
             >
               <template slot-scope="{ row }">{{
-                row.pointCode + row.pointItem
-              }}
+                  row.pointCode + row.pointItem
+                                             }}
               </template>
             </el-table-column>
             <el-table-column
@@ -1357,7 +1357,7 @@
             <el-button
               size="mini"
               icon="el-icon-search"
-              type="info"
+              type="primary"
               @click="dialogFormVisibleView = true"
             >查看详情
             </el-button>

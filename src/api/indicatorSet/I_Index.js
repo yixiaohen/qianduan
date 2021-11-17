@@ -64,3 +64,12 @@ export function Get(data) {
     data
   });
 }
+
+// 导入评审标准
+export function InsertI_DataByHis_Ha_Catalog(data) {
+  return request({
+    url: 'I_Index/InsertI_DataByHis_Ha_Catalog',
+    method: 'get',
+    params: data
+  });
+}

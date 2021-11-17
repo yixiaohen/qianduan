@@ -32,6 +32,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            style="margin-top: 6px"
             type="primary"
             @click="SelectDistribution('搜索')"
           >搜索</el-button>
@@ -45,7 +46,7 @@
         :data="tableData"
         border
         size="mini"
-        style="width: 100%"
+        style="width: 100%;margin-top: 6px"
         height="calc(100vh - 180px)"
         stripe
       >

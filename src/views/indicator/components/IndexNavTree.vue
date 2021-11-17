@@ -6,18 +6,36 @@
       :load="loadNode"
       node-key="index_id"
       lazy
+      highlight-current
       :show-checkbox="multiples"
       @node-click="nodeClickCatalog"
       @check="getSelectTreeCatalog"
     >
       <span slot-scope="{ node, data }" class="custom-tree-node">
-        <span>
-          <svg-icon v-if="data.Count > 0" icon-class="file" />
-          <svg-icon v-else icon-class="file_two" />
+        <span v-if="data.Count > 0" style="font-size: 14px;font-weight: bolder">
+
+          <svg-icon
+            v-if="data.imported===1"
+            icon-class="importDir"
+          />
+          <svg-icon
+            v-else
+            icon-class="treeFileDir"
+          />
+          {{ node.label }}</span>
+
+        <span v-else style="font-size: 12px">
+          <svg-icon
+            v-if="data.imported===1"
+            icon-class="importFile"
+          />
+          <svg-icon
+            v-else
+            icon-class="treeFile"
+          />
           {{ node.label }}
         </span>
-      </span>
-    </el-tree>
+      </span></el-tree>
   </div>
 </template>
 
@@ -91,7 +109,7 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="scss" >
 .TreeCatalog {
   height: 100%;
   font-size: 16px;
@@ -100,13 +118,13 @@ export default {
 
 /* 改变被点击节点背景颜色，字体颜色 */
 .el-tree-node:focus > .el-tree-node__content {
-  background-color: #4a9de7 !important;
+  background-color: #1890ff !important;
   color: #fff !important;
 }
 
 /*节点失焦时的背景颜色*/
 .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-  background-color: #4a9de7 !important;
+  background-color: #1890ff !important;
   color: #fff !important;
 }
 </style>

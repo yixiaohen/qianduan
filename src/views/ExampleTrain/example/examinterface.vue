@@ -19,35 +19,43 @@
               <el-button
                 type="primary"
                 @click="SelectUserPaper('listQuery')"
-              >搜索</el-button>
+              >搜索
+              </el-button>
             </el-form-item>
           </el-form>
         </div>
       </div>
-      <div shadow="never" :style="{ height: '750px', overflow: 'auto' }">
+      <div class="box">
+
         <el-card
           v-for="(item, index) in userPaperList"
           :key="index"
-          shadow="never"
-          :style="{ margin: '8px 0' }"
+          class="card-style"
+          :class="{active:selectIndex===index}"
+          @mouseover.native="selectClick(index)"
         >
+
           <div slot="header" class="font-style">
+
             <div>任务名称： {{ item.taskName }}</div>
             <div>试卷标题： {{ item.paperTitle }}</div>
+
           </div>
           <div class="font-style">
-            <div>考试开始时间：{{ item.starDate.replace("T", " ") }}</div>
-            <div>考试结束时间：{{ item.endDate.replace("T", " ") }}</div>
+            <div>考试开始时间：{{ item.starDate.replace('T', ' ') }}</div>
+            <div>考试结束时间：{{ item.endDate.replace('T', ' ') }}</div>
             <div>考试时长：{{ item.extime || 0 }}分钟</div>
+            <div v-if="item.ReplyGrade>=60">考试成绩：<span style="color:green;font-weight: bolder">{{ item.ReplyGrade || 0 }}</span></div>
+            <div v-else>考试成绩：<span style="color:red;font-weight: bolder">{{ item.ReplyGrade || 0 }}</span></div>
             <div>
               考试状态：{{
                 item.State === 0
-                  ? "未考"
+                  ? '未考'
                   : item.State === 1
-                    ? "已考"
+                    ? '已考'
                     : item.State === 2
-                      ? "过时未考"
-                      : "未开始"
+                      ? '过时未考'
+                      : '未开始'
               }}
             </div>
           </div>
@@ -55,7 +63,8 @@
             size="mini"
             :disabled="item.State !== 0"
             @click="openModel(item)"
-          >开始考试</el-button>
+          >开始考试
+          </el-button>
         </el-card>
       </div>
     </el-card>
@@ -172,6 +181,7 @@ export default {
   name: 'ExampleExaminterFace',
   data() {
     return {
+      selectIndex: -1,
       listQuery: {
         paperTitle: '',
         taskName: '',
@@ -211,6 +221,9 @@ export default {
     clearInterval(this.timer);
   },
   methods: {
+    selectClick(index) {
+      this.selectIndex = index;
+    },
     openModel(row) {
       this.$confirm(
         `<div>
@@ -289,9 +302,10 @@ export default {
       try {
         const data = await InsertAnswerPaper(form);
         if (data.code == 200) {
-          this.SelectUserPaper();
+          await this.SelectUserPaper();
         }
-      } catch {}
+      } catch {
+      }
       this.modalShow = false;
     },
     submit() {
@@ -317,12 +331,14 @@ export default {
             Uid: window.userInfo[0].UserID
           });
           this.userPaperList = data;
-        } catch {}
+        } catch {
+        }
       } else {
         try {
           const { data } = await SelectUserPaper(this.listQuery);
           this.userPaperList = data;
-        } catch {}
+        } catch {
+        }
       }
     }
   }
@@ -330,7 +346,25 @@ export default {
 </script>
 <style lang="scss">
 @import "../ExampleTrainStyles/index.scss";
+
 .exam {
   width: 320px;
+}
+.box{
+  height: 680px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  flex-wrap:wrap;
+
+}
+.card-style{
+  width:300px;
+  height:300px;
+  margin: 10px;
+}
+.active {
+  border: 2px solid #409EFF;
+
 }
 </style>

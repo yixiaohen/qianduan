@@ -112,6 +112,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            style="margin-top: 7px"
             type="info"
             icon="el-icon-search"
             size="mini"
@@ -149,6 +150,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            style="margin-top: 7px"
             :loading="downloadLoading"
             :disabled="listLoading"
             type="success"
@@ -164,10 +166,10 @@
       <el-table
         v-loading="listLoading"
         :data="tableData"
-        style="width: 100%"
+        style="width: 100%;margin-top: 18px"
         border
         size="mini"
-        height="calc(100vh - 260px)"
+        height="calc(100vh - 250px)"
         stripe
         @cell-click="cellClick"
       >
@@ -762,11 +764,12 @@
         <el-col :span="1">
           <el-switch
             v-model="cellOverflow"
-            style="margin: 6px 0px"
+            style="margin: 10px 4px 0 0"
           />
         </el-col>
         <el-col :span="20">
           <el-pagination
+            style="margin-top: 10px"
             :current-page="listQuery.pageIndex"
             :page-sizes="[15, 20, 30, 40, 50]"
             :page-size="listQuery.pageSize"

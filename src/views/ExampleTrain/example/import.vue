@@ -49,7 +49,7 @@ import { InputTxt } from '@/api/KS_Topic';
 function isPaper(s) {
   var type = ['单选题', '多选题', '判断题', '填空题', '简答题'];
   for (var i = 0; i < type.length; i++) {
-    if (s.indexOf(type[i]) > 0) {
+    if (s.indexOf(type[i]) >= 0) {
       return true;
     }
   }

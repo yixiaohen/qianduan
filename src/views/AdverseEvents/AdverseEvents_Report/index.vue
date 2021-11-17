@@ -18,7 +18,9 @@
           :value="item.EventID"
         />
       </el-select>
-      <el-radio-group v-if="!seeControl" v-model="eventTitle"    type="success" size="mini" @change="edChangeS(eventTitle)">
+      <el-radio-group
+        v-if="!seeControl" v-model="eventTitle" type="success" size="mini" @change="edChangeS(eventTitle)"
+      >
         <el-radio-button
           size="mini"
           :disabled="seeControl"
@@ -96,9 +98,12 @@
 
     </div>
     <div v-if="temName===0">
+      <div style=" width:80%;text-align: center;margin:10px 0;font-weight: bolder;font-size: 20px">{{ title }}</div>
       <el-form label-position="top" size="mini" :rules="rules">
+
         <div v-loading="listLoading" class="main">
           <el-collapse v-model="activeNames" class="collapse" accordion>
+
             <el-collapse-item class="collapse-item" title="受损害者资料" name="1">
               <el-row>
                 <el-col :span="9">
@@ -131,7 +136,7 @@
                       :disabled="seeControl"
                       placeholder=""
                     >
-                      <el-button slot="append" icon="el-icon-search" @click="searchClinicNumber(tongyongshijian=0)" />
+                      <el-button slot="append" icon="el-icon-search" @click="searchClinicNumber(tongyongshijian=0)"/>
                     </el-input>
                   </el-form-item>
                 </el-col>
@@ -347,7 +352,7 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-              <div v-html="problems" />
+              <div v-html="problems"/>
             </el-collapse-item>
             <el-collapse-item class="collapse-item" title="附件管理" name="4">
               <el-upload
@@ -365,8 +370,8 @@
                 <el-table-column label="文件名">
                   <template slot-scope="{ row }">
                     <el-link type="primary" :href="row.FileUrl" target="_blank">{{
-                      row.FileName
-                    }}
+                        row.FileName
+                                                                                }}
                     </el-link>
                   </template>
                 </el-table-column>
@@ -412,7 +417,7 @@
             :disabled="seeControl"
             placeholder="请输入卡号"
           />
-          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(yiliaoqixie=1)" />
+          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(yiliaoqixie=1)"/>
         </div>
       </div>
 
@@ -451,17 +456,17 @@
           <el-radio v-model="yiLiaoQiXie.ReportSource" :disabled="seeControl" label="使用企业">使用企业</el-radio>
         </div>
         <div>单位名称：
-          <el-input v-model="yiLiaoQiXie.ReportUnit" :disabled="seeControl" />
+          <el-input v-model="yiLiaoQiXie.ReportUnit" :disabled="seeControl"/>
         </div>
 
       </div>
       <div class="tableHeaderKy">
 
         <div>联系地址：
-          <el-input v-model="yiLiaoQiXie.Address" :disabled="seeControl" />
+          <el-input v-model="yiLiaoQiXie.Address" :disabled="seeControl"/>
         </div>
         <div>邮编：
-          <el-input v-model="yiLiaoQiXie.Zipcode" :disabled="seeControl" />
+          <el-input v-model="yiLiaoQiXie.Zipcode" :disabled="seeControl"/>
         </div>
         <div>联系电话：
           <el-input v-model="yiLiaoQiXie.Tele" :disabled="seeControl">></el-input>
@@ -502,7 +507,7 @@
 
           <td><span>2.年龄</span></td>
           <td>
-            <el-input v-model.number="yiLiaoQiXie.Age" type="textarea" :disabled="seeControl" />
+            <el-input v-model.number="yiLiaoQiXie.Age" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td><span>3.性别</span></td>
@@ -530,7 +535,7 @@
         <tr align="center">
           <td><span>4.预期治疗疾病或作用</span></td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.Diseffect" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.Diseffect" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -543,7 +548,7 @@
         <tr align="center">
           <td><span>5．事件主要表现</span></td>
           <td colspan="6">
-            <el-input v-model="yiLiaoQiXie.EventMain" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.EventMain" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -624,14 +629,14 @@
         <tr align="center">
           <td><span>10．医疗器械分类名称</span></td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.MDCName" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.MDCName" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
         <!--      第13行-->
         <tr align="center">
           <td><span>11．商品名称</span></td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.TradeName" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.TradeName" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -639,7 +644,7 @@
         <tr align="center">
           <td><span>12．注册证号</span></td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.CertificateNo" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.CertificateNo" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -647,17 +652,17 @@
         <tr align="center">
           <td><span>13．生产企业名称</span></td>
           <td>
-            <el-input v-model="yiLiaoQiXie.ManufactName" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.ManufactName" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td><span>生产企业地址</span></td>
           <td>
-            <el-input v-model="yiLiaoQiXie.ManufactAdress" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.ManufactAdress" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td><span>企业联系电话</span></td>
           <td>
-            <el-input v-model.number="yiLiaoQiXie.ManufactCall" type="textarea" :disabled="seeControl" />
+            <el-input v-model.number="yiLiaoQiXie.ManufactCall" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -665,17 +670,17 @@
         <tr align="center">
           <td><span>14．型号规格</span></td>
           <td>
-            <el-input v-model="yiLiaoQiXie.PSpecification" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.PSpecification" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td><span>产品编号</span></td>
           <td>
-            <el-input v-model="yiLiaoQiXie.PNumber" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.PNumber" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td><span>产品批号</span></td>
           <td>
-            <el-input v-model="yiLiaoQiXie.PBNumber" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoQiXie.PBNumber" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -742,7 +747,7 @@
         <tr align="center">
           <td>19.事件发生原因分析</td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.EventReason" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoQiXie.EventReason" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -750,7 +755,7 @@
         <tr align="center">
           <td>20.事件处理情况</td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.Treatment" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoQiXie.Treatment" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -773,7 +778,7 @@
         <tr align="center">
           <td>省级监测机构意见陈述</td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.ProValua" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoQiXie.ProValua" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -781,7 +786,7 @@
         <tr align="center">
           <td>国家监测机构意见陈述</td>
           <td colspan="5">
-            <el-input v-model="yiLiaoQiXie.ConValua" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoQiXie.ConValua" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -796,7 +801,7 @@
           <el-radio v-model="yiLiaoQiXie.ReportTitle" :disabled="seeControl" label="其他">其他</el-radio>
         </div>
         <div>报告人签名：
-          <el-input v-model.trim="yiLiaoQiXie.ReportUser" :disabled="seeControl" />
+          <el-input v-model.trim="yiLiaoQiXie.ReportUser" :disabled="seeControl"/>
         </div>
 
       </div>
@@ -819,8 +824,8 @@
           <el-table-column label="文件名">
             <template slot-scope="{ row }">
               <el-link type="primary" :href="row.FileUrl" target="_blank">{{
-                row.FileName
-              }}
+                  row.FileName
+                                                                          }}
               </el-link>
             </template>
           </el-table-column>
@@ -863,7 +868,7 @@
             :disabled="seeControl"
             placeholder="请输入卡号"
           />
-          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(huli=2)" />
+          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(huli=2)"/>
         </div>
 
 
@@ -896,7 +901,7 @@
             <div class="div1">事件类型</div>
           </td>
           <td>
-            <el-input v-model="HuLi.EventCategory" type="textarea" :disabled="seeControl" />
+            <el-input v-model="HuLi.EventCategory" type="textarea" :disabled="seeControl"/>
           </td>
           <td>
             <div class="div1">发生日期及时间点</div>
@@ -916,7 +921,7 @@
             <div class="div1">班次</div>
           </td>
           <td colspan="4">
-            <el-input v-model="HuLi.Shift" type="textarea" :disabled="seeControl" />
+            <el-input v-model="HuLi.Shift" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -1031,7 +1036,7 @@
             <div class="div1">原因分析</div>
           </td>
           <td colspan="8">
-            <el-input v-model="HuLi.CauseAnalysis" :disabled="seeControl" type="textarea" />
+            <el-input v-model="HuLi.CauseAnalysis" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1040,7 +1045,7 @@
             <div class="div1">整改措施</div>
           </td>
           <td colspan="8">
-            <el-input v-model="HuLi.Measures" :disabled="seeControl" type="textarea" />
+            <el-input v-model="HuLi.Measures" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1049,13 +1054,13 @@
             <div>报告护士</div>
           </td>
           <td>
-            <el-input v-model.trim="HuLi.ReportUser" type="textarea" :disabled="seeControl" />
+            <el-input v-model.trim="HuLi.ReportUser" type="textarea" :disabled="seeControl"/>
           </td>
           <td>
             <div class="myInput">护士长</div>
           </td>
           <td>
-            <el-input v-model="HuLi.HeadNurse" type="textarea" :disabled="seeControl" />
+            <el-input v-model="HuLi.HeadNurse" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td>
@@ -1079,7 +1084,7 @@
             <div>部门意见</div>
           </td>
           <td colspan="8">
-            <el-input v-model="HuLi.Opinions" :disabled="seeControl" type="textarea" />
+            <el-input v-model="HuLi.Opinions" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
         <tr align="center">
@@ -1087,7 +1092,7 @@
             <div class="myInput">部门签名</div>
           </td>
           <td>
-            <el-input v-model="HuLi.Sign" type="textarea" :disabled="seeControl" />
+            <el-input v-model="HuLi.Sign" type="textarea" :disabled="seeControl"/>
           </td>
           <td>
             <div class="myInput">签字日期</div>
@@ -1126,8 +1131,8 @@
           <el-table-column label="文件名">
             <template slot-scope="{ row }">
               <el-link type="primary" :href="row.FileUrl" target="_blank">{{
-                row.FileName
-              }}
+                  row.FileName
+                                                                          }}
               </el-link>
             </template>
           </el-table-column>
@@ -1171,7 +1176,7 @@
             :disabled="seeControl"
             placeholder="请输入卡号"
           />
-          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(yiliaoanquan=3)" />
+          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(yiliaoanquan=3)"/>
         </div>
         <div><span> 提交审核的科室部门：</span>
           <defaultDepts
@@ -1231,7 +1236,7 @@
         <tr align="center" style="width: auto">
           <td><span>A.患者资料（姓名）</span></td>
           <td colspan="5">
-            <el-input v-model="yiLiaoAnQuan.PatientName" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yiLiaoAnQuan.PatientName" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
         <!--      第2行-->
@@ -1257,12 +1262,12 @@
 
           <td><span>2.年龄</span></td>
           <td>
-            <el-input v-model.number="yiLiaoAnQuan.Age" type="textarea" :disabled="seeControl" />
+            <el-input v-model.number="yiLiaoAnQuan.Age" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td><span>3.职别</span></td>
           <td>
-            <el-input v-model.trim="yiLiaoAnQuan.Position" type="textarea" :disabled="seeControl" />
+            <el-input v-model.trim="yiLiaoAnQuan.Position" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
         <!--      第4行-->
@@ -1284,14 +1289,14 @@
 
           <td><span>5.临床诊断</span></td>
           <td colspan="3">
-            <el-input v-model="yiLiaoAnQuan.Diagnosis" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Diagnosis" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
         <!--      第5行-->
         <tr align="center">
           <td><span>6.在场相关人员或相关科室</span></td>
           <td colspan="5">
-            <el-input v-model="yiLiaoAnQuan.Diagnostic" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Diagnostic" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1303,13 +1308,13 @@
         <tr align="center">
           <td><span>7.事件发生场所</span></td>
           <td colspan="5">
-            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="急诊" />
-            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="门诊" />
-            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="住院部" />
-            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="医技部门" />
-            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="手术室" />
-            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="行政后勤部门" />
-            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="其他" />
+            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="急诊"/>
+            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="门诊"/>
+            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="住院部"/>
+            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="医技部门"/>
+            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="手术室"/>
+            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="行政后勤部门"/>
+            <el-radio v-model="yiLiaoAnQuan.Place" :disabled="seeControl" label="其他"/>
             <!--                <el-radio v-model="yiLiaoAnQuan.Place" label="医技部门"></el-radio>-->
           </td>
         </tr>
@@ -1317,12 +1322,12 @@
         <tr align="center">
           <td><span>8.不良后果</span></td>
           <td colspan="2">
-            <el-radio v-model="yiLiaoAnQuan.Result" :disabled="seeControl" label="无" />
-            <el-radio v-model="yiLiaoAnQuan.Result" :disabled="seeControl" label="有" />
+            <el-radio v-model="yiLiaoAnQuan.Result" :disabled="seeControl" label="无"/>
+            <el-radio v-model="yiLiaoAnQuan.Result" :disabled="seeControl" label="有"/>
           </td>
           <td><span>如果有不良后果，具体详情</span></td>
           <td colspan="2">
-            <el-input v-model="yiLiaoAnQuan.Resulthave" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Resulthave" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1330,7 +1335,7 @@
         <tr align="center">
           <td><span>事情经过</span></td>
           <td colspan="5">
-            <el-input v-model="yiLiaoAnQuan.Process" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Process" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1428,7 +1433,7 @@
               :disabled="seeControl"
               label="17. 导管操作事件：静点滴漏/渗、导管脱落/断裂/堵塞、连接错误等"
             />
-            <el-radio v-model="yiLiaoAnQuan.EventCategory" :disabled="seeControl" label="18.其它事件：非上列之异常事件" />
+            <el-radio v-model="yiLiaoAnQuan.EventCategory" :disabled="seeControl" label="18.其它事件：非上列之异常事件"/>
           </td>
 
           <!--          <td colspan="3">-->
@@ -1443,10 +1448,10 @@
         <!--      第12行-->
         <tr align="center">
           <td colspan="6">
-            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅰ级事件" />
-            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅱ级事件" />
-            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅲ级事件" />
-            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅳ级事件" />
+            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅰ级事件"/>
+            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅱ级事件"/>
+            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅲ级事件"/>
+            <el-radio v-model="yiLiaoAnQuan.EventDegree" :disabled="seeControl" label="Ⅳ级事件"/>
           </td>
         </tr>
         <!--      第13行-->
@@ -1458,14 +1463,14 @@
         <tr align="center">
           <td colspan="2"><span>导致事件的可能原因</span></td>
           <td colspan="4">
-            <el-input v-model="yiLiaoAnQuan.Causes" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Causes" :disabled="seeControl" type="textarea"/>
           </td>
 
         </tr>
         <tr align="center">
           <td colspan="2"><span>事件处理情况（提供补救措施或改善建议）</span></td>
           <td colspan="4">
-            <el-input v-model="yiLiaoAnQuan.Handle" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Handle" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
         <!--      第15行-->
@@ -1476,7 +1481,7 @@
         <!--      第16行-->
         <tr align="center">
           <td colspan="6">
-            <el-input v-model="yiLiaoAnQuan.Evaluate" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Evaluate" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1488,7 +1493,7 @@
         <!--      第18行-->
         <tr align="center">
           <td colspan="6">
-            <el-input v-model="yiLiaoAnQuan.Measures" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yiLiaoAnQuan.Measures" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1501,10 +1506,10 @@
         <tr align="center">
           <td colspan="2"><span>报告人</span></td>
           <td colspan="4">
-            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="医师" />
-            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="技师" />
-            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="护理人员" />
-            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="其他" />
+            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="医师"/>
+            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="技师"/>
+            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="护理人员"/>
+            <el-radio v-model="yiLiaoAnQuan.ReportUser" :disabled="seeControl" label="其他"/>
           </td>
         </tr>
 
@@ -1512,21 +1517,21 @@
         <tr align="center">
           <td colspan="2"><span>当事人的类别</span></td>
           <td colspan="4">
-            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="本院" />
-            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="进修生" />
-            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="研究生" />
-            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="学生" />
-            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="不详" />
+            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="本院"/>
+            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="进修生"/>
+            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="研究生"/>
+            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="学生"/>
+            <el-radio v-model="yiLiaoAnQuan.Classification" :disabled="seeControl" label="不详"/>
           </td>
         </tr>
         <!--      第22行-->
         <tr align="center">
           <td colspan="2"><span>职称</span></td>
           <td colspan="4">
-            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="高级" />
-            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="中级" />
-            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="初级" />
-            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="士级" />
+            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="高级"/>
+            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="中级"/>
+            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="初级"/>
+            <el-radio v-model="yiLiaoAnQuan.Level" :disabled="seeControl" label="士级"/>
           </td>
         </tr>
       </table>
@@ -1535,20 +1540,18 @@
       <div class="tableHeader">
         <div style="line-height: 26px;height: 26px;margin-top: 4px;margin-right: 4px">报告人签名：</div>
         <div>
-          <el-input v-model.trim="yiLiaoAnQuan.Sign" :disabled="seeControl" />
+          <el-input v-model.trim="yiLiaoAnQuan.Sign" :disabled="seeControl"/>
         </div>
-
-
 
 
         <div style="line-height: 26px;height: 26px;margin-top: 4px;margin-right: 4px">科室：</div>
         <div>
-          <el-input v-model="yiLiaoAnQuan.InpatientDept" :disabled="seeControl" />
+          <el-input v-model="yiLiaoAnQuan.InpatientDept" :disabled="seeControl"/>
         </div>
 
         <div style="line-height: 26px;height: 26px;margin-top: 4px;margin-right: 4px"> 联系号码：</div>
         <div>
-          <el-input v-model.number="yiLiaoAnQuan.Cal" :disabled="seeControl" />
+          <el-input v-model.number="yiLiaoAnQuan.Cal" :disabled="seeControl"/>
         </div>
 
       </div>
@@ -1572,8 +1575,8 @@
           <el-table-column label="文件名">
             <template slot-scope="{ row }">
               <el-link type="primary" :href="row.FileUrl" target="_blank">{{
-                row.FileName
-              }}
+                  row.FileName
+                                                                          }}
               </el-link>
             </template>
           </el-table-column>
@@ -1648,7 +1651,7 @@
             :disabled="seeControl"
             placeholder="请输入卡号"
           />
-          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(yaopin=4)" />
+          <el-button size="mini" icon="el-icon-search" @click="searchClinicNumber(yaopin=4)"/>
         </div>
       </div>
       <div class="tableHeaderKy">
@@ -1664,35 +1667,35 @@
 
         </div>
         <span>报告来源：</span>
-        <el-radio v-model="yaoPin.ReportSourse" :disabled="seeControl" label="医疗卫生机构" />
-        <el-radio v-model="yaoPin.ReportSourse" :disabled="seeControl" label="生产企业经营企业" />
-        <el-radio v-model="yaoPin.ReportSourse" :disabled="seeControl" label="个人" />
+        <el-radio v-model="yaoPin.ReportSourse" :disabled="seeControl" label="医疗卫生机构"/>
+        <el-radio v-model="yaoPin.ReportSourse" :disabled="seeControl" label="生产企业经营企业"/>
+        <el-radio v-model="yaoPin.ReportSourse" :disabled="seeControl" label="个人"/>
 
         <!--          <el-input :disabled="seeControl" v-model="yaoPin.Dept"/>-->
       </div>
       <div class="tableHeaderKy">
         <div>
           <span>严重程度：</span>
-          <el-radio v-model="yaoPin.Degree" :disabled="seeControl" label="新的" />
-          <el-radio v-model="yaoPin.Degree" :disabled="seeControl" label="严重" />
-          <el-radio v-model="yaoPin.Degree" :disabled="seeControl" label="一般" />
+          <el-radio v-model="yaoPin.Degree" :disabled="seeControl" label="新的"/>
+          <el-radio v-model="yaoPin.Degree" :disabled="seeControl" label="严重"/>
+          <el-radio v-model="yaoPin.Degree" :disabled="seeControl" label="一般"/>
         </div>
 
         <div style="margin-left: 10%">
           <span> 编码:</span>
 
-          <el-input v-model="yaoPin.Code" :disabled="seeControl" />
+          <el-input v-model="yaoPin.Code" :disabled="seeControl"/>
         </div>
       </div>
       <div class="tableHeaderKy">
         <div>
           <span> 单位名称:</span>
-          <el-input v-model="yaoPin.UnitName" :disabled="seeControl" />
+          <el-input v-model="yaoPin.UnitName" :disabled="seeControl"/>
         </div>
 
 
         <div>电话：
-          <el-input v-model="yaoPin.Tel" :disabled="seeControl" />
+          <el-input v-model="yaoPin.Tel" :disabled="seeControl"/>
         </div>
 
         <div>
@@ -1732,7 +1735,7 @@
             <span>患者姓名</span>
           </td>
           <td>
-            <el-input v-model="yaoPin.PatientName" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.PatientName" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td>
@@ -1761,7 +1764,7 @@
             <span>年龄</span>
           </td>
           <td>
-            <el-input v-model="yaoPin.Age" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.Age" type="textarea" :disabled="seeControl"/>
 
           </td>
 
@@ -1769,21 +1772,21 @@
             <span>民族</span>
           </td>
           <td>
-            <el-input v-model="yaoPin.Nation" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.Nation" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td>
             <span>体重(kg)</span>
           </td>
           <td>
-            <el-input v-model="yaoPin.Weight" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.Weight" type="textarea" :disabled="seeControl"/>
           </td>
 
           <td>
             <span>联系方式</span>
           </td>
           <td>
-            <el-input v-model.number="yaoPin.ContactTel" type="textarea" :disabled="seeControl" />
+            <el-input v-model.number="yaoPin.ContactTel" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
 
@@ -1792,18 +1795,18 @@
             <span>家族药品不良反应/事件</span>
           </td>
           <td colspan="5">
-            <el-radio v-model="yaoPin.FReaction" :disabled="seeControl" label="有" />
-            <el-radio v-model="yaoPin.FReaction" :disabled="seeControl" label="无" />
-            <el-radio v-model="yaoPin.FReaction" :disabled="seeControl" label="不详" />
+            <el-radio v-model="yaoPin.FReaction" :disabled="seeControl" label="有"/>
+            <el-radio v-model="yaoPin.FReaction" :disabled="seeControl" label="无"/>
+            <el-radio v-model="yaoPin.FReaction" :disabled="seeControl" label="不详"/>
           </td>
 
           <td colspan="2">
             <span>既往药品不良反应/事件情况</span>
           </td>
           <td colspan="5">
-            <el-radio v-model="yaoPin.BReaction" :disabled="seeControl" label="有" />
-            <el-radio v-model="yaoPin.BReaction" :disabled="seeControl" label="无" />
-            <el-radio v-model="yaoPin.BReaction" :disabled="seeControl" label="不详" />
+            <el-radio v-model="yaoPin.BReaction" :disabled="seeControl" label="有"/>
+            <el-radio v-model="yaoPin.BReaction" :disabled="seeControl" label="无"/>
+            <el-radio v-model="yaoPin.BReaction" :disabled="seeControl" label="不详"/>
           </td>
 
         </tr>
@@ -1813,7 +1816,7 @@
             <span>不良反应/事件名称</span>
           </td>
           <td colspan="2">
-            <el-input v-model="yaoPin.ReactionName" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yaoPin.ReactionName" :disabled="seeControl" type="textarea"/>
           </td>
 
           <td>
@@ -1835,7 +1838,7 @@
             <span>病历号/门诊号（企业填写医院名称）</span>
           </td>
           <td colspan="3">
-            <el-input v-model="yaoPin.MedicalNumber" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.MedicalNumber" type="textarea" :disabled="seeControl"/>
           </td>
 
         </tr>
@@ -1843,7 +1846,7 @@
         <tr align="center">
           <td colspan="4"><span>不良反应/事件过程描述（包括症状、体征、临床检验等）及处理情况</span></td>
           <td colspan="8">
-            <el-input v-model="yaoPin.ReactionDescribe" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yaoPin.ReactionDescribe" :disabled="seeControl" type="textarea"/>
           </td>
         </tr>
 
@@ -1862,19 +1865,19 @@
         <tr align="center">
           <td rowspan="1"><span>怀疑药品</span></td>
           <td colspan="1">
-            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.TradeName" type="textarea" />
+            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.TradeName" type="textarea"/>
           </td>
           <td colspan="2">
-            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.CommonName" type="textarea" />
+            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.CommonName" type="textarea"/>
           </td>
           <td colspan="2">
-            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.ManufactName" type="textarea" />
+            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.ManufactName" type="textarea"/>
           </td>
           <td colspan="1">
-            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.PBNumber" type="textarea" />
+            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.PBNumber" type="textarea"/>
           </td>
           <td colspan="1">
-            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.UseConsumption" type="textarea" />
+            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.UseConsumption" type="textarea"/>
           </td>
           <td colspan="1">
             <el-date-picker
@@ -1899,7 +1902,7 @@
             />
           </td>
           <td colspan="2">
-            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.MedicalReason" type="textarea" />
+            <el-input v-for="item in yaoPin.DoubtMedical" v-model="item.MedicalReason" type="textarea"/>
           </td>
         </tr>
         <!--怀疑药品第二行-->
@@ -1991,19 +1994,19 @@
         <tr align="center">
           <td rowspan="1"><span>并用药品</span></td>
           <td colspan="1">
-            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.TradeName" type="textarea" />
+            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.TradeName" type="textarea"/>
           </td>
           <td colspan="2">
-            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.CommonName" type="textarea" />
+            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.CommonName" type="textarea"/>
           </td>
           <td colspan="2">
-            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.ManufactName" type="textarea" />
+            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.ManufactName" type="textarea"/>
           </td>
           <td colspan="1">
-            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.PBNumber" type="textarea" />
+            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.PBNumber" type="textarea"/>
           </td>
           <td colspan="1">
-            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.UseConsumption" type="textarea" />
+            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.UseConsumption" type="textarea"/>
           </td>
           <td colspan="1">
             <el-date-picker
@@ -2028,7 +2031,7 @@
             />
           </td>
           <td colspan="2">
-            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.MedicalReason" type="textarea" />
+            <el-input v-for="item2 in yaoPin.BlendingMedical" v-model="item2.MedicalReason" type="textarea"/>
           </td>
         </tr>
         <!--合并药品第二行-->
@@ -2118,21 +2121,21 @@
         <tr align="center">
           <td><span>不良反应/事件的结果</span></td>
           <td colspan="3">
-            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="治愈" />
-            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="好转" />
-            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="有后遗症" />
+            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="治愈"/>
+            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="好转"/>
+            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="有后遗症"/>
           </td>
 
           <td><span>表现</span></td>
           <td colspan=" 2 ">
-            <el-input v-model="yaoPin.ReshInfo" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yaoPin.ReshInfo" :disabled="seeControl" type="textarea"/>
           </td>
           <td colspan="2">
-            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="死亡" />
+            <el-radio v-model="yaoPin.ReactionResult" :disabled="seeControl" label="死亡"/>
             <span>直接死因</span>
           </td>
           <td colspan="1">
-            <el-input v-model="yaoPin.DeathReason" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yaoPin.DeathReason" :disabled="seeControl" type="textarea"/>
           </td>
 
           <td><span>死亡时间</span></td>
@@ -2153,7 +2156,7 @@
         <tr align="center">
           <td><span>原患疾病</span></td>
           <td colspan="11">
-            <el-input v-model="yaoPin.Sickness" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.Sickness" type="textarea" :disabled="seeControl"/>
           </td>
         </tr>
         <!--      原患疾病结束-->
@@ -2161,21 +2164,21 @@
         <tr align="center">
           <td><span>对原患疾病的影响</span></td>
           <td colspan="6">
-            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="不明显" />
-            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="病程延长" />
-            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="病情加重" />
-            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="导致后遗症" />
+            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="不明显"/>
+            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="病程延长"/>
+            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="病情加重"/>
+            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="导致后遗症"/>
           </td>
 
           <td>
             <span>表现</span>
           </td>
           <td colspan="2">
-            <el-input v-model="yaoPin.ShowSick" :disabled="seeControl" type="textarea" />
+            <el-input v-model="yaoPin.ShowSick" :disabled="seeControl" type="textarea"/>
           </td>
 
           <td colspan="2">
-            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="导致死亡" />
+            <el-radio v-model="yaoPin.Influence" :disabled="seeControl" label="导致死亡"/>
           </td>
         </tr>
         <!--      对原患疾病的影响结束-->
@@ -2183,16 +2186,16 @@
         <tr align="center">
           <td colspan="4"><span>国内有无类似不良反应（包括文献报道）</span></td>
           <td colspan="3">
-            <el-radio v-model="yaoPin.InternalReaction" :disabled="seeControl" label="有" />
-            <el-radio v-model="yaoPin.InternalReaction" :disabled="seeControl" label="无" />
-            <el-radio v-model="yaoPin.InternalReaction" :disabled="seeControl" label="不详" />
+            <el-radio v-model="yaoPin.InternalReaction" :disabled="seeControl" label="有"/>
+            <el-radio v-model="yaoPin.InternalReaction" :disabled="seeControl" label="无"/>
+            <el-radio v-model="yaoPin.InternalReaction" :disabled="seeControl" label="不详"/>
           </td>
 
           <td colspan="2"><span>国外有无类似不良反应（包括文献报道）</span></td>
           <td colspan="3">
-            <el-radio v-model="yaoPin.OverseasReaction" :disabled="seeControl" label="有" />
-            <el-radio v-model="yaoPin.OverseasReaction" :disabled="seeControl" label="无" />
-            <el-radio v-model="yaoPin.OverseasReaction" :disabled="seeControl" label="不详" />
+            <el-radio v-model="yaoPin.OverseasReaction" :disabled="seeControl" label="有"/>
+            <el-radio v-model="yaoPin.OverseasReaction" :disabled="seeControl" label="无"/>
+            <el-radio v-model="yaoPin.OverseasReaction" :disabled="seeControl" label="不详"/>
           </td>
         </tr>
         <!--      国内外有无类似不良反应（包括文献报道结束）-->
@@ -2202,17 +2205,17 @@
 
           <td><span>报告人</span></td>
           <td colspan="8">
-            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="肯定" />
-            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="很可能" />
-            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="可能" />
-            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="可能无关" />
-            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="待评价" />
-            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="无法评价" />
+            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="肯定"/>
+            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="很可能"/>
+            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="可能"/>
+            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="可能无关"/>
+            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="待评价"/>
+            <el-radio v-model="yaoPin.ManEv" :disabled="seeControl" label="无法评价"/>
           </td>
 
           <td><span>签名</span></td>
           <td>
-            <el-input v-model="yaoPin.ManSign" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.ManSign" type="textarea" :disabled="seeControl"/>
           </td>
 
         </tr>
@@ -2220,17 +2223,17 @@
         <tr align="center">
           <td><span>报告单位</span></td>
           <td colspan="8">
-            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="肯定" />
-            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="很可能" />
-            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="可能" />
-            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="可能无关" />
-            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="待评价" />
-            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="无法评价" />
+            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="肯定"/>
+            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="很可能"/>
+            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="可能"/>
+            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="可能无关"/>
+            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="待评价"/>
+            <el-radio v-model="yaoPin.CompanyEv" :disabled="seeControl" label="无法评价"/>
           </td>
 
           <td><span>签名</span></td>
           <td>
-            <el-input v-model="yaoPin.CompanySign" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.CompanySign" type="textarea" :disabled="seeControl"/>
           </td>
 
         </tr>
@@ -2238,17 +2241,17 @@
         <tr align="center">
           <td><span>省级药品不良反应监测机构</span></td>
           <td colspan="8">
-            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="肯定" />
-            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="很可能" />
-            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="可能" />
-            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="可能无关" />
-            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="待评价" />
-            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="无法评价" />
+            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="肯定"/>
+            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="很可能"/>
+            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="可能"/>
+            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="可能无关"/>
+            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="待评价"/>
+            <el-radio v-model="yaoPin.ProValuaEv" :disabled="seeControl" label="无法评价"/>
           </td>
 
           <td><span>签名</span></td>
           <td>
-            <el-input v-model="yaoPin.ProValuaSign" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.ProValuaSign" type="textarea" :disabled="seeControl"/>
           </td>
 
         </tr>
@@ -2256,17 +2259,17 @@
         <tr align="center">
           <td><span>国家药品不良反应监测中心</span></td>
           <td colspan="8">
-            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="肯定" />
-            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="很可能" />
-            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="可能" />
-            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="可能无关" />
-            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="待评价" />
-            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="无法评价" />
+            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="肯定"/>
+            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="很可能"/>
+            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="可能"/>
+            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="可能无关"/>
+            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="待评价"/>
+            <el-radio v-model="yaoPin.ConValuaEv" :disabled="seeControl" label="无法评价"/>
           </td>
 
           <td><span>签名</span></td>
           <td>
-            <el-input v-model="yaoPin.ConValuaSign" type="textarea" :disabled="seeControl" />
+            <el-input v-model="yaoPin.ConValuaSign" type="textarea" :disabled="seeControl"/>
           </td>
 
         </tr>
@@ -2283,8 +2286,8 @@
             <div><span>1.用药与不良反应/事件的出现有无合理的时间关系？</span></div>
           </td>
           <td colspan="6">
-            <el-radio v-model="yaoPin.ReasonTime" :disabled="seeControl" label="有" />
-            <el-radio v-model="yaoPin.ReasonTime" :disabled="seeControl" label="无" />
+            <el-radio v-model="yaoPin.ReasonTime" :disabled="seeControl" label="有"/>
+            <el-radio v-model="yaoPin.ReasonTime" :disabled="seeControl" label="无"/>
           </td>
         </tr>
 
@@ -2293,9 +2296,9 @@
             <div><span>2.反应是否符合该药已知的不良反应类型？</span></div>
           </td>
           <td colspan="6">
-            <el-radio v-model="yaoPin.ReasonType" :disabled="seeControl" label="是" />
-            <el-radio v-model="yaoPin.ReasonType" :disabled="seeControl" label="否" />
-            <el-radio v-model="yaoPin.ReasonType" :disabled="seeControl" label="不明" />
+            <el-radio v-model="yaoPin.ReasonType" :disabled="seeControl" label="是"/>
+            <el-radio v-model="yaoPin.ReasonType" :disabled="seeControl" label="否"/>
+            <el-radio v-model="yaoPin.ReasonType" :disabled="seeControl" label="不明"/>
           </td>
         </tr>
 
@@ -2304,10 +2307,10 @@
             <div><span>3.停药或减量后，反应/事件是否消失或减轻？</span></div>
           </td>
           <td colspan="6">
-            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="是" />
-            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="否" />
-            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="不明" />
-            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="未停药或未减量" />
+            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="是"/>
+            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="否"/>
+            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="不明"/>
+            <el-radio v-model="yaoPin.Ease" :disabled="seeControl" label="未停药或未减量"/>
           </td>
         </tr>
 
@@ -2316,10 +2319,10 @@
             <div><span>4.再次使用可疑药品后是否再次出现同样反应/事件？</span></div>
           </td>
           <td colspan="6">
-            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="是" />
-            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="否" />
-            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="不明" />
-            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="未再使用" />
+            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="是"/>
+            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="否"/>
+            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="不明"/>
+            <el-radio v-model="yaoPin.DoubtReact" :disabled="seeControl" label="未再使用"/>
           </td>
         </tr>
 
@@ -2328,9 +2331,9 @@
             <div><span>5.反应/事件是否可用并用药的作用、患者病情的进展、其他治疗的影响来解释？</span></div>
           </td>
           <td colspan="6">
-            <el-radio v-model="yaoPin.BlendingReact" :disabled="seeControl" label="是" />
-            <el-radio v-model="yaoPin.BlendingReact" :disabled="seeControl" label="否" />
-            <el-radio v-model="yaoPin.BlendingReact" :disabled="seeControl" label="不明" />
+            <el-radio v-model="yaoPin.BlendingReact" :disabled="seeControl" label="是"/>
+            <el-radio v-model="yaoPin.BlendingReact" :disabled="seeControl" label="否"/>
+            <el-radio v-model="yaoPin.BlendingReact" :disabled="seeControl" label="不明"/>
           </td>
         </tr>
 
@@ -2342,11 +2345,11 @@
 
         <tr align="center">
           <td colspan="12">
-            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="1.引起死亡" />
-            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="2.致畸、致癌、致出生缺陷" />
-            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="3.对生命有危险并能够导致人体永久的或显著的伤残" />
-            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="4.对器官功能产生永久损伤" />
-            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="5.导致住院或住院时间延长" />
+            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="1.引起死亡"/>
+            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="2.致畸、致癌、致出生缺陷"/>
+            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="3.对生命有危险并能够导致人体永久的或显著的伤残"/>
+            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="4.对器官功能产生永久损伤"/>
+            <el-radio v-model="yaoPin.Serious" :disabled="seeControl" label="5.导致住院或住院时间延长"/>
           </td>
         </tr>
 
@@ -2357,20 +2360,20 @@
 
         <div>
           报告人职业（医疗机构）:
-          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="医生" />
-          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="药师" />
-          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="护士" />
-          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="其他" />
+          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="医生"/>
+          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="药师"/>
+          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="护士"/>
+          <el-radio v-model="yaoPin.ProfessionInst" :disabled="seeControl" label="其他"/>
         </div>
 
         <div>
           报告人职务职称（企业）
-          <el-input v-model="yaoPin.ProfessionEnter" :disabled="seeControl" />
+          <el-input v-model="yaoPin.ProfessionEnter" :disabled="seeControl"/>
         </div>
 
         <div>
           报告人签名：
-          <el-input v-model.trim="yaoPin.ReportSign" :disabled="seeControl" />
+          <el-input v-model.trim="yaoPin.ReportSign" :disabled="seeControl"/>
         </div>
 
       </div>
@@ -2394,8 +2397,8 @@
           <el-table-column label="文件名">
             <template slot-scope="{ row }">
               <el-link type="primary" :href="row.FileUrl" target="_blank">{{
-                row.FileName
-              }}
+                  row.FileName
+                                                                          }}
               </el-link>
             </template>
           </el-table-column>
@@ -2477,11 +2480,14 @@
         </div>
         <div style="margin-left: 10vh">
           <div style="width: 25vh">
-            <td><el-input v-model="yaoPin.Monitor" :disabled="seeControl" size="mini" style="width: 20vh;height: 2vh" />
+            <td>
+              <el-input v-model="yaoPin.Monitor" :disabled="seeControl" size="mini" style="width: 20vh;height: 2vh"/>
             </td>
-            <td><el-tag type="info" style="width: 150px">
-              药品不良反应监测中心
-            </el-tag></td>
+            <td>
+              <el-tag type="info" style="width: 150px">
+                药品不良反应监测中心
+              </el-tag>
+            </td>
           </div>
           <div style="width: 25vh">
             <el-tag type="info" style="width: 70px">通信地址：
@@ -2505,17 +2511,17 @@
           </div>
           <div>
             <el-tag type="info" style="width: 50px">电 话：
-              <el-input v-model="yaoPin.Phone" :disabled="seeControl" size="mini" style="width: 33.5vh;height: 2vh" />
+              <el-input v-model="yaoPin.Phone" :disabled="seeControl" size="mini" style="width: 33.5vh;height: 2vh"/>
             </el-tag>
           </div>
           <div>
             <el-tag type="info" style="width: 50px">传 真：
-              <el-input v-model="yaoPin.Fax" :disabled="seeControl" size="mini" style="width: 33.5vh;height: 2vh" />
+              <el-input v-model="yaoPin.Fax" :disabled="seeControl" size="mini" style="width: 33.5vh;height: 2vh"/>
             </el-tag>
           </div>
           <div>
             <el-tag type="info" style="width:70px">E – mail ：
-              <el-input v-model="yaoPin.EMail" :disabled="seeControl" size="mini" style="width: 30vh;height: 2vh" />
+              <el-input v-model="yaoPin.EMail" :disabled="seeControl" size="mini" style="width: 30vh;height: 2vh"/>
             </el-tag>
           </div>
 
@@ -2617,7 +2623,7 @@ export default {
         ReportUser: window.userInfo[0].UserName, // 报告人签名
         CreateUserID: window.userInfo[0].UserID,
         IsDraft: 0, // 草稿 1是0否
-        FindDepartmentID: 0, // 发现科室
+        FindDepartmentID:  window.userInfo[0].DeptID, // 发现科室
         File_List: [
           // {
           //   FileID: 0,
@@ -2636,7 +2642,7 @@ export default {
         EventCategory: '', // 事件类别
         OccurDate: '', // 发生日期及时间点
         Shift: '', // 班次
-        FindDepartmentID: 0, // 所在科室号
+        FindDepartmentID:  window.userInfo[0].DeptID, // 所在科室号
         DepartmentName: '', // 所在科室
         PatientName: '', // 患者姓名
         Sex: '', // 性别
@@ -2698,7 +2704,7 @@ export default {
         Level: '', // 职称
         ReportUser: '', // 报告人
         Sign: window.userInfo[0].UserName, // 报告人签名
-        FindDepartmentID: 0, // 科室号
+        FindDepartmentID: window.userInfo[0].DeptID, // 科室号
         DepartmentName: '', // 科室
         FindDepartmentName: '',
         InpatientDept: '', // 住院部
@@ -2782,7 +2788,7 @@ export default {
         Fax: '',
         EMail: '',
         IsDraft: 0,
-        FindDepartmentID: 0,
+        FindDepartmentID:  window.userInfo[0].DeptID,
         CreateUserID: window.userInfo[0].UserID,
         File_List: [],
         DoubtMedical: [ // 怀疑药品
@@ -2893,7 +2899,7 @@ export default {
         VictimDepartment: '',
         SerialNumber: '',
         FindName: '',
-        FindDepartmentID: 0,
+        FindDepartmentID: window.userInfo[0].DeptID,
         FindDepartment: '',
         Process: '',
         Level: '',
@@ -4256,7 +4262,17 @@ export default {
 
 html, body, table, tr, td, input, el-input {
   padding: 0;
-  margin:0;
+  margin: 0;
+}
+.dialog {
+  margin-top: 50% !important;
+  width: 30%;
+
+  .el-dialog .el-dialog__header {
+    padding: 0 !important;
+    background-color: #ffffff !important;
+    opacity: 0 !important;
+  }
 }
 //.el-select .el-input__inner:focus{
 //  background-color: red;
@@ -4267,7 +4283,7 @@ html, body, table, tr, td, input, el-input {
   justify-content: inherit;
   align-items: center;
   height: 25px;
-  line-height:25px;
+  line-height: 25px;
   margin-left: 10%;
   font-size: 16px;
   margin-top: 1vh;
@@ -4300,8 +4316,8 @@ html, body, table, tr, td, input, el-input {
   display: flex;
   justify-content: center;
   align-items: center;
-  height:20px;
-  margin-top:4px;
+  height: 20px;
+  margin-top: 4px;
   margin-bottom: 4px;
 
 }

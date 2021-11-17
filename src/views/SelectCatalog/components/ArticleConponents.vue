@@ -48,28 +48,8 @@
            ({{indexTitle+1}}) .{{ ming1[indexTitle].Title }}
           </el-link>
         </span>
-        <!--      <p-->
-        <!--        v-for=" (item,index) in ming1"-->
-        <!--      >-->
-        <!--        <el-link>-->
-
-        <!--          {{ item.Title }}-->
-
-        <!--        </el-link>-->
       </p>
     </div>
-    <!--      indexTitle===numMing ?  ming1[numMing]:ming1[indexTitle]-->
-    <!--      <p-->
-    <!--        v-for="(ji,index) in value.Article.length ===0?[]:  ming1"-->
-    <!--        :key="index"-->
-    <!--      >-->
-    <!--        <el-link type="primary" @click="SelectArticleByArticleID(ming2[index])">{{-->
-    <!--            ji-->
-    <!--          }}-->
-    <!--        </el-link>-->
-    <!--      </p>-->
-
-
     <el-dialog
       :title="'上传人:' + formInline.AuthorName"
       :visible.sync="dialogVisible"
@@ -107,17 +87,6 @@ import { mapGetters } from 'vuex';
 export default {
   name: 'ArticleConponents',
   components: { filePreview2 },
-  // filters: {
-  //   capitalize1(item1) {
-  //     if (item1.AuthorName === null) {
-  //       item1.SerialNo = '';
-  //       return item1.AuthorName;
-  //     }
-  //     else{
-  //       return '测试 ';
-  //     }
-  //   }
-  // },
   props: {
     value: {
       type: Object,

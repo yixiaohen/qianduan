@@ -281,8 +281,8 @@
                         show-overflow-tooltip
                       >
                         <template slot-scope="scope">{{
-                          scope.row.CreatDate.split('T').join(' ')
-                        }}
+                            scope.row.CreatDate.split('T').join(' ')
+                                                     }}
                         </template>
                       </el-table-column>
                       <el-table-column
@@ -429,7 +429,7 @@
                     label="版本号"
                     prop="VersionNumber"
                   >
-                    <el-input v-model="listQuery.VersionNumber" />
+                    <el-input v-model="listQuery.VersionNumber"/>
                   </el-form-item>
                 </div>
                 <el-form-item label="附件上传">
@@ -475,7 +475,7 @@
                   align="center"
                 >
                   <template slot-scope="{ row }">
-                    <el-link target="_blank" :href="'Annex/file/' + row.FileUrl.replace('%', '%25')">点击下载</el-link>
+                    <el-link target="_blank" :href="row.FileUrl.replace('%', '%25')">点击下载</el-link>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -490,7 +490,7 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <tinymce ref="tinymceRef" />
+              <tinymce ref="tinymceRef"/>
             </el-tab-pane>
             <el-tab-pane
               label="指定可见人"
@@ -554,7 +554,7 @@
               />
             </el-form-item>
           </el-form>
-          <filePreview :preview-data="previewData" />
+          <filePreview2 :preview-data="previewData"/>
           <div
             class="htmlPane"
             v-html="listQuery.Content"
@@ -590,7 +590,7 @@
               </el-input>
             </el-form-item>
             <el-form-item label="资料标题">
-              <el-input v-model="listQuery.Title" />
+              <el-input v-model="listQuery.Title"/>
             </el-form-item>
             <div
               style="
@@ -600,13 +600,13 @@
               "
             >
               <el-form-item label="上传日期">
-                <el-input v-model="seeStatusViewForm.AuditDate" />
+                <el-input v-model="seeStatusViewForm.AuditDate"/>
               </el-form-item>
               <el-form-item label="上传人">
-                <el-input v-model="seeStatusViewForm.AuditUserName" />
+                <el-input v-model="seeStatusViewForm.AuditUserName"/>
               </el-form-item>
               <el-form-item label="审核结果">
-                <el-input v-model="AuditStatus" />
+                <el-input v-model="AuditStatus"/>
               </el-form-item>
             </div>
             <el-form-item label="意见">
@@ -829,6 +829,7 @@
                         </div>
                         <div class="bottomBody">
                           <el-table
+                            v-loading="listLoading"
                             class="bottomBodyTb"
                             :data="tableData"
                             style="width: 100%"
@@ -836,7 +837,6 @@
                             border
                             size="mini"
                             highlight-current-row
-                            v-loading="listLoading"
                           >
                             <el-table-column
                               type="index"
@@ -918,8 +918,8 @@
                               show-overflow-tooltip
                             >
                               <template slot-scope="scope">{{
-                                scope.row.CreatDate.split('T').join(' ')
-                              }}
+                                  scope.row.CreatDate.split('T').join(' ')
+                                                           }}
                               </template>
                             </el-table-column>
                             <el-table-column
@@ -1088,7 +1088,7 @@
                     label="版本号"
                     prop="VersionNumber"
                   >
-                    <el-input v-model="listQuery.VersionNumber" />
+                    <el-input v-model="listQuery.VersionNumber"/>
                   </el-form-item>
                 </div>
                 <el-form-item label="附件上传">
@@ -1160,7 +1160,7 @@
                   align="center"
                 >
                   <template slot-scope="{ row }">
-                    <el-link target="_blank" :href="'Annex/file/' + row.FileUrl.replace('%', '%25')">点击下载</el-link>
+                    <el-link target="_blank" :href="row.FileUrl.replace('%', '%25')">点击下载</el-link>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -1186,7 +1186,7 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <tinymce ref="tinymceRef" />
+              <tinymce ref="tinymceRef"/>
             </el-tab-pane>
             <el-tab-pane
               label="指定可见人"
@@ -1250,7 +1250,7 @@
               />
             </el-form-item>
           </el-form>
-          <filePreview2 :preview-data="previewData" />
+          <filePreview2 :preview-data="previewData"/>
           <div
             class="htmlPane"
             v-html="listQuery.Content"
@@ -1286,7 +1286,7 @@
               </el-input>
             </el-form-item>
             <el-form-item label="资料标题">
-              <el-input v-model="listQuery.Title" />
+              <el-input v-model="listQuery.Title"/>
             </el-form-item>
             <div
               style="
@@ -1296,13 +1296,13 @@
               "
             >
               <el-form-item label="上传日期">
-                <el-input v-model="seeStatusViewForm.AuditDate" />
+                <el-input v-model="seeStatusViewForm.AuditDate"/>
               </el-form-item>
               <el-form-item label="上传人">
-                <el-input v-model="seeStatusViewForm.AuditUserName" />
+                <el-input v-model="seeStatusViewForm.AuditUserName"/>
               </el-form-item>
               <el-form-item label="审核结果">
-                <el-input v-model="AuditStatus" />
+                <el-input v-model="AuditStatus"/>
               </el-form-item>
             </div>
             <el-form-item label="意见">
@@ -1351,6 +1351,7 @@ import tinymce from '@/components/tinymce';
 import { SelectPenaltiesByCatalogID } from '@/api/Penalties';
 import { mapGetters } from 'vuex';
 import filePreview3 from '@/views/components/file/filePreview3'; // 导入没有修改删除功能的附件列表组件
+
 export default {
   name: 'Article',
   components: {
@@ -1363,6 +1364,7 @@ export default {
     filePreview2,
     filePreview3
   },
+
   data() {
     return {
       kaoPinBanFa: false, // 考评办法对话框默认关闭
@@ -1567,7 +1569,7 @@ export default {
         ArticleID: row.ArticleID
       });
       this.previewData = [...Preview(row.Content), ...data];
-      console.log('闲杂',this.previewData);
+      console.log('闲杂', this.previewData);
       this.dialogFormVisibleView = true;
     },
     async downRow(row, MoveType) {
@@ -1766,8 +1768,9 @@ export default {
       try {
         this.formCatalog.UploadState = this.UploadState || '0';
         const { data } = await SelectArticle(this.formCatalog);
+
         this.tableData = data.DataList;
-        // this.formCatalog.Sort = 'asc';
+        console.log(this.tableData);
         this.pagination.total = data.Total;
         this.materialDataTh = data.th;
         this.formCatalog.pageIndex = 1;
@@ -1813,6 +1816,11 @@ export default {
       }
     },
     async PreviewFile(title) {
+      // 由于已经加了/Annex/file，所以，如果有的就去掉/Annex/file
+      var res = title.search('/Annex/file');
+      if (res !== -1) {
+        title = title.replace(/Annex\/file\/|\//g, '');
+      }
       /* 文件预览 */
       const { data } = await PreviewFile({
         Title: title

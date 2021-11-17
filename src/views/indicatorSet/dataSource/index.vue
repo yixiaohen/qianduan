@@ -8,7 +8,7 @@
             size="mini"
             type="primary"
             icon="el-icon-circle-plus"
-            @click="showConfig = true"
+            @click="OpenAddDataSource"
           >
             添加数据源
           </el-button>
@@ -33,7 +33,7 @@
         />
         <el-table-column prop="time" label="创建日期" align="center" sortable>
           <template slot-scope="{ row }">
-            {{ row.time ? row.time.replace("T", " ") : "" }}
+            {{ row.time ? row.time.replace('T', ' ') : '' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -48,7 +48,7 @@
           label="数据库连接字符串"
           align="center"
         />
-        <el-table-column prop="remarks" label="备注" align="center" />
+        <el-table-column prop="remarks" label="备注" align="center"/>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button
@@ -73,6 +73,7 @@
       <!--      分页-->
       <div class="block">
         <el-pagination
+          style="margin: 6px 0 0 0"
           :page-sizes="pagination.pageSizes"
           :page-size="pagination.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
@@ -117,6 +118,13 @@
             size="small"
             clearable
           />
+          <el-button
+            :type="testConnColor"
+            size="mini"
+            @click="testConn"
+          >
+            {{ testConnFont }}
+          </el-button>
         </el-form-item>
         <el-form-item label="备注" prop="remarks">
           <el-input
@@ -152,11 +160,13 @@
 </template>
 
 <script>
-import { DeleteConn, GetConn, InsertConn, SelectConn, UpdateConn } from '@/api/indicatorSet/I_Conn';
+import { DeleteConn, GetConn, InsertConn, SelectConn, TestConnect, UpdateConn } from '@/api/indicatorSet/I_Conn';
 
 export default {
   data() {
     return {
+      testConnColor: 'info', // 设置测试连接按钮的颜色
+      testConnFont: '测试连接', // 设置测试连接按钮的文本
       configDataTitle: '配置数据源', // 添加和编辑数据源的对话框的标题值
       rules: {
         DataBaseType: [
@@ -245,6 +255,30 @@ export default {
     this.SelectDataBase();
   },
   methods: {
+    OpenAddDataSource() {
+      this.configDataTitle = '配置数据源';
+      this.showConfig = true;
+    },
+    // 测试连接
+    async testConn() {
+      try {
+        const { code,msg } = await TestConnect({
+          type: this.dynamicValidateForm.type,
+          sqlcon: this.dynamicValidateForm.sqlcon
+        });
+        if (code === 200) {
+          this.testConnColor = 'success';
+          this.$message.success('连接成功');
+        } else {
+          this.testConnColor = 'warning';
+          this.$message.warning('连接失败');
+        }
+      } catch (e) {
+        this.testConnColor = 'warning';
+        this.$message.warning('连接失败');
+        console.log(e);
+      }
+    },
     // *添加数据源
     async addDataSource() {
       // 规则验证 addDia为表单标识
@@ -398,11 +432,13 @@ export default {
 .el-container {
   .el-header {
     height: 20px;
+
     .el-form {
       margin-top: 5px;
       display: flex;
       align-content: center;
       justify-content: flex-start;
+
       .el-form-item {
       }
 

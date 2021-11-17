@@ -4,6 +4,7 @@
       <el-form :inline="true" :model="listQuery" size="mini">
         <el-form-item>
           <el-button
+            style="margin-top: 7px"
             type="primary"
             icon="el-icon-circle-plus"
             size="mini"
@@ -44,6 +45,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            style="margin-top: 7px"
             type="info"
             icon="el-icon-search"
             size="mini"
@@ -54,6 +56,7 @@
         </el-form-item>
         <el-form-item>
           <el-checkbox
+            style="margin-top: 7px"
             v-model="checked"
             @change="checkbox"
           >只看草稿
@@ -70,6 +73,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            style="margin-top: 7px"
             :loading="downloadLoading"
             :disabled="listLoading"
             type="success"
@@ -268,6 +272,7 @@
         </el-col>
         <el-col :span="20">
           <el-pagination
+            style="margin-top: 10px"
             background
             :current-page.sync="pagination.pageIndex"
             :page-size="pagination.pageSize"

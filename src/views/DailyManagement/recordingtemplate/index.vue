@@ -5,6 +5,7 @@
         <el-form :inline="true" size="mini">
           <el-form-item>
             <el-button
+              style="margin-top: 6px"
               type="primary"
               icon="el-icon-circle-plus"
               size="mini"
@@ -13,6 +14,7 @@
           </el-form-item>
           <el-form-item>
             <el-button
+              style="margin-top: 6px"
               type="primary"
               size="mini"
               @click="categoryAdmin"
@@ -42,6 +44,7 @@
             <el-select
               v-model="listQuery.TemplateTypeName"
               clearable
+              filterable
               placeholder="表单类别"
             >
               <el-option
@@ -72,6 +75,7 @@
 
           <el-form-item>
             <el-button
+              style="margin-top: 6px"
               :loading="listLoading"
               type="primary"
               icon="el-icon-search"
@@ -84,7 +88,7 @@
       <div class="content">
         <el-table
           v-loading="listLoading"
-          element-loading-text="拼命加载中"
+
           :data="tableData"
           style="width: 100%"
           border
@@ -682,7 +686,7 @@
           label="序号"
           width="60"
           align="center"
-          fixed="left"
+
         />
         <el-table-column
           v-for="(itemType, indexType) in tableTypeTitle"
@@ -720,7 +724,7 @@
             <el-button
               type="text"
               size="mini"
-              @click="DeleteType(scope)"
+              @click="DeleteType(scope.row)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -749,7 +753,7 @@ import tableHeight from '@/views/mixin/tableHeight';
 import treeFilter from '@/views/components/treeFilter';
 import { mapGetters } from 'vuex';
 import {
-  DeleteTemplate,
+  DeleteTemplate, DeleteTemplateType,
   InsertDistribution,
   InsertTemplate,
   InsertTemplateType,
@@ -763,10 +767,11 @@ import {
 import { SelectDeptorUser } from '@/api/institution';
 import { SelectZGUser } from '@/api/user';
 import reasonfordeduction from '@/views/components/reasonfordeduction';
+import Import from '@/views/ExampleTrain/example/import';
 
 export default {
   name: 'RecordingTemplate',
-  components: { defaultDept, treeFilter, defaultDepts, reasonfordeduction },
+  components: { Import, defaultDept, treeFilter, defaultDepts, reasonfordeduction },
   mixins: [tableHeight],
   data() {
     return {
@@ -1543,7 +1548,27 @@ export default {
     TypeEdit(scope) {
       this.typeEdit = scope.$index;
     },
-    DeleteType() {},
+    DeleteType(row) {
+      this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(async() => {
+        const { code } = await DeleteTemplateType({ TemplateTypeID: row.TemplateTypeID });
+        if (code === 200) {
+          this.SelectTemplateType(); // 刷新列表
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
     insetTypeData() {
       this.tableTypeData.unshift({
         TemplateTypeName: '',
@@ -1587,6 +1612,8 @@ export default {
 };
 </script>
 <style lang="scss">
+// 导出等待条样式
+@import "src/styles/loading.scss";
 .RecordingTemplate {
   margin: 4px;
   .el-radio,

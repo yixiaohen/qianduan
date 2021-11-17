@@ -1181,7 +1181,7 @@
               <el-button
                 icon="el-icon-search"
                 size="mini"
-                type="info"
+                type="primary"
                 @click="dialogFormVisibleView = true"
               >查看详情
               </el-button>

@@ -9,7 +9,19 @@
               icon="el-icon-circle-plus"
               size="mini"
               @click="addMenu()"
-            >增加</el-button>
+            >增加
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-input
+              v-model="searchTitleContent"
+              style="width: 150px"
+              size="mini"
+              clearable
+              placeholder="请输入菜单标题"
+              @change="searchTitle"
+            />
+
           </el-form-item>
         </el-form>
       </div>
@@ -24,14 +36,14 @@
           default-expand-all
           :tree-props="{ children: 'Children', hasChildren: 'hasChildren' }"
         >
-          <el-table-column type="index" />
-          <el-table-column prop="MemuTitle" label="菜单标题" width="150" />
-          <el-table-column prop="MenuID" label="MenuID" width="100" />
-          <el-table-column prop="ParentID" label="ParentID" width="100" />
-          <el-table-column prop="MenuName" label="MenuName" width="160" />
-          <el-table-column prop="MenuIcon" label="MenuIcon" />
-          <el-table-column prop="Component" label="Component" />
-          <el-table-column prop="MenuPath" label="MenuPath" width="180" />
+          <el-table-column type="index"/>
+          <el-table-column prop="MemuTitle" label="菜单标题" width="150"/>
+          <el-table-column prop="MenuID" label="MenuID" width="100"/>
+          <el-table-column prop="ParentID" label="ParentID" width="100"/>
+          <el-table-column prop="MenuName" label="MenuName" width="160"/>
+          <el-table-column prop="MenuIcon" label="MenuIcon"/>
+          <el-table-column prop="Component" label="Component"/>
+          <el-table-column prop="MenuPath" label="MenuPath" width="180"/>
           <el-table-column label="操作" width="250" align="center">
             <template slot-scope="{ row }">
               <el-button
@@ -87,7 +99,7 @@
         label-width="80px"
       >
         <el-form-item label="父级ID" prop="ParentID">
-          <el-input v-model="formMenu.ParentID" />
+          <el-input v-model="formMenu.ParentID"/>
         </el-form-item>
         <el-form-item label="菜单类型" prop="MenuTypeID">
           <el-select v-model="formMenu.MenuTypeID" placeholder="请选择菜单类型">
@@ -100,19 +112,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="菜单标题" prop="MemuTitle">
-          <el-input v-model="formMenu.MemuTitle" />
+          <el-input v-model="formMenu.MemuTitle"/>
         </el-form-item>
         <el-form-item label="菜单名称" prop="MenuName">
-          <el-input v-model="formMenu.MenuName" />
+          <el-input v-model="formMenu.MenuName"/>
         </el-form-item>
         <el-form-item label="菜单图标" prop="MenuIcon">
-          <el-input v-model="formMenu.MenuIcon" />
+          <el-input v-model="formMenu.MenuIcon"/>
         </el-form-item>
         <el-form-item label="路由地址" prop="Component">
-          <el-input v-model="formMenu.Component" />
+          <el-input v-model="formMenu.Component"/>
         </el-form-item>
         <el-form-item label="菜单路径" prop="MenuPath">
-          <el-input v-model="formMenu.MenuPath" />
+          <el-input v-model="formMenu.MenuPath"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -121,7 +133,8 @@
           type="primary"
           size="mini"
           @click="title === '添加菜单' ? InsertMenu() : UpdateMenu()"
-        >确 定</el-button>
+        >确 定
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -133,6 +146,7 @@ export default {
   name: 'Menu',
   data() {
     return {
+      searchTitleContent: '',
       labelPosition: 'top',
       title: '',
       dialogFormVisible: false,
@@ -161,6 +175,17 @@ export default {
     this.getMenus();
   },
   methods: {
+    // 查询搜索
+    async searchTitle() {
+      try {
+        const { data, code } = await SelectMenu({ titleContent: this.searchTitleContent });
+        if (code === 200) {
+          this.tableData = data.Menus;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
     deleteMenus(row) {
       this.$confirm(`此操作将永久删除 ${row.MemuTitle} , 是否继续?`, '警告', {
         confirmButtonText: '确定',
@@ -179,7 +204,8 @@ export default {
                 type: 'error',
                 message: '删除失败!'
               });
-          } catch {}
+          } catch {
+          }
           this.getMenus();
         })
         .catch(() => {
@@ -203,7 +229,8 @@ export default {
                 type: 'error',
                 message: '修改失败!'
               });
-          } catch {}
+          } catch {
+          }
           this.dialogFormVisible = false;
           this.formMenu = {};
           this.getMenus();
@@ -227,12 +254,15 @@ export default {
               this.dialogFormVisible = false;
               this.formMenu = {};
               this.getMenus();
-            } else type = 'error';
+            } else {
+              type = 'error';
+            }
             this.$message({
               type: type,
               message: msg
             });
-          } catch {}
+          } catch {
+          }
         }
       });
     },
@@ -244,9 +274,11 @@ export default {
     },
     async getMenus() {
       try {
-        const { data } = await SelectMenu();
+        const { data } = await SelectMenu({ titleContent: this.searchTitleContent});
         this.tableData = data.Menus;
-      } catch {}
+      } catch (e) {
+        console.log(e);
+      }
     },
     async SelectAllMenuType() {
       const data = await SelectAllMenuType({ UserID: window.userInfo[0].UserID });
@@ -260,7 +292,8 @@ export default {
         };
         const data = await MenuMove(val);
         this.getMenus();
-      } catch {}
+      } catch {
+      }
     },
     async downRow(row) {
       try {
@@ -270,7 +303,8 @@ export default {
         };
         const data = await MenuMove(val);
         this.getMenus();
-      } catch {}
+      } catch {
+      }
     }
   }
 };
@@ -278,12 +312,15 @@ export default {
 <style lang="scss">
 .root {
   height: calc(100vh - 100px);
+
   .top-container {
     width: 100%;
     height: 100%;
+
     .top-container-head {
       height: 32px;
     }
+
     .top-container-body {
       height: 100%;
       overflow-y: hidden;

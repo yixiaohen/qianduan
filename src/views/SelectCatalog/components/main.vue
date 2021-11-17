@@ -13,6 +13,9 @@ export default {
       default: 0,
       menu_one: '',
       menu_two: ''
+    },
+    dialogVisible: {
+      type: Boolean
     }
   },
   data() {
@@ -31,14 +34,20 @@ export default {
   methods: {
 
     async GetcatalogSecond(val) {
-      // this.x = val;
-      const { data } = await GetcatalogSecond({
-        CatalogID: val,
-        UserID: window.userInfo[0].UserID
-      });
+      this.$emit('changeShow', true);
+      try {
+        // this.x = val;
+        const { data } = await GetcatalogSecond({
+          CatalogID: val,
+          UserID: window.userInfo[0].UserID
+        });
 
-      this.tableData = data;
-      // console.log(this.tableData);
+        this.tableData = data;
+        this.$emit('changeShow', false);
+      } catch (e) {
+        console.log(e);
+        this.$emit('changeShow', false);
+      }
     },
     async getIni() {
       const para = this.$store.getters.iniPara;
@@ -52,7 +61,6 @@ export default {
   render() {
     const header = value => {
       const html = (
-
         <div style="background: #dfe7f9;">
           <div style="display:flex;align-items:center">
             <div style="flex:2;font-weight: 700;font-size: 15px;">

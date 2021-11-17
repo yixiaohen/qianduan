@@ -33,7 +33,8 @@ the page more responsive. See https://www.chromestatus.com/feature/5745543795965
 Vue.use(ElementUI);
 // CKEditor.component.props.editorUrl.default  = require('../public/ckeditor')
 Vue.use(CKEditor);
-
+// 默认全部使用el-dialog时点击外部不会关闭对话框，防止误触
+ElementUI.Dialog.props.closeOnClickModal.default = false;
 Vue.config.productionTip = false;
 // 注册一个原型，用来发送通知通信
 export const eventBus = new Vue();

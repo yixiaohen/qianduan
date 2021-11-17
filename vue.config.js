@@ -14,11 +14,11 @@ const port = 1314;
 // const backPort = 369;
 
 // 公司服务器
-const IP = '81.71.27.37';
-const backPort = 81;
+// const IP = '81.71.27.37';
+// const backPort = 80;
 
-// const IP = '192.168.2.11';
-// const backPort = 81;
+const IP = '192.168.2.11';
+const backPort = 81;
 
 // const IP = '192.168.2.21';
 // const backPort = 80;

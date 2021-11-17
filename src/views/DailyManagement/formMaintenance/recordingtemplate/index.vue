@@ -5,6 +5,7 @@
         <el-form :inline="true" size="mini">
           <el-form-item>
             <el-button
+              style="margin-top: 7px"
               type="primary"
               icon="el-icon-circle-plus"
               size="mini"
@@ -13,10 +14,18 @@
           </el-form-item>
           <el-form-item>
             <el-button
+              style="margin-top: 7px"
               type="primary"
               size="mini"
               @click="categoryAdmin"
             >类别管理</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-select v-model="listQuery.StateType" placeholder="表单状态">
+              <el-option label="全部" :value="-1" />
+              <el-option label="已启用" :value="0" />
+              <el-option label="已禁用" :value="1" />
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-input
@@ -52,13 +61,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <el-select v-model="listQuery.StateType" placeholder="表单状态">
-              <el-option label="全部" :value="-1" />
-              <el-option label="已启用" :value="0" />
-              <el-option label="已禁用" :value="1" />
-            </el-select>
-          </el-form-item>
+
           <el-form-item>
             <el-select
               v-model="listQuery.TemplateSource"
@@ -72,6 +75,7 @@
 
           <el-form-item>
             <el-button
+              style="margin-top: 7px"
               :loading="listLoading"
               type="primary"
               icon="el-icon-search"
@@ -89,7 +93,7 @@
           style="width: 100%"
           border
           size="mini"
-          height="calc(100vh - 180px)"
+          height="calc(100vh - 220px)"
           stripe
         >
           <el-table-column
@@ -225,6 +229,7 @@
           <el-col :span="20">
             <el-pagination
               background
+              style="margin-top: 10px"
               :current-page.sync="pagination.pageIndex"
               :page-size="pagination.pageSize"
               :page-sizes="pagination.pageSizes"
@@ -274,15 +279,16 @@
         :model="formData"
         :inline="true"
       >
+
         <el-form-item
           label="表单名称"
           label-width="80px"
           prop="RC_TemplateName"
         >
-          <el-input v-model="formData.RC_TemplateName" clearable />
+          <el-input v-model="formData.RC_TemplateName" style="margin-top: -5px" clearable />
         </el-form-item>
-        <el-form-item label="表单类别" label-width="80px" prop="TemplateTypeID">
-          <el-select v-model="formData.TemplateTypeID" placeholder="请选择">
+        <el-form-item label="表单类别" label-width="80px"   prop="TemplateTypeID">
+          <el-select v-model="formData.TemplateTypeID" placeholder="请选择"  style="margin-top:-5px">
             <el-option
               v-for="item in tableTypeData"
               :key="item.TemplateTypeID"
@@ -342,6 +348,7 @@
             class="period"
           >
             <el-input
+              style="margin-top: -5px"
               v-model="formData.Cycle"
               type="Number"
               clearable
@@ -352,8 +359,8 @@
         </el-form>
       </el-form>
       <el-form :inline="true" size="mini">
-        <el-form-item label="注意事项" label-width="77px">
-          <el-input v-model="formData.Precautions" clearable />
+        <el-form-item label="注意事项" label-width="77px" >
+          <el-input v-model="formData.Precautions" clearable  style="margin-top: -5px" />
         </el-form-item>
       </el-form>
       <el-table
@@ -361,8 +368,16 @@
         :data="ContentData"
         border
         size="mini"
+        :header-cell-style="{'text-align':'center'}"
+        :cell-style="{'text-align':'center'}"
         height="calc(100vh - 220px)"
       >
+        <el-table-column
+          type="index"
+          label="序号"
+          label-width="80px"
+
+        ></el-table-column>
         <el-table-column
           label="类别"
           prop="Category"
@@ -486,6 +501,7 @@
                   </el-form-item>
                   <el-form-item label="自查科室" prop="RC_InspectionDepartment">
                     <default-depts
+                      ref="allSelect"
                       w="100%"
                       :multiple="true"
                       :value="addFormData.RC_InspectionDepartment"
@@ -768,6 +784,7 @@ export default {
   mixins: [tableHeight],
   data() {
     return {
+
       listLoading: true,
       dialogFormVisible: false,
       dialogError: false,
@@ -839,7 +856,8 @@ export default {
         TemplateTypeID: '',
         CaseJudgment: 0,
         IsRequired: 0,
-        Cycle: ''
+        Cycle: '',
+        Precautions: ''
       },
       RC_TemplateTypeData: [
         {
@@ -964,6 +982,8 @@ export default {
     this.SelectZGUser();
     this.SelectTemplateType();
     this.SelectNorm();
+
+
   },
   computed: {
     ...mapGetters(['device', 'permission_routes'])
@@ -1024,6 +1044,7 @@ export default {
       this.formData.RC_TemplateType = row.RC_TemplateType;
       this.formData.Precautions = row.Precautions;
       try {
+
         const { data } = await SelectTemplateByID({
           TemplateID: row.TemplateID
         });
@@ -1351,6 +1372,8 @@ export default {
     },
 
     async clickInsertDistri(row) {
+      console.log(this.$refs.allSelect);
+      console.log('this.$refs.allSelect');
       this.permission_routes.map((item, index) => {
         /* 判断是否拥着regulatoryrectification菜单 */
         if (item.path == '/dailymanagement') {
@@ -1474,6 +1497,7 @@ export default {
     },
     async getTreeData(val = 0) {
       try {
+
         const data = await SelectDeptorUser({});
         this.TreeFilterData.treeData = data.data;
       } catch (error) {}

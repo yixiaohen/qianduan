@@ -56,3 +56,11 @@ export function SelectEvaluationUserRoleCount(data) {
     data
   });
 }
+// 覆盖保存评审条款分配人员部门ID(执行部门人员对应部门ID,主管部门人员对应部门ID,分管院领导对应部门ID)
+export function UpdatetEvaluationUserDept(data) {
+  return request({
+    url: 'EvaluationUser/UpdatetEvaluationUserDept',
+    method: 'post',
+    data
+  });
+}

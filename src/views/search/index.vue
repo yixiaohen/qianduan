@@ -107,10 +107,25 @@
               </el-form-item>
               <el-form-item>
                 <el-select
+                  v-model="categoryData.AuditStatus"
+                  style="width: 180px"
+                  clearable
+                  placeholder="材料审核状态"
+                >
+                  <el-option
+                    v-for="item in resStatus"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-select
                   v-model="categoryData.CheckStatus"
                   style="width: 180px"
                   clearable
-                  placeholder="评审状态"
+                  placeholder="条款审核状态"
                 >
                   <el-option
                     v-for="item in ReviewStatus"
@@ -177,9 +192,54 @@
                 align="center"
               />
               <el-table-column
-                label="资料审核状态"
+                prop="title"
+                label="标题"
+                min-width="180"
+                align="center"
+              >
+                <template slot-scope="{ row }">
+                <el-link
+              type="primary"
+                  @click="see(row)"
+                >{{row.title}}
+                </el-link>
+              </template>
+
+              </el-table-column>
+
+
+              <el-table-column
+                prop="catalogCode"
+                label="条款"
+                align="center"
+              />
+              <el-table-column
+                prop="CatalogGroupName"
+                label="组别"
+                align="center"
+              />
+              <el-table-column
+                prop="groupName"
+                label="资料类别"
+                align="center"
+              />
+              <el-table-column
+                prop="authorName"
+                label="录入用户"
+                align="center"
+              />
+              <el-table-column
+                prop="creationDate"
+                label="录入时间"
+                align="center"
+              >
+                <template slot-scope="{ row }">
+                  {{ row.creationDate.replace('T', ' ') }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="材料审核状态"
                 prop="STATUS"
-                width="160"
                 align="center"
               >
                 <template slot-scope="{ row }">
@@ -195,58 +255,18 @@
               <el-table-column
                 prop="checkStatus"
                 label="条款审核状态"
+                align="center"
               />
-              <el-table-column
-                prop="title"
-                label="标题"
-                min-width="180"
-              />
-              <el-table-column
-                prop="catalogCode"
-                label="条款"
-              />
-              <el-table-column
-                prop="CatalogGroupName"
-                label="组别"
-              />
-              <el-table-column
-                prop="groupName"
-                label="资料类别"
-              />
-              <el-table-column
-                prop="authorName"
-                label="录入用户"
-              />
-              <el-table-column
-                prop="creationDate"
-                label="录入时间"
-              >
-                <template slot-scope="{ row }">
-                  {{ row.creationDate.replace('T', ' ') }}
-                </template>
-              </el-table-column>
               <el-table-column
                 prop="deptName"
                 label="评审部门"
-                min-width="200"
+                align="center"
               />
               <el-table-column
                 prop="lastRank"
                 label="评审结果"
-              />
-              <el-table-column
-                fixed="right"
                 align="center"
-                width="60"
-              >
-                <template slot-scope="{ row }">
-                  <el-button
-                    size="mini"
-                    @click="see(row)"
-                  >查看
-                  </el-button>
-                </template>
-              </el-table-column>
+              />
             </el-table>
           </div>
           <el-pagination
@@ -269,9 +289,9 @@
       :close-on-click-modal="false"
       :visible.sync="dialogFormVisible"
     >
-      <filePreview :preview-data="previewData" />
+      <filePreview :preview-data="previewData"/>
       <el-card>
-        <div v-html="content" />
+        <div v-html="content"/>
       </el-card>
     </el-dialog>
   </div>
@@ -352,6 +372,28 @@ export default {
           label: ''
         }
       ],
+      resStatus: [
+        {
+          value: 0,
+          label: '未审核'
+        },
+        {
+          value: 1,
+          label: '通过'
+        },
+        {
+          value: 2,
+          label: '退回'
+        },
+        {
+          value: 3,
+          label: '退回已修改'
+        },
+        {
+          value: -1,
+          label: '全部'
+        }
+      ], // 材料审核状态分类搜索框内容
       MyCatalogTreeData: [],
       defaultProps: {
         value: 'DeptID',
@@ -390,6 +432,7 @@ export default {
         CheckStatus: '',
         LastRank: '',
         CatalogCode: '',
+        AuditStatus: -1, // 资料审核状态-1为全部
         UserID: window.userInfo[0].UserID
       }
     };
@@ -399,8 +442,9 @@ export default {
     this.loadNode();
     this.SelectAllArticleGroup();
     this.SelectCategory();
-    this.SelectMyCatalogTree();
+
   },
+
   methods: {
     async getIni() {
       const para = this.$store.getters.iniPara;
@@ -466,7 +510,11 @@ export default {
       try {
         const { data } = await SelectAllArticleGroup();
         this.articleOptions = data;
-      } catch {
+        this.$nextTick(() => {
+          this.SelectMyCatalogTree();
+        });
+      } catch (e) {
+        console.log(e);
       }
     },
     async SelectCategory() {
@@ -479,6 +527,9 @@ export default {
       this.listLoading = false;
     },
     async clickSelectCategory() {
+      if (this.categoryData.AuditStatus===''){
+        this.categoryData.AuditStatus = -1;
+      }
       this.categoryData.CatalogCode = this.categoryData.CatalogCode.replace(
         /\./g,
         '.0'

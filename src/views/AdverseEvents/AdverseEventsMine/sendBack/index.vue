@@ -53,7 +53,7 @@
     </div>
     <!--通用模板列表数据-->
     <div v-if="temNameL===0" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
@@ -62,6 +62,7 @@
                 :data="tableData"
                 height="100%"
                 border
+                highlight-current-row
                 size="mini"
                 class="middleBodyTb"
                 @row-click="rowClick"
@@ -230,13 +231,14 @@
     </div>
     <!--医疗器械模板列表数据-->
     <div v-else-if="temNameL===1" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
                 border
-                height="80%"
+                highlight-current-row
+                height="92%"
                 size="mini"
                 :data="reportData"
                 style="width: 100%"
@@ -403,13 +405,14 @@
     </div>
     <!--护理模板列表数据-->
     <div v-else-if="temNameL===2" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
-                height="80%"
+                height="92%"
                 border
+                highlight-current-row
                 size="mini"
                 :data="reportData"
                 style="width: 100%;"
@@ -578,13 +581,14 @@
     </div>
     <!--医疗安全模板列表数据-->
     <div v-else-if="temNameL===3" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
                 border
-                height="80%"
+                highlight-current-row
+                height="92%"
                 size="mini"
                 :data="reportData"
                 style="width: 100%"
@@ -750,13 +754,14 @@
     </div>
     <!--药品安全模板列表数据-->
     <div v-else-if="temNameL===4" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
-                height="80%"
+                height="92%"
                 border
+                highlight-current-row
                 size="mini"
                 :data="reportData"
                 style="width: 100%"
@@ -1319,7 +1324,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .send_back {
   margin: 4px;
   overflow: hidden;

@@ -1,4 +1,5 @@
 import service from '@/utils/request';
+import service2 from '@/utils/requestAsync';
 
 export function InsertPlan(data) {
   return service({
@@ -35,6 +36,15 @@ export function DeletePlan(data) {
 export function UpdatePlan(data) {
   return service({
     url: '/PX_Plan/UpdatePlan',
+    method: 'post',
+    data
+  });
+}
+
+// 每5秒调用接口，更新用户附件观看时长
+export function UpdateTargetTimeByUserId(data) {
+  return service2({
+    url: '/PX_Plan/UpdateTargetTimeByUserId',
     method: 'post',
     data
   });

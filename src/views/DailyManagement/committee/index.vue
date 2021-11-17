@@ -10,6 +10,7 @@
           :xs="9"
         >
           <el-radio-group
+            style="margin-top: 4px"
             v-model="radio"
             size="small"
           >
@@ -30,6 +31,7 @@
           >
             <el-form-item v-if="radio == '委员会'">
               <el-button
+                style="margin-top: 4px"
                 icon="el-icon-plus"
                 size="mini"
                 type="primary"
@@ -39,6 +41,7 @@
             </el-form-item>
             <el-form-item v-if="radio != '委员会'">
               <el-button
+                style="margin-top: 4px"
                 icon="el-icon-plus"
                 size="mini"
                 type="primary"
@@ -48,6 +51,7 @@
             </el-form-item>
             <el-form-item v-if="radio == '委员会'">
               <el-input
+                style="margin-top: -2px"
                 v-model="pagination.CommitteeName"
                 placeholder="委员会名称"
                 clearable
@@ -59,6 +63,7 @@
             </el-form-item>
             <el-form-item v-if="radio != '委员会'">
               <el-input
+                style="margin-top: -2px"
                 v-model="MeetingTableDataVal.MeetingName"
                 placeholder="会议名称"
                 clearable
@@ -70,6 +75,7 @@
             </el-form-item>
             <el-form-item>
               <el-button
+                style="margin-top: 4px"
                 type="info"
                 icon="el-icon-search"
                 size="mini"
@@ -92,7 +98,7 @@
           v-loading="loading"
           element-loading-text="拼命加载中"
           :data="tableData"
-          style="width: 100%"
+          style="width: 100%;margin-top: 6px"
           height="calc(100vh - 160px)"
           border
           size="mini"
@@ -162,7 +168,7 @@
           v-loading="loading"
           element-loading-text="拼命加载中"
           :data="MeetingTableData"
-          style="width: 100%"
+          style="width: 100%;margin-top: 6px"
           height="calc(100vh - 160px)"
           border
           size="mini"

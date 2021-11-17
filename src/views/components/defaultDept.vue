@@ -1,6 +1,7 @@
 <template>
   <el-select
     v-model="DeptName"
+    style="margin-top: -7px"
     placeholder="请选择部门"
     clearable
     size="mini"
@@ -35,6 +36,7 @@
         :default-checked-keys="dept_value"
         :default-expanded-keys="[1]"
         :filter-node-method="filterNode"
+        @clear="clear1"
         @check="getSelectTreeDept"
         @check-change="handleCheckChange"
       />
@@ -126,12 +128,17 @@ export default {
       } catch {
       }
     },
+    clear1() {
+      var auto = '清空了';
+      this.$emit('clear', auto);
+    },
     getSelectTreeDept(value) {
       if (!this.multiple) {
         /* 单选 */
         this.$refs.treeDepts.setCheckedKeys([value.DeptID]);
         this.DeptName = value.DeptName;
         this.$emit('getDefaultDeptsValue', value.DeptID.toString());
+
       }
     },
     handleCheckChange(data, checked, indeterminate, getHalfCheckedKeys) {

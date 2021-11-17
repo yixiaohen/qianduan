@@ -38,6 +38,7 @@
           </el-form-item>
           <el-form-item>
             <el-button
+              style="margin-top: 6px"
               type="primary"
               icon="el-icon-search"
               size="mini"
@@ -46,6 +47,7 @@
           </el-form-item>
           <el-form-item>
             <el-button
+              style="margin-top: 6px"
               type="primary"
               size="mini"
               @click="insetRC_ErrorData()"
@@ -53,6 +55,7 @@
           </el-form-item>
           <el-form-item>
             <el-button
+              style="margin-top: 6px"
               type="primary"
               size="mini"
               @click="TypeError"

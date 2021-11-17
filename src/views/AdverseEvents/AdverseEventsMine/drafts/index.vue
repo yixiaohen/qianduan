@@ -57,6 +57,7 @@
       <el-table
         :data="tableData"
         style="width: 100%"
+        highlight-current-row
         size="mini"
         @selection-change="handleSelectionChange"
         @row-click="getDetails"
@@ -193,6 +194,7 @@
         <div class="middleBody">
           <el-table
             border
+            highlight-current-row
             height="80%"
             size="mini"
             :data="reportData"
@@ -305,6 +307,7 @@
           <el-table
             height="80%"
             border
+            highlight-current-row
             size="mini"
             :data="reportData"
             style="width: 100%;"
@@ -419,6 +422,7 @@
         <div class="middleBody">
           <el-table
             border
+            highlight-current-row
             height="80%"
             size="mini"
             :data="reportData"
@@ -533,6 +537,7 @@
             height="80%"
             border
             size="mini"
+            highlight-current-row
             :data="reportData"
             style="width: 100%"
             stripe
@@ -1053,7 +1058,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss"scoped >
 .drafts {
   .el-table th,
   .el-table td {

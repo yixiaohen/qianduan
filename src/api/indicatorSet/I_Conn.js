@@ -41,3 +41,12 @@ export function UpdateConn(data) {
     data
   });
 }
+
+// 测试不同数据库连接
+export function TestConnect(data) {
+  return request({
+    url: 'I_Conn/TestConnect',
+    method: 'post',
+    data
+  });
+}

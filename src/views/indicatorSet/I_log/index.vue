@@ -76,7 +76,7 @@
       <!--折叠-->
       <span>展开 </span>
       <el-switch v-model="cellOverflow" style="margin: 6px 0"/>
-      <span> 折叠</span>
+      <span>收起</span>
       <!--                        分页-->
       <div class="block">
         <el-pagination

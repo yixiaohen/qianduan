@@ -5,42 +5,66 @@
 
     <!--导航菜单开始-->
     <el-row class="nav">
-      <el-col :span="14">
-        <i class="el-icon-arrow-left" @click="goBack"/>
-        <i v-show="isShowGo1" class="el-icon-arrow-right"/>
+      <el-col :span="24">
+        <i v-show="!isShowback" class="el-icon-arrow-left" style="opacity:0.2;"/>
+
+        <i v-show="isShowback" class="el-icon-arrow-left" @click="goBack"/>
+        <i
+          v-show="isShowGo1"
+          class="el-icon-arrow-right"
+        />
         <i
           v-show="isShowGo2"
-          style="opacity: 1"
+          style="opacity: 1;"
           class="el-icon-arrow-right"
           @click="dirEnter(nowmDirectoryID,nowDirectoryName)"
         />
-
         <!--        刷新重回首页-->
-        <i class="el-icon-refresh-left" @click="refreshDisk"/>
+        <i
+          class="el-icon-refresh-left"
+          @click="refreshDisk"
+        />
         <!--    面包屑导航开始-->
-        <el-breadcrumb v-for="item in brname" v-model="brname" separator="/" class="breadcrumb">
-          <el-breadcrumb-item :to="{ path: '/reviewmanagement/networkDisk' }">{{ item }} ></el-breadcrumb-item>
+        <el-breadcrumb
+          v-for="item in brname"
+          v-model="brname"
+          separator="/"
+          class="breadcrumb"
+        >
+          <el-breadcrumb-item>
+            <el-link
+              :disabled="item==='...'||item==='个人网盘'"
+              type="success"
+              @click="breadcrumbGo(item)"
+            >
+              {{ item }}
+            </el-link>
+            >
+          </el-breadcrumb-item>
         </el-breadcrumb>
         <!--    面包屑导航结束-->
 
       </el-col>
-      <el-col :span="10">
-        <!-- 搜索开始-->
-        <div style="width:60vh;height: 100%;">
-          <el-input
-            v-model="inputFileName"
-            class="my-input"
-            clearable
-            placeholder="请输入搜索内容"
-          >el-
-          </el-input>
-          <el-button type="primary" style="font-size: 2vh;" @click="SearchFiles">搜索</el-button>
 
-        </div>
-
-        <!--        搜索结束-->
-      </el-col>
     </el-row>
+
+    <!-- 搜索开始-->
+    <div style="width:50%;height: 100%;margin: 0 auto;text-align: center">
+      <el-input
+        v-model="inputFileName"
+        class="my-input"
+        clearable
+        size="small"
+        style="width: 30%"
+        placeholder="请输入搜索内容"
+      />
+      <el-button type="primary" size="small" style="margin-bottom: 10px;margin-top: 10px" @click="SearchFiles">搜索
+      </el-button>
+
+    </div>
+
+    <!--        搜索结束-->
+
 
     <!--导航菜单结束-->
     <!--头部操作标签开始-->
@@ -49,7 +73,7 @@
       <el-col :span="8" class="Operation1">
 
         <!--          新建文件夹开始-->
-        <el-button type="primary" plain style="font-size: 2vh;" size="mini" @click="adddirdialogVisible=true">
+        <el-button type="primary" plain size="small" @click="adddirdialogVisible=true">
           <i class="el-icon-folder-add"/> 新建文件夹
         </el-button>
         <!--        添加附件开始-->
@@ -61,7 +85,7 @@
           :file-list="FilsList"
           :show-file-list="false"
         >
-          <el-button :loading="false" type="primary" plain style="font-size: 2vh;" size="mini">
+          <el-button :loading="false" type="primary" plain size="small">
             <i class="el-icon-upload2"/>上传资料
           </el-button>
 
@@ -80,8 +104,7 @@
           v-show="isShowDownload"
           type="primary"
           plain
-          size="mini"
-          style="font-size: 2vh;"
+          size="small"
           @click="fileEnter(nowMeanID, nowFileName,nowFileUrl)"
         >
           <i class="el-icon-download"/>
@@ -96,8 +119,7 @@
           v-show="isShowDirRename"
           type="primary"
           plain
-          size="mini"
-          style="font-size: 2vh;"
+          size="small"
           @click="renameDir"
         >
           <i class="el-icon-edit-outline"/>
@@ -108,8 +130,7 @@
           v-show="isShowFileRename"
           type="primary"
           plain
-          size="mini"
-          style="font-size: 2vh;"
+          size="small"
           @click="renameFile"
         >
           <i class="el-icon-edit-outline"/>
@@ -129,8 +150,7 @@
           v-show="isShowMoveFileBtn"
           type="primary"
           plain
-          size="mini"
-          style="font-size: 2vh"
+          size="small"
           @click="openMoveFileDialog"
         >
           <i class="el-icon-top-right"/>
@@ -145,7 +165,7 @@
 
 
         <!-- 删除文件夹开始-->
-        <el-button v-show="isShowDelDir" type="danger" plain size="mini" style="font-size: 2vh;" @click="delDirJudge">
+        <el-button v-show="isShowDelDir" type="danger" plain size="small" @click="delDirJudge">
           <i class="el-icon-delete"/>
           删除此目录
         </el-button>
@@ -156,8 +176,7 @@
           v-show="isShowDelFile"
           type="danger"
           plain
-          size="mini"
-          style="font-size: 2vh;"
+          size="small"
           @click="delFileJudge"
         >
           <i class="el-icon-delete"/>
@@ -179,7 +198,7 @@
 
     <!-- 展示以文件图标样式开始-->
     <!--    <el-card class="box-card">-->
-    <el-card class="box-card el-card__body">
+    <el-card class="box-card el-card__body" style="margin: 0 auto;width: 92%">
       <!--文件夹显示开始-->
       <div v-show="isShowFileList" class="filelist">
         <ul class="sUl1">
@@ -189,7 +208,7 @@
             @click="fileDirItemClick(item.mDirectoryID,item.DirectoryName,index)"
             @dblclick="dirEnter(item.mDirectoryID,item.DirectoryName)"
           >
-            <div class="file1">
+            <div :class="{fileS:indexFile1!==index,file1:true}">
               <i v-show="indexFile1===index" class="el-icon-success"/>
               <div class="folderIcon">
                 <i class="el-icon-folder-opened"/>
@@ -211,26 +230,27 @@
             @click="fileItemClick(item.MeanID,item.FileName,item.FileUrl,index)"
             @dblclick="fileEnter(item.MeanID,item.FileName,item.FileUrl)"
           >
-            <div class="file1">
+            <div :class="{fileS:indexFile2!==index,file1:true}">
               <i v-show="indexFile2===index" class="el-icon-success"/>
-              <i  v-if="(/^.+(\.docx)$/).test(item.FileName)"  class="el-icon-document"/>
-              <i  v-else-if="(/^.+(\.doc)$/).test(item.FileName)"  class="el-icon-tickets"/>
-              <i  v-else-if="(/^.+(\.pdf)$/).test(item.FileName)"  class="el-icon-mobile"/>
-              <i  v-else-if="(/^.+(\.doc)$/).test(item.FileName)"  class="el-icon-tickets"/>
-              <i  v-else-if="(/^.+(\.txt)$/).test(item.FileName)"  class="el-icon-document-remove"/>
-              <i  v-else-if="(/^.+(\.jpg)$/).test(item.FileName)"  class="el-icon-picture-outline"/>
-              <i  v-else-if="(/^.+(\.png)$/).test(item.FileName)"  class="el-icon-picture-outline"/>
-              <i  v-else-if="(/^.+(\.jpeg)$/).test(item.FileName)"  class="el-icon-picture-outline"/>
-              <i  v-else-if="(/^.+(\.gif)$/).test(item.FileName)"  class="el-icon-picture-outline"/>
-              <i  v-else-if="(/^.+(\.mp4)$/).test(item.FileName)"  class="el-icon-video-camera-solid"/>
-              <i  v-else-if="(/^.+(\.zip)$/).test(item.FileName)"  class="el-icon-s-cooperation"/>
-              <i  v-else-if="(/^.+(\.rar)$/).test(item.FileName)"  class="el-icon-s-cooperation"/>
-              <i  v-else class="el-icon-reading"/>
+              <i v-if="(/^.+(\.docx)$/).test(item.FileName)" class="el-icon-document"/>
+              <i v-else-if="(/^.+(\.doc)$/).test(item.FileName)" class="el-icon-tickets"/>
+              <i v-else-if="(/^.+(\.pdf)$/).test(item.FileName)" class="el-icon-mobile"/>
+              <i v-else-if="(/^.+(\.doc)$/).test(item.FileName)" class="el-icon-tickets"/>
+              <i v-else-if="(/^.+(\.txt)$/).test(item.FileName)" class="el-icon-document-remove"/>
+              <i v-else-if="(/^.+(\.jpg)$/).test(item.FileName)" class="el-icon-picture-outline"/>
+              <i v-else-if="(/^.+(\.png)$/).test(item.FileName)" class="el-icon-picture-outline"/>
+              <i v-else-if="(/^.+(\.jpeg)$/).test(item.FileName)" class="el-icon-picture-outline"/>
+              <i v-else-if="(/^.+(\.gif)$/).test(item.FileName)" class="el-icon-picture-outline"/>
+              <i v-else-if="(/^.+(\.mp4)$/).test(item.FileName)" class="el-icon-video-camera-solid"/>
+              <i v-else-if="(/^.+(\.zip)$/).test(item.FileName)" class="el-icon-s-cooperation"/>
+              <i v-else-if="(/^.+(\.rar)$/).test(item.FileName)" class="el-icon-s-cooperation"/>
+              <i v-else class="el-icon-reading"/>
               <div v-show="item.FileName===nowFileName ? false:isShowTotalName1" class="file2">
-                {{ item.FileName | guolvwenjian }}
+                <span>{{ item.FileName | guolvwenjian }}    </span>
               </div>
-              <div v-show="item.FileName===nowFileName ? isShowTotalName2 : false " class="file2"> {{
-                  item.FileName                                                                                                }}
+              <div v-show="item.FileName===nowFileName ? isShowTotalName2 : false " class="file2">
+                <span>    {{ item.FileName }}
+               </span>
               </div>
             </div>
           </li>
@@ -294,10 +314,10 @@
         </el-form-item>
 
       </el-form>
-      <div class="dialog-footer">
+      <span slot="footer" class="dialog-footer">
         <el-button @click="renamedialogOut">取 消</el-button>
         <el-button type="primary" @click="renamedialogForm">确 定</el-button>
-      </div>
+      </span>
     </el-dialog>
 
     <!--重命名文件弹窗-->
@@ -314,7 +334,7 @@
       </div>
     </el-dialog>
     <!--    移动文件对话框-->
-    <el-dialog title="请选择移动到" :visible.sync="isShowMovingFileDialog">
+    <el-dialog :title="'请选择移动到：'+titleTo" :visible.sync="isShowMovingFileDialog">
 
       <el-tree
         ref="dirTree"
@@ -330,12 +350,23 @@
         check-on-click-node
 
         @check="handleCheckChangeArea"
-      />
+      >
+        <span
+          slot-scope="{ node}"
+          class="custom-tree-node"
+        >
+          <span>
+            <svg-icon
+              icon-class="treeFileDir"
+            />
+            {{ node.label }}</span>
+        </span>
+      </el-tree>
       <span slot="footer" class="dialog-footer">
-            <el-button size="mini" type="primary" @click="handleNodeClick">确 定</el-button>
+        <el-button size="mini" type="primary" @click="handleNodeClick">确 定</el-button>
 
-    <el-button size="mini" @click="isShowMovingFileDialog = false" >取 消</el-button>
-  </span>
+        <el-button size="mini" @click="isShowMovingFileDialog = false">取 消</el-button>
+      </span>
     </el-dialog>
 
 
@@ -400,6 +431,10 @@ export default {
   },
   data() {
     return {
+      timer: null,
+      titleTo: '', // 移动到标题
+      isC: false, // 标识是否点击了面包屑
+      isShowback: false, // 返回上一层按钮显示与否
       baseDir: [{
         mDirectoryID: 0,
         DirectoryName: '个人网盘',
@@ -438,6 +473,7 @@ export default {
       isShowMovingFileDialog: false, // 是否显示移动文件对话框
       brname: ['个人网盘'], // 面包屑字段
       brname2: ['个人网盘'], // 面包屑不省略字段
+      brnameS: ['个人网盘'], // 面包屑字段
       zancun: [],
 
       nowId: 0, // 当前目录下id
@@ -492,7 +528,6 @@ export default {
   created() {
     this.SelectDirectorys();
     this.Andmean();
-
   },
 
   methods: {
@@ -501,12 +536,11 @@ export default {
       try {
         const { data } = await SelectDirectorys();
         this.treeData = data;
-        console.log(this.treeData);
       } catch (error) {
         console.log(error);
       }
     },
-
+    // 获取当前层级的文件夹以及文件数据
     async Andmean() {
       try {
         const { data } = await Andmean({ mDirectoryID: this.nowId });
@@ -521,28 +555,60 @@ export default {
       }
     },
 
-
     // 操作按钮
+    // 点击面包屑名字进入相应文件夹中
+    breadcrumbGo(item) {
+      console.log('item', item);
+      var num = null;
+      let DirId = null;
+      // 获取recordDirId下标
+      num = this.brnameS.indexOf(item);
+      // 删除后面的面包屑
+      this.brname = this.brname.slice(0, num + 1);
+      this.brnameS = this.brnameS.slice(0, num + 1);
+      this.recordDirId = this.recordDirId.slice(0, num);
+      DirId = this.recordDirId[num - 1];
+      this.isC = true; // 标识点击了面包屑
+      // 进入相应的文件夹位置
+      this.$nextTick(() => {
+        this.dirEnter(DirId, item, this.isC);
+      });
+    },
     // 回退上一层级
     goBack() {
+      // 如果记录面包屑id的数组长度为空，证明就是第一层级了
       if (this.recordDirId.length === 0) {
         this.nowId = 0;
         this.mDirectoryID = 0;
         this.Andmean();
         this.brname = ['个人网盘'];
+        this.brnameS = ['个人网盘'];
         this.isShowShu = false;// 如果有数据隐藏“暂无数据”
+        this.isShowback = false; // 已返回第一层级将返回按钮隐藏变灰
+        this.recordDirId = [];
         this.$message.info('已返回第一层级！');
+        this.isC = false; // 标识不点击面包屑
       } else {
+        // 如果记录面包屑id的数组长度不为空，那就减掉记录id,记录面包屑数组的最后一个数值
+        // brnameS为不省略地记录面包屑的数组，brname为省略地记录面包屑的数组
         this.nowId = this.recordDirId[this.recordDirId.length - 2];
-        this.Andmean();
+        this.brnameS.pop();// 删掉最后一个
         this.recordDirId.pop();// 如果回退了删除记录的最后一个
-        this.brname.pop();// 删掉最后一个
+        this.brname = this.brnameS;
+        this.$nextTick(() => {
+          this.Andmean();
+        });
+        // 如果记录面包屑id的数组长度为空，证明就是第一层级了
         if (this.recordDirId.length === 0) {
           this.nowId = 0;
           this.mDirectoryID = 0;
           this.Andmean();
           this.brname = ['个人网盘'];
+          this.brnameS = ['个人网盘'];
+          this.recordDirId = [];
           this.isShowShu = false;// 如果有数据隐藏“暂无数据”
+          this.isShowback = false; // 已返回第一层级将返回按钮隐藏变灰
+          this.isC = false; // 标识不点击面包屑
           this.$message.info('已返回第一层级！');
         }
       }
@@ -554,6 +620,7 @@ export default {
       this.nowId = 0;// 将再次查询全部目录和文件的0赋值给nowId，使得Andmean的参数变化视图跟着改变
       this.Andmean();// 再次查找数据，显示视图
       this.brname = ['个人网盘'];// 重置面包屑字段
+      this.brnameS = ['个人网盘'];// 重置面包屑字段
       this.recordDirId = [];// 返回第一层了，就把层级记录给重置
       this.indexFile1 = -1;// 赋值一个不存在的下标，使得勾选图标的v-show为false,隐藏单击文件后的勾选图标
       this.indexFile2 = -1;// 赋值一个不存在的下标，使得勾选图标的v-show为false,隐藏单击文件的勾选图标
@@ -561,6 +628,7 @@ export default {
       this.inputFileName = '';// 清除搜索框
       this.isShowShu = false;// 隐藏“暂无数据”提示
       this.isShowOperation = false; // 隐藏右边操作栏
+      this.isC = false; // 标识不点击面包屑
     },
     // 重命名文件夹名
     renameDir() {
@@ -631,7 +699,7 @@ export default {
     // 当复选框被点击的时候触发 ，树形控件实现单选
     handleCheckChangeArea(data) {
       var labvalojb = data; // 暂存选中节点
-      // console.log(data);
+      this.titleTo = data.DirectoryName; // 移动到标题
       this.$refs.dirTree.setCheckedKeys([]); // 删除所有选中节点
       this.$refs.dirTree.setCheckedNodes([labvalojb]); // 选中已选中节点
     },
@@ -644,9 +712,11 @@ export default {
         this.brname = [];// 如果是移到根目录重置面包屑字段
       }
       this.UpdateMeanMove(); // 移动到相应目录
-
-      this.dirEnter(this.toMoveDirId, this.toMoveDirName); // 页面跳到相应目录
       this.isShowMovingFileDialog = false; // 关闭对话框
+      this.brname.pop();// 删除面包屑当前层级
+      this.$nextTick(() => {
+        this.dirEnter(this.toMoveDirId, this.toMoveDirName); // 页面跳到相应目录
+      });
     },
     // 移动资料处理
     async UpdateMeanMove() {
@@ -735,6 +805,7 @@ export default {
       this.isShowDirRename = true; // 显示重命名文件夹按钮
       this.isShowFileRename = false;// 将重命名文件按钮隐藏
       this.isShowMoveFileBtn = false; // 将移动到按钮隐藏
+
       this.isShowTotalDirName2 = true; // 一开始时隐藏全部文件夹名的,后因单击了给文件,此时将他显示
       console.log('当前点击的是' + this.indexFile);
     },
@@ -757,35 +828,50 @@ export default {
       this.isShowFileRename = true;// 显示重命名文件按钮
       this.isShowTotalName2 = true; // 一开始时隐藏全部文件名的,后因单击了给文件,此时将他显示
       this.isShowMoveFileBtn = true; // 显示移动按钮
+
       console.log('此文件id为' + MeanID);
       console.log('此文件名为' + FileName);
     },
 
     // 双击进入文件夹
-    async dirEnter(id, name) {
-      this.isShowShu = false;
-      this.indexFile1 = -1;// 赋值一个不存在的下标，使得勾选图标的v-show为false,隐藏单击文件后的勾选图标
-      this.nowId = id;// 当前目录的id
-      this.recordDirId.push(this.nowId);// 将当前父级的目录id放进一个数组，以确保能构建回退层级功能
+    async dirEnter(id, name, isC) {
+      // 外层嵌套防抖，防止快速点击四次导致面包屑出现出错
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(() => {
+        this.isC = false;
+        this.isShowShu = false;
+        this.isShowback = true; // 将返回按钮显示
+        this.indexFile1 = -1;// 赋值一个不存在的下标，使得勾选图标的v-show为false,隐藏单击文件后的勾选图标
+        this.nowId = id;// 当前目录的id
+        if (isC !== true) {
+          this.recordDirId.push(this.nowId);// 将当前父级的目录id放进一个数组，以确保能构建回退层级功能
+        }
 
-      this.Andmean();// 重新加载，刷新页面
-      if (this.brname.length > 2) {
-        this.brname = ['个人网盘', '...'];// 如果点击的层数太多，面包屑太长，就删了重新赋值，留一个，并加省略号
-      }
-      if (this.recordDirId.length === 0) {
-        this.brname = ['个人网盘'];// 如果记录的数组已经减完元素，就是第一层
-      }
-      if (this.nowId === id) {
-        this.brname.push(name);// //将当前目录的名字存进面包屑数组中
-      }
+        this.Andmean();// 重新加载，刷新页面
+        if (this.brnameS.length > 2) {
+          // this.brnameS = JSON.parse(JSON.stringify(this.brname));
+          this.brname = this.brnameS;
+          this.brname = ['个人网盘', '...'];// 如果点击的层数太多，面包屑太长，就删了重新赋值，留一个，并加省略号
+        }
+        if (this.recordDirId.length === 0) {
+          this.brname = ['个人网盘'];// 如果记录的数组已经减完元素，就是第一层
+          this.brnameS = ['个人网盘'];// 如果记录的数组已经减完元素，就是第一层
+        }
+        if (this.nowId === id && isC !== true) {
+          this.brname.push(name);// //将当前目录的名字存进面包屑数组中
+          this.brnameS.push(name);// //将当前目录的名字存进面包屑数组中
+        }
 
-      // this.brname = this.guolvwenjian(this.brname);
-      this.isShowOperation = false;// 双击文件夹就把选中的头部右边操作栏隐藏
-      if (this.fileData === '' && this.dirData === '') {
-        this.isShowShu = true;// 如果没有数据显示“暂无数据”
-      }
-      this.isShowGo1 = true;// 双击后将灰暗的下一层级图标显示
-      this.isShowGo2 = false;// 双击后将高亮的下一层级图标隐藏
+        // this.brname = this.guolvwenjian(this.brname);
+        this.isShowOperation = false;// 双击文件夹就把选中的头部右边操作栏隐藏
+        if (this.fileData === '' && this.dirData === '') {
+          this.isShowShu = true;// 如果没有数据显示“暂无数据”
+        }
+        this.isShowGo1 = true;// 双击后将灰暗的下一层级图标显示
+        this.isShowGo2 = false;// 双击后将高亮的下一层级图标隐藏
+      }, 300);
     },
 
     // 双击文件进行预览
@@ -918,7 +1004,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 @import '../KS_Styles/index.scss';
 
@@ -940,8 +1026,16 @@ export default {
 
 }
 
+.fileS {
+  /*实现文字溢出隐藏加省略号*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+
+}
 
 .file2 {
+  margin-top: -6px;
   display: flex;
   position: absolute;
   justify-content: center;
@@ -950,7 +1044,8 @@ export default {
   height: 6vh;
   font-size: 1.5vh;
   /*padding-top: 1vh;*/
-  text-align: center;
+  text-align: inherit;
+
 }
 
 /*这是文件及文件夹显示全名不省略的样式*/
@@ -972,21 +1067,21 @@ export default {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  font-size: 6vh;
-  height: 7vh;
+  font-size: 50px;
+  height: 46px;
   color: #2e9ad0;
 }
 
 /*文件图标*/
-.el-icon-tickets,.el-icon-reading,
-.el-icon-picture-outline,.el-icon-document-remove,
-.el-icon-mobile,.el-icon-document,.el-icon-video-camera-solid,
-.el-icon-s-cooperation{
+.el-icon-tickets, .el-icon-reading,
+.el-icon-picture-outline, .el-icon-document-remove,
+.el-icon-mobile, .el-icon-document, .el-icon-video-camera-solid,
+.el-icon-s-cooperation {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  font-size: 6vh;
-  height: 7vh;
+  font-size: 44px;
+  height: 44px;
   color: #3a835d;
 }
 
@@ -997,8 +1092,7 @@ export default {
   margin: 0 auto;
   justify-content: space-between;
   align-items: center;
-  height: 40px;
-  font-size: 2vh;
+  height: 50px;
   overflow: hidden;
   width: 90%;
   border-top: 2px solid #F2F6FC;
@@ -1048,7 +1142,9 @@ export default {
 
 /*面包屑导航*/
 .breadcrumb {
-  font-size: 1.2vh;
+  font-size: 18px;
+  font-weight: bolder;
+  line-height: 20px;
   display: inline-block;
   padding-left: 10px;
 
@@ -1056,7 +1152,9 @@ export default {
 
 /*返回上一级*/
 .el-icon-arrow-left {
-  font-size: 1.5vh;
+  font-size: 22px;
+  line-height: 22px;
+  color: cornflowerblue
 
 
 }
@@ -1070,12 +1168,21 @@ export default {
 /*下一层级*/
 .el-icon-arrow-right {
   opacity: 0.2;
+  font-size: 22px;
+  line-height: 22px;
+  color: cornflowerblue
 }
 
 /*刷新*/
 .el-icon-refresh-left {
-  font-size: 1.5vh;
+  font-size: 22px;
+  line-height: 22px;
+  color: cornflowerblue;
   margin-left: 10px;
+}
+
+.el-icon-refresh-left:hover {
+  color: green;
 }
 
 
@@ -1085,7 +1192,9 @@ export default {
 }
 
 .myrow {
-  margin-top: 6px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 

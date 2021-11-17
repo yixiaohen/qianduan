@@ -1,9 +1,11 @@
 <template>
+
+
   <div class="notices">
     <el-card class="box-card" shadow="never">
       <div slot="header" class="clearfix">
         <span>
-          <i class="el-icon-message-solid" />
+          <i class="el-icon-message-solid"/>
           公告信息
         </span>
       </div>
@@ -14,19 +16,22 @@
               v-model="listQuery.condition"
               placeholder="请根据标题查询"
               prefix-icon="el-icon-search"
+              size="small"
               style="width: 300px"
               class="filter-item inline-input"
               clearable
             />
-          </el-form-item>
-          <el-form-item>
             <el-button
               v-waves
               class="filter-item"
               type="primary"
+              size="small"
               @click="clickSelectNotice"
-            >搜索</el-button>
+            >搜索
+            </el-button>
+            <el-button v-if="isHave" type="success" size="small" @click="changIsShow">发布公告</el-button>
           </el-form-item>
+
         </el-form>
 
         <el-table
@@ -99,12 +104,14 @@
         <el-row>
           <el-col
             :span="5"
-          ><el-switch
-            v-model="cellOverflow"
-            style="margin: 6px 0px"
-            active-text="收起"
-            inactive-text="展开"
-          /></el-col>
+          >
+            <el-switch
+              v-model="cellOverflow"
+              style="margin: 6px 0px"
+              active-text="收起"
+              inactive-text="展开"
+            />
+          </el-col>
           <el-col :span="19">
             <el-pagination
               background
@@ -133,15 +140,15 @@
         label-width="70px"
       >
         <el-form-item label="发布者">
-          <el-input disabled :value="seeData.UserName" />
+          <el-input disabled :value="seeData.UserName"/>
         </el-form-item>
         <el-form-item label="发布时间">
-          <el-input disabled :value="seeData.CreateTime" />
+          <el-input disabled :value="seeData.CreateTime"/>
         </el-form-item>
         <!-- <el-form-item label="发布内容">
           <el-input disabled type="textarea" :value="seeData.NoticeContent" :rows="12" />
         </el-form-item> -->
-        <div class="NoticeContent" v-html="seeData.NoticeContent" />
+        <div class="NoticeContent" v-html="seeData.NoticeContent"/>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button
@@ -154,14 +161,17 @@
   </div>
 </template>
 
+
 <script>
 import waves from '@/directive/waves';
 import { SelectNotice } from '@/api/notice';
 
 export default {
   directives: { waves },
+  props: ['isHave'],
   data() {
     return {
+
       listLoading: false,
       dialogVisible: false,
       labelPosition: 'top',
@@ -180,13 +190,18 @@ export default {
         pageSize: 15,
         pageSizes: [15, 20, 50, 100, 150, 200]
       },
-      cellOverflow: true
+      cellOverflow: true,
+
     };
   },
   created() {
     this.SelectNotice();
+
   },
   methods: {
+    changIsShow(){
+      this.$emit('changIsShow');
+    },
     seeNotices(row) {
       this.seeData = row;
       this.dialogVisible = true;
@@ -225,14 +240,17 @@ export default {
 .notices {
 
   margin-bottom: 6px;
+
   .el-card__body {
 
     padding: 6px;
+
     .el-form-item {
       margin: 0;
       margin-bottom: 6px;
     }
   }
+
   .NoticeContent {
     width: 100%;
     height: 300px;
@@ -247,6 +265,7 @@ export default {
       border: 1px solid #eee;
     }
   }
+
   .el-card__header {
     padding: 6px;
     border-bottom: 1px solid #e6ebf5;

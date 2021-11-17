@@ -129,7 +129,7 @@
           :data="tableData"
           border
           size="mini"
-          style="width: 100%"
+          style="width: 100%;margin-top: 6px"
           height="calc(100vh - 170px)"
           stripe
         >
@@ -425,6 +425,7 @@
       </el-dialog>
       <!-- 表单模板begin -->
       <el-table
+        style="margin-top: 6px"
         v-show="TemplateShow"
         :data="TemplateData"
         height="calc(100vh - 180px)"

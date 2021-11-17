@@ -26,7 +26,8 @@
           padding: 0 0 5px 0;
         "
       >
-        <div class="catalogName">{{ CatalogName }}</div>
+<!--        <div class="catalogName">{{ CatalogName }}</div>-->
+<!--        注释了这个标题-->
         <div style="flex: 1; display: flex; flex-wrap: wrap">
           <div
             v-for="(itemTow, indexTow) in headerData[radio]
@@ -89,15 +90,17 @@ export default {
   methods: {
 
     async GetCatalogFirst() {
+      this.$emit('changeShowHeader', true);
       try {
         const { data } = await GetCatalogFirst();
         this.headerData = data;
         this.CatalogName = data[0].CatalogName;
-        console.log(data[8].Children);
         const CatalogID = data[0].Children ? data[0].Children[0].CatalogID : 0;
-        this.clickTwo(CatalogID, 0);
-      } catch (error) {
-        console.log(error);
+        this.$nextTick(() => {
+          this.clickTwo(CatalogID, 0);
+        });
+      } catch (e) {
+        console.log(e);
       }
     },
     async radioGroup(val) {

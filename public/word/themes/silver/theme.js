@@ -2331,7 +2331,8 @@
     var setAll = function (element, attrs) {
       var dom = element.dom;
       each$1(attrs, function (v, k) {
-        rawSet(dom, k, v);
+        if (v !== '')
+          rawSet(dom, k, v);
       });
     };
     var get$3 = function (element, key) {
@@ -9044,7 +9045,7 @@
           tag: 'div',
           classes: detail.progress ? [
             'tox-progress-bar',
-            'tox-progress-indicatorSet'
+            'tox-progress-indicator'
           ] : ['tox-progress-bar']
         },
         components: [
@@ -10622,7 +10623,7 @@
       return (isStickyToolbar || editor.inline) && !useFixedContainer(editor) && !isDistractionFree(editor);
     };
     var isDraggableModal = function (editor) {
-      return editor.getParam('draggable_modal', false, 'boolean');
+      return editor.getParam('draggable_modal', true, 'boolean');
     };
     var getMenus = function (editor) {
       var menu = editor.getParam('menu');
@@ -13091,18 +13092,32 @@
       };
     };
 
-    var renderBar = function (spec, backstage) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [
-            'tox-bar',
-            'tox-form__controls-h-stack'
-          ]
+    var exhibit$4 = function () {
+      return nu$6({
+        styles: {
+          '-webkit-user-select': 'none',
+          'user-select': 'none',
+          '-ms-user-select': 'none',
+          '-moz-user-select': '-moz-none'
         },
-        components: map(spec.items, backstage.interpreter)
-      };
+        attributes: { unselectable: 'on' }
+      });
     };
+    var events$a = function () {
+      return derive([abort(selectstart(), always)]);
+    };
+
+    var ActiveUnselecting = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        events: events$a,
+        exhibit: exhibit$4
+    });
+
+    var Unselecting = create$1({
+      fields: [],
+      name: 'unselecting',
+      active: ActiveUnselecting
+    });
 
     var schema$e = constant([
       defaulted$1('prefix', 'form-field'),
@@ -13217,7 +13232,121 @@
       }
     });
 
-    var exhibit$4 = function (base, tabConfig) {
+    var schema$f = constant([
+      defaulted$1('field1Name', 'field1'),
+      defaulted$1('field2Name', 'field2'),
+      onStrictHandler('on1Change'),
+      onStrictHandler('on2Change'),
+      SketchBehaviours.field('authBehaviours', [
+        Composing,
+        Representing
+      ])
+    ]);
+    var getField = function (comp, detail, partName) {
+      return getPart(comp, detail, partName).bind(Composing.getCurrent);
+    };
+    var multiPart1 = function (selfName, otherName) {
+      return required({
+        factory: FormField,
+        name: selfName,
+        overrides: function (detail) {
+          return {
+            fieldBehaviours: derive$1([config('auth-behaviour', [run(change(), function (me) {
+                  var other = [];
+                  otherName.forEach(function (a) {
+                    return getField(me, detail, a).each(function (b) {
+                      other.push(b);
+                    });
+                  });
+                  detail.on1Change(me, other);
+                })])])
+          };
+        }
+      });
+    };
+    var multiPart2 = function (selfName, otherName) {
+      return required({
+        factory: FormField,
+        name: selfName,
+        overrides: function (detail) {
+          return {
+            fieldBehaviours: derive$1([config('auth-behaviour', [run(change(), function (me) {
+                  var other = [];
+                  otherName.forEach(function (a) {
+                    return getField(me, detail, a).each(function (b) {
+                      other.push(b);
+                    });
+                  });
+                  detail.on2Change(me, other);
+                })])])
+          };
+        }
+      });
+    };
+    var parts$4 = constant([
+      multiPart1('field1', ['field2']),
+      multiPart2('field2', ['field1'])
+    ]);
+
+    var factory$5 = function (detail, components, _spec, _externals) {
+      return {
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: SketchBehaviours.augment(detail.authBehaviours, [
+          Composing.config({ find: Optional.some }),
+          Representing.config({
+            store: {
+              mode: 'manual',
+              getValue: function (comp) {
+                var _a;
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2'
+                ]);
+                return _a = {}, _a[detail.field1Name] = Representing.getValue(parts.field1()), _a[detail.field2Name] = Representing.getValue(parts.field2()), _a;
+              },
+              setValue: function (comp, value) {
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2'
+                ]);
+                if (hasNonNullableKey(value, detail.field1Name)) {
+                  Representing.setValue(parts.field1(), value[detail.field1Name]);
+                }
+                if (hasNonNullableKey(value, detail.field2Name)) {
+                  Representing.setValue(parts.field2(), value[detail.field2Name]);
+                }
+              }
+            }
+          })
+        ]),
+        apis: {
+          getField1: function (component) {
+            return getPart(component, detail, 'field1');
+          },
+          getField2: function (component) {
+            return getPart(component, detail, 'field2');
+          }
+        }
+      };
+    };
+    var FormAuth = composite$1({
+      name: 'FormAuth',
+      configFields: schema$f(),
+      partFields: parts$4(),
+      factory: factory$5,
+      apis: {
+        getField1: function (apis, component) {
+          return apis.getField1(component);
+        },
+        getField2: function (apis, component) {
+          return apis.getField2(component);
+        }
+      }
+    });
+
+    var exhibit$5 = function (base, tabConfig) {
       return nu$6({
         attributes: wrapAll$1([{
             key: tabConfig.tabAttr,
@@ -13228,7 +13357,7 @@
 
     var ActiveTabstopping = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        exhibit: exhibit$4
+        exhibit: exhibit$5
     });
 
     var TabstopSchema = [defaulted$1('tabAttr', 'data-alloy-tabstop')];
@@ -13238,6 +13367,290 @@
       name: 'tabstopping',
       active: ActiveTabstopping
     });
+
+    var self$1 = function () {
+      return Composing.config({ find: Optional.some });
+    };
+    var memento = function (mem) {
+      return Composing.config({ find: mem.getOpt });
+    };
+    var childAt = function (index) {
+      return Composing.config({
+        find: function (comp) {
+          return child(comp.element, index).bind(function (element) {
+            return comp.getSystem().getByDom(element).toOptional();
+          });
+        }
+      });
+    };
+    var ComposingConfigs = {
+      self: self$1,
+      memento: memento,
+      childAt: childAt
+    };
+
+    var formChangeEvent = generate$1('form-component-change');
+    var formCloseEvent = generate$1('form-close');
+    var formCancelEvent = generate$1('form-cancel');
+    var formActionEvent = generate$1('form-action');
+    var formSubmitEvent = generate$1('form-submit');
+    var formBlockEvent = generate$1('form-block');
+    var formUnblockEvent = generate$1('form-unblock');
+    var formTabChangeEvent = generate$1('form-tabchange');
+    var formResizeEvent = generate$1('form-resize');
+
+    var renderAuth = function (spec, providersBackstage) {
+      var repBehaviour = Representing.config({
+        store: {
+          mode: 'manual',
+          getValue: function (comp) {
+            var el = comp.element.dom;
+            return el.checked;
+          },
+          setValue: function (comp, value) {
+            var el = comp.element.dom;
+            el.checked = value;
+          }
+        }
+      });
+      var toggleCheckboxHandler = function (comp) {
+        comp.element.dom.click();
+        return Optional.some(true);
+      };
+      var makeIcon = function (className) {
+        var iconName = className === 'checked' ? 'selected' : 'unselected';
+        return {
+          dom: {
+            tag: 'span',
+            classes: [
+              'tox-icon',
+              'tox-checkbox-icon__' + className
+            ],
+            innerHtml: get$e(iconName, providersBackstage.icons)
+          }
+        };
+      };
+      var pField0 = FormField.parts.field({
+        factory: { sketch: identity },
+        dom: {
+          tag: 'input',
+          classes: ['tox-checkbox__input'],
+          attributes: {
+            type: 'checkbox',
+            checked: spec.checked0 ? 'checked' : ''
+          }
+        },
+        behaviours: derive$1([
+          ComposingConfigs.self(),
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            }
+          }),
+          Tabstopping.config({}),
+          Focusing.config({}),
+          repBehaviour,
+          Keying.config({
+            mode: 'special',
+            onEnter: toggleCheckboxHandler,
+            onSpace: toggleCheckboxHandler,
+            stopSpaceKeyup: true
+          }),
+          config('checkbox-events', [run(change(), function (component, _) {
+              emitWith(component, formChangeEvent, { name: spec.name });
+            })])
+        ])
+      });
+      var pLabel0 = FormField.parts.label({
+        dom: {
+          tag: 'span',
+          classes: ['tox-checkbox__label'],
+          innerHtml: providersBackstage.translate('Browse')
+        },
+        behaviours: derive$1([Unselecting.config({})])
+      });
+      var memIcons0 = record({
+        dom: {
+          tag: 'div',
+          classes: ['tox-checkbox__icons']
+        },
+        components: [
+          makeIcon('checked'),
+          makeIcon('unchecked')
+        ]
+      });
+      var browse = FormAuth.parts.field1({
+        dom: {
+          tag: 'label',
+          classes: ['tox-checkbox']
+        },
+        components: [
+          pField0,
+          memIcons0.asSpec(),
+          pLabel0
+        ],
+        fieldBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            disableClass: 'tox-checkbox--disabled',
+            onDisabled: function (comp) {
+              FormField.getField(comp).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormField.getField(comp).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
+      var pField1 = FormField.parts.field({
+        factory: { sketch: identity },
+        dom: {
+          tag: 'input',
+          classes: ['tox-checkbox__input'],
+          attributes: {
+            type: 'checkbox',
+            checked: spec.checked1 ? 'checked' : ''
+          }
+        },
+        behaviours: derive$1([
+          ComposingConfigs.self(),
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            }
+          }),
+          Tabstopping.config({}),
+          Focusing.config({}),
+          repBehaviour,
+          Keying.config({
+            mode: 'special',
+            onEnter: toggleCheckboxHandler,
+            onSpace: toggleCheckboxHandler,
+            stopSpaceKeyup: true
+          }),
+          config('checkbox-events', [run(change(), function (component, _) {
+              emitWith(component, formChangeEvent, { name: spec.name });
+            })])
+        ])
+      });
+      var pLabel1 = FormField.parts.label({
+        dom: {
+          tag: 'span',
+          classes: ['tox-checkbox__label'],
+          innerHtml: providersBackstage.translate('Modify')
+        },
+        behaviours: derive$1([Unselecting.config({})])
+      });
+      var memIcons1 = record({
+        dom: {
+          tag: 'div',
+          classes: ['tox-checkbox__icons']
+        },
+        components: [
+          makeIcon('checked'),
+          makeIcon('unchecked')
+        ]
+      });
+      var modify = FormAuth.parts.field2({
+        dom: {
+          tag: 'label',
+          classes: ['tox-checkbox']
+        },
+        components: [
+          pField1,
+          memIcons1.asSpec(),
+          pLabel1
+        ],
+        fieldBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            disableClass: 'tox-checkbox--disabled',
+            onDisabled: function (comp) {
+              FormField.getField(comp).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormField.getField(comp).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
+      return FormAuth.sketch({
+        dom: {
+          tag: 'div',
+          classes: ['tox-form__group']
+        },
+        components: [{
+            dom: {
+              tag: 'div',
+              classes: ['tox-form__controls-h-stack']
+            },
+            components: [
+              {
+                dom: {
+                  tag: 'label',
+                  classes: ['tox-form__group--stretched'],
+                  innerHtml: providersBackstage.translate(spec.label)
+                }
+              },
+              browse,
+              modify
+            ]
+          }],
+        field1Name: 'browse',
+        field2Name: 'modify',
+        on1Change: function (current, other) {
+          if (Representing.getValue(current) === false) {
+            other.forEach(function (a) {
+              if (Representing.getValue(a)) {
+                Representing.setValue(a, false);
+              }
+            });
+          }
+        },
+        on2Change: function (current, other) {
+          if (Representing.getValue(current) === true) {
+            other.forEach(function (a) {
+              if (Representing.getValue(a) === false) {
+                Representing.setValue(a, true);
+              }
+            });
+          }
+        },
+        authBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            onDisabled: function (comp) {
+              FormAuth.getField1(comp).bind(FormField.getField).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormAuth.getField1(comp).bind(FormField.getField).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
+    };
+
+    var renderBar = function (spec, backstage) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [
+            'tox-bar',
+            'tox-form__controls-h-stack'
+          ]
+        },
+        components: map(spec.items, backstage.interpreter)
+      };
+    };
 
     var global$a = tinymce.util.Tools.resolve('tinymce.html.Entities');
 
@@ -13273,16 +13686,6 @@
         }
       });
     };
-
-    var formChangeEvent = generate$1('form-component-change');
-    var formCloseEvent = generate$1('form-close');
-    var formCancelEvent = generate$1('form-cancel');
-    var formActionEvent = generate$1('form-action');
-    var formSubmitEvent = generate$1('form-submit');
-    var formBlockEvent = generate$1('form-block');
-    var formUnblockEvent = generate$1('form-unblock');
-    var formTabChangeEvent = generate$1('form-tabchange');
-    var formResizeEvent = generate$1('form-resize');
 
     var renderCollection = function (spec, providersBackstage) {
       var _a;
@@ -13409,7 +13812,7 @@
       return renderFormFieldWith(pLabel, pField, extraClasses, []);
     };
 
-    var schema$f = constant([
+    var schema$g = constant([
       option('data'),
       defaulted$1('inputAttributes', {}),
       defaulted$1('inputStyles', {}),
@@ -13460,7 +13863,7 @@
       };
     };
 
-    var factory$5 = function (detail, _spec) {
+    var factory$6 = function (detail, _spec) {
       return {
         uid: detail.uid,
         dom: dom$2(detail),
@@ -13471,8 +13874,8 @@
     };
     var Input = single$2({
       name: 'Input',
-      configFields: schema$f(),
-      factory: factory$5
+      configFields: schema$g(),
+      factory: factory$6
     });
 
     var exports$1 = {}, module = { exports: exports$1 };
@@ -14165,7 +14568,7 @@
         isInvalid: isInvalid
     });
 
-    var events$a = function (invalidConfig, invalidState) {
+    var events$b = function (invalidConfig, invalidState) {
       return invalidConfig.validator.map(function (validatorInfo) {
         return derive([run(validatorInfo.onEvent, function (component) {
             run$1(component, invalidConfig, invalidState).get(identity);
@@ -14177,7 +14580,7 @@
 
     var ActiveInvalidate = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        events: events$a
+        events: events$b
     });
 
     var InvalidateSchema = [
@@ -14473,7 +14876,7 @@
       ];
     };
 
-    var schema$g = constant([
+    var schema$h = constant([
       strict$1('dom'),
       strict$1('fetch'),
       onHandler('onOpen'),
@@ -14494,7 +14897,7 @@
       defaulted$1('useMinWidth', false),
       option('role')
     ].concat(sandboxFields()));
-    var parts$4 = constant([
+    var parts$5 = constant([
       external$1({
         schema: [tieredMenuMarkers()],
         name: 'menu',
@@ -14505,7 +14908,7 @@
       partType()
     ]);
 
-    var factory$6 = function (detail, components, _spec, externals) {
+    var factory$7 = function (detail, components, _spec, externals) {
       var _a;
       var lookupAttr = function (attr) {
         return get$1(detail.dom, 'attributes').bind(function (attrs) {
@@ -14621,9 +15024,9 @@
     };
     var Dropdown = composite$1({
       name: 'Dropdown',
-      configFields: schema$g(),
-      partFields: parts$4(),
-      factory: factory$6,
+      configFields: schema$h(),
+      partFields: parts$5(),
+      factory: factory$7,
       apis: {
         open: function (apis, comp) {
           return apis.open(comp);
@@ -14641,33 +15044,6 @@
           return apis.repositionMenus(comp);
         }
       }
-    });
-
-    var exhibit$5 = function () {
-      return nu$6({
-        styles: {
-          '-webkit-user-select': 'none',
-          'user-select': 'none',
-          '-ms-user-select': 'none',
-          '-moz-user-select': '-moz-none'
-        },
-        attributes: { unselectable: 'on' }
-      });
-    };
-    var events$b = function () {
-      return derive([abort(selectstart(), always)]);
-    };
-
-    var ActiveUnselecting = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        events: events$b,
-        exhibit: exhibit$5
-    });
-
-    var Unselecting = create$1({
-      fields: [],
-      name: 'unselecting',
-      active: ActiveUnselecting
     });
 
     var renderPanelButton = function (spec, sharedBackstage) {
@@ -15798,7 +16174,7 @@
     };
 
     var owner$3 = 'form';
-    var schema$h = [field$1('formBehaviours', [Representing])];
+    var schema$i = [field$1('formBehaviours', [Representing])];
     var getPartName = function (name) {
       return '<alloy.field.' + name + '>';
     };
@@ -15824,7 +16200,7 @@
           pname: getPartName(n)
         });
       });
-      return composite(owner$3, schema$h, fieldParts, make$4, spec);
+      return composite(owner$3, schema$i, fieldParts, make$4, spec);
     };
     var toResult$1 = function (o, e) {
       return o.fold(function () {
@@ -16277,27 +16653,6 @@
       return colourPickerSketcher;
     };
 
-    var self$1 = function () {
-      return Composing.config({ find: Optional.some });
-    };
-    var memento = function (mem) {
-      return Composing.config({ find: mem.getOpt });
-    };
-    var childAt = function (index) {
-      return Composing.config({
-        find: function (comp) {
-          return child(comp.element, index).bind(function (element) {
-            return comp.getSystem().getByDom(element).toOptional();
-          });
-        }
-      });
-    };
-    var ComposingConfigs = {
-      self: self$1,
-      memento: memento,
-      childAt: childAt
-    };
-
     var english = {
       'colorcustom.rgb.red.label': 'R',
       'colorcustom.rgb.red.description': 'Red component',
@@ -16442,6 +16797,313 @@
         ]),
         components: [memReplaced.asSpec()]
       };
+    };
+
+    var schema$j = constant([
+      defaulted$1('field1Name', 'field1'),
+      defaulted$1('field2Name', 'field2'),
+      defaulted$1('field3Name', 'field3'),
+      onStrictHandler('onOptionChange'),
+      SketchBehaviours.field('defaultValueBehaviours', [
+        Composing,
+        Representing
+      ])
+    ]);
+    var getField$1 = function (comp, detail, partName) {
+      return getPart(comp, detail, partName).bind(Composing.getCurrent);
+    };
+    var multiPart0 = function (selfName, otherName) {
+      return required({
+        factory: FormField,
+        name: selfName,
+        overrides: function (detail) {
+          return {
+            fieldBehaviours: derive$1([config('field-multi-behaviour', [run(change(), function (me) {
+                  var other = [];
+                  otherName.forEach(function (a) {
+                    return getField$1(me, detail, a).each(function (b) {
+                      other.push(b);
+                    });
+                  });
+                  detail.onOptionChange(me, other);
+                })])])
+          };
+        }
+      });
+    };
+    var multiPart = function (selfName) {
+      return required({
+        factory: FormField,
+        name: selfName
+      });
+    };
+    var parts$6 = constant([
+      multiPart('field1'),
+      multiPart0('field2', ['field1']),
+      multiPart('field3')
+    ]);
+
+    var factory$8 = function (detail, components, _spec, _externals) {
+      return {
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: SketchBehaviours.augment(detail.defaultValueBehaviours, [
+          Composing.config({ find: Optional.some }),
+          Representing.config({
+            store: {
+              mode: 'manual',
+              getValue: function (comp) {
+                var _a;
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2',
+                  'field3'
+                ]);
+                return _a = {}, _a[detail.field1Name] = Representing.getValue(parts.field1()), _a[detail.field2Name] = Representing.getValue(parts.field2()), _a[detail.field3Name] = Representing.getValue(parts.field3()), _a;
+              },
+              setValue: function (comp, value) {
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2',
+                  'field3'
+                ]);
+                if (hasNonNullableKey(value, detail.field1Name)) {
+                  Representing.setValue(parts.field1(), value[detail.field1Name]);
+                }
+                if (hasNonNullableKey(value, detail.field2Name)) {
+                  Representing.setValue(parts.field2(), value[detail.field2Name]);
+                }
+                if (hasNonNullableKey(value, detail.field3Name)) {
+                  Representing.setValue(parts.field3(), value[detail.field3Name]);
+                }
+              }
+            }
+          })
+        ]),
+        apis: {
+          getField1: function (component) {
+            return getPart(component, detail, 'field1');
+          },
+          getField2: function (component) {
+            return getPart(component, detail, 'field2');
+          },
+          getField3: function (component) {
+            return getPart(component, detail, 'field3');
+          }
+        }
+      };
+    };
+    var FormDefaultValue = composite$1({
+      name: 'FormDefaultValue',
+      configFields: schema$j(),
+      partFields: parts$6(),
+      factory: factory$8,
+      apis: {
+        getField1: function (apis, component) {
+          return apis.getField1(component);
+        },
+        getField2: function (apis, component) {
+          return apis.getField2(component);
+        },
+        getField3: function (apis, component) {
+          return apis.getField3(component);
+        }
+      }
+    });
+
+    var factory$9 = function (detail, _spec) {
+      var options = map(detail.options, function (option) {
+        return {
+          dom: {
+            tag: 'option',
+            value: option.value,
+            innerHtml: option.text,
+            attributes: { selected: option.selected ? 'selected' : '' }
+          }
+        };
+      });
+      var initialValues = detail.data.map(function (v) {
+        return wrap$1('initialValue', v);
+      }).getOr({});
+      return {
+        uid: detail.uid,
+        dom: {
+          tag: 'select',
+          classes: detail.selectClasses,
+          attributes: detail.selectAttributes
+        },
+        components: options,
+        behaviours: augment(detail.selectBehaviours, [
+          Focusing.config({}),
+          Representing.config({
+            store: __assign({
+              mode: 'manual',
+              getValue: function (select) {
+                return get$6(select.element);
+              },
+              setValue: function (select, newValue) {
+                var found = find(detail.options, function (opt) {
+                  return opt.value === newValue;
+                });
+                if (found.isSome()) {
+                  set$3(select.element, newValue);
+                }
+              }
+            }, initialValues)
+          }),
+          Replacing.config({})
+        ])
+      };
+    };
+    var HtmlSelect = single$2({
+      name: 'HtmlSelect',
+      configFields: [
+        strict$1('options'),
+        field$1('selectBehaviours', [
+          Focusing,
+          Representing
+        ]),
+        defaulted$1('selectClasses', []),
+        defaulted$1('selectAttributes', {}),
+        option('data')
+      ],
+      factory: factory$9
+    });
+
+    var renderDefaultValue = function (spec, providersBackstage) {
+      var selectWrap = [];
+      spec.items.forEach(function (a) {
+        var translatedOptions = map(a.items, function (item) {
+          return {
+            text: providersBackstage.translate(item.text),
+            value: item.value,
+            selected: item.selected
+          };
+        });
+        var pField = FormField.parts.field({
+          dom: {},
+          selectAttributes: { size: a.size },
+          options: translatedOptions,
+          factory: HtmlSelect,
+          selectBehaviours: derive$1([
+            Disabling.config({
+              disabled: function () {
+                return a.disabled || providersBackstage.isDisabled();
+              }
+            }),
+            Tabstopping.config({}),
+            config('defaultvalue-change', [run(change(), function (component, _) {
+                emitWith(component, formChangeEvent, { name: a.name });
+              })])
+          ])
+        });
+        var chevron = a.size > 1 ? Optional.none() : Optional.some({
+          dom: {
+            tag: 'div',
+            classes: ['tox-selectfield__icon-js'],
+            innerHtml: get$e('chevron-down', providersBackstage.icons)
+          }
+        });
+        selectWrap.push({
+          dom: {
+            tag: 'div',
+            classes: ['tox-selectfield']
+          },
+          components: flatten([
+            [pField],
+            chevron.toArray()
+          ])
+        });
+      });
+      var formGroup = function (components) {
+        return {
+          dom: {
+            tag: 'div',
+            classes: ['tox-form__group--stretched']
+          },
+          components: components
+        };
+      };
+      var getLabel = function (label) {
+        return {
+          dom: {
+            tag: 'label',
+            classes: ['tox-label'],
+            innerHtml: providersBackstage.translate(label)
+          }
+        };
+      };
+      var pField = FormField.parts.field({
+        factory: Input,
+        inputClasses: ['tox-textfield'],
+        inputBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            }
+          }),
+          receivingConfig(),
+          Tabstopping.config({})
+        ]),
+        selectOnFocus: false
+      });
+      var dv = FormDefaultValue.parts.field1(formGroup([
+        FormField.parts.label(getLabel('Default value')),
+        pField
+      ]));
+      var dvOption = FormDefaultValue.parts.field2(formGroup([selectWrap[0]]));
+      var vcDefOb = FormDefaultValue.parts.field3(formGroup([
+        FormField.parts.label(getLabel('defOb')),
+        selectWrap[1]
+      ]));
+      return FormDefaultValue.sketch({
+        dom: {
+          tag: 'div',
+          classes: ['tox-form__group']
+        },
+        components: [
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-form__controls-h-stack']
+            },
+            components: [
+              dv,
+              vcDefOb
+            ]
+          },
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-form__controls-h-stack']
+            },
+            components: [dvOption]
+          }
+        ],
+        field1Name: 'dv',
+        field2Name: 'dvOption',
+        field3Name: 'vcDefOb',
+        onOptionChange: function (current, other) {
+          other.forEach(function (a) {
+            return Representing.setValue(a, Representing.getValue(current));
+          });
+        },
+        defaultValueBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            onDisabled: function (comp) {
+              FormDefaultValue.getField1(comp).bind(FormField.getField).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormDefaultValue.getField1(comp).bind(FormField.getField).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
     };
 
     var global$c = tinymce.util.Tools.resolve('tinymce.util.Tools');
@@ -16633,6 +17295,323 @@
       });
       var pField = FormField.parts.field({ factory: { sketch: renderField } });
       return renderFormFieldWith(pLabel, pField, ['tox-form__group--stretched'], []);
+    };
+
+    var schema$k = constant([
+      defaulted$1('field1Name', 'field1'),
+      defaulted$1('field2Name', 'field2'),
+      onStrictHandler('onTypeChange'),
+      SketchBehaviours.field('fieldTypeBehaviours', [
+        Composing,
+        Representing
+      ])
+    ]);
+    var getField$2 = function (comp, detail, partName) {
+      return getPart(comp, detail, partName).bind(Composing.getCurrent);
+    };
+    var multiPart0$1 = function (selfName, otherName) {
+      return required({
+        factory: FormField,
+        name: selfName,
+        overrides: function (detail) {
+          return {
+            fieldBehaviours: derive$1([config('field-type-behaviour', [run(change(), function (me) {
+                  var other = [];
+                  otherName.forEach(function (a) {
+                    return getField$2(me, detail, a).each(function (b) {
+                      other.push(b);
+                    });
+                  });
+                  detail.onTypeChange(me, other);
+                })])])
+          };
+        }
+      });
+    };
+    var multiPart$1 = function (selfName) {
+      return required({
+        factory: FormField,
+        name: selfName
+      });
+    };
+    var parts$7 = constant([
+      multiPart0$1('field1', ['field2']),
+      multiPart$1('field2')
+    ]);
+
+    var factory$a = function (detail, components, _spec, _externals) {
+      return {
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: SketchBehaviours.augment(detail.fieldTypeBehaviours, [
+          Composing.config({ find: Optional.some }),
+          Representing.config({
+            store: {
+              mode: 'manual',
+              getValue: function (comp) {
+                var _a;
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2'
+                ]);
+                return _a = {}, _a[detail.field1Name] = Representing.getValue(parts.field1()), _a[detail.field2Name] = Representing.getValue(parts.field2()), _a;
+              },
+              setValue: function (comp, value) {
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2'
+                ]);
+                if (hasNonNullableKey(value, detail.field1Name)) {
+                  Representing.setValue(parts.field1(), value[detail.field1Name]);
+                }
+                if (hasNonNullableKey(value, detail.field2Name)) {
+                  Representing.setValue(parts.field2(), value[detail.field2Name]);
+                }
+              }
+            }
+          })
+        ]),
+        apis: {
+          getField1: function (component) {
+            return getPart(component, detail, 'field1');
+          },
+          getField2: function (component) {
+            return getPart(component, detail, 'field2');
+          }
+        }
+      };
+    };
+    var FormFieldType = composite$1({
+      name: 'FormFieldType',
+      configFields: schema$k(),
+      partFields: parts$7(),
+      factory: factory$a,
+      apis: {
+        getField1: function (apis, component) {
+          return apis.getField1(component);
+        },
+        getField2: function (apis, component) {
+          return apis.getField2(component);
+        }
+      }
+    });
+
+    var renderFieldType = function (spec, providersBackstage) {
+      var translatedOptions = map(spec.items, function (item) {
+        return {
+          text: providersBackstage.translate(item.text),
+          value: item.value,
+          selected: item.selected
+        };
+      });
+      var pField0 = FormField.parts.field({
+        dom: {},
+        selectAttributes: { size: spec.size },
+        options: translatedOptions,
+        factory: HtmlSelect,
+        selectBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            }
+          }),
+          Tabstopping.config({}),
+          config('fieldtype-change', [run(change(), function (component, _) {
+              emitWith(component, formChangeEvent, { name: spec.name });
+            })])
+        ])
+      });
+      var chevron = spec.size > 1 ? Optional.none() : Optional.some({
+        dom: {
+          tag: 'div',
+          classes: ['tox-selectfield__icon-js'],
+          innerHtml: get$e('chevron-down', providersBackstage.icons)
+        }
+      });
+      var formGroup = function (components) {
+        return {
+          dom: {
+            tag: 'div',
+            classes: ['tox-form__group--stretched']
+          },
+          components: components
+        };
+      };
+      var getLabel = function (label) {
+        return {
+          dom: {
+            tag: 'label',
+            classes: ['tox-label'],
+            innerHtml: providersBackstage.translate(label)
+          }
+        };
+      };
+      var selectWrap = {
+        dom: {
+          tag: 'div',
+          classes: ['tox-selectfield']
+        },
+        components: flatten([
+          [pField0],
+          chevron.toArray()
+        ])
+      };
+      var type = FormFieldType.parts.field1(formGroup([
+        FormField.parts.label(getLabel('Type')),
+        selectWrap
+      ]));
+      var repBehaviour = Representing.config({
+        store: {
+          mode: 'manual',
+          getValue: function (comp) {
+            var el = comp.element.dom;
+            return el.checked;
+          },
+          setValue: function (comp, value) {
+            var el = comp.element.dom;
+            el.checked = value;
+          }
+        }
+      });
+      var toggleCheckboxHandler = function (comp) {
+        comp.element.dom.click();
+        return Optional.some(true);
+      };
+      var pField = FormField.parts.field({
+        factory: { sketch: identity },
+        dom: {
+          tag: 'input',
+          classes: ['tox-checkbox__input'],
+          attributes: {
+            type: 'checkbox',
+            checked: spec.checked ? 'checked' : ''
+          }
+        },
+        behaviours: derive$1([
+          ComposingConfigs.self(),
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            }
+          }),
+          Tabstopping.config({}),
+          Focusing.config({}),
+          repBehaviour,
+          Keying.config({
+            mode: 'special',
+            onEnter: toggleCheckboxHandler,
+            onSpace: toggleCheckboxHandler,
+            stopSpaceKeyup: true
+          }),
+          config('checkbox-events', [run(change(), function (component, _) {
+              emitWith(component, formChangeEvent, { name: spec.name });
+            })])
+        ])
+      });
+      var pLabel = FormField.parts.label({
+        dom: {
+          tag: 'span',
+          classes: ['tox-checkbox__label'],
+          innerHtml: providersBackstage.translate('Date select')
+        },
+        behaviours: derive$1([Unselecting.config({})])
+      });
+      var makeIcon = function (className) {
+        var iconName = className === 'checked' ? 'selected' : 'unselected';
+        return {
+          dom: {
+            tag: 'span',
+            classes: [
+              'tox-icon',
+              'tox-checkbox-icon__' + className
+            ],
+            innerHtml: get$e(iconName, providersBackstage.icons)
+          }
+        };
+      };
+      var memIcons = record({
+        dom: {
+          tag: 'div',
+          classes: ['tox-checkbox__icons']
+        },
+        components: [
+          makeIcon('checked'),
+          makeIcon('unchecked')
+        ]
+      });
+      var dateSelect = FormFieldType.parts.field2({
+        dom: {
+          tag: 'label',
+          classes: [spec.hidden ? 'tox-checkbox--hidden' : 'tox-checkbox-b']
+        },
+        components: [
+          pField,
+          memIcons.asSpec(),
+          pLabel
+        ],
+        fieldBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            disableClass: 'tox-checkbox--disabled',
+            onDisabled: function (comp) {
+              FormField.getField(comp).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormField.getField(comp).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
+      return FormFieldType.sketch({
+        dom: {
+          tag: 'div',
+          classes: ['tox-form__group']
+        },
+        components: [{
+            dom: {
+              tag: 'div',
+              classes: ['tox-form__controls-h-stack']
+            },
+            components: [
+              type,
+              dateSelect
+            ]
+          }],
+        field1Name: 'type',
+        field2Name: 'dateSelect',
+        onTypeChange: function (current, other) {
+          var cur = Representing.getValue(current);
+          if (cur === '\u65f6\u95f4') {
+            spec.hidden = false;
+            other.forEach(function (a) {
+              return a.element.dom.parentElement.className = 'tox-checkbox-b';
+            });
+          } else {
+            spec.hidden = true;
+            other.forEach(function (a) {
+              return a.element.dom.parentElement.className = 'tox-checkbox--hidden';
+            });
+          }
+        },
+        fieldTypeBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            onDisabled: function (comp) {
+              FormFieldType.getField1(comp).bind(FormField.getField).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormFieldType.getField1(comp).bind(FormField.getField).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
     };
 
     var renderGrid = function (spec, backstage) {
@@ -18142,7 +19121,7 @@
       ]))));
     };
 
-    var schema$i = constant([
+    var schema$l = constant([
       defaulted$1('field1Name', 'field1'),
       defaulted$1('field2Name', 'field2'),
       onStrictHandler('onLockedChange'),
@@ -18153,7 +19132,7 @@
         Representing
       ])
     ]);
-    var getField = function (comp, detail, partName) {
+    var getField$3 = function (comp, detail, partName) {
       return getPart(comp, detail, partName).bind(Composing.getCurrent);
     };
     var coupledPart = function (selfName, otherName) {
@@ -18163,7 +19142,7 @@
         overrides: function (detail) {
           return {
             fieldBehaviours: derive$1([config('coupled-input-behaviour', [run(input(), function (me) {
-                  getField(me, detail, otherName).each(function (other) {
+                  getField$3(me, detail, otherName).each(function (other) {
                     getPart(me, detail, 'lock').each(function (lock) {
                       if (Toggling.isOn(lock)) {
                         detail.onLockedChange(me, other, lock);
@@ -18175,7 +19154,7 @@
         }
       });
     };
-    var parts$5 = constant([
+    var parts$8 = constant([
       coupledPart('field1', 'field2'),
       coupledPart('field2', 'field1'),
       required({
@@ -18194,7 +19173,7 @@
       })
     ]);
 
-    var factory$7 = function (detail, components, _spec, _externals) {
+    var factory$b = function (detail, components, _spec, _externals) {
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -18242,9 +19221,9 @@
     };
     var FormCoupledInputs = composite$1({
       name: 'FormCoupledInputs',
-      configFields: schema$i(),
-      partFields: parts$5(),
-      factory: factory$7,
+      configFields: schema$l(),
+      partFields: parts$8(),
+      factory: factory$b,
       apis: {
         getField1: function (apis, component) {
           return apis.getField1(component);
@@ -20013,68 +20992,12 @@
       };
     };
 
-    var factory$8 = function (detail, _spec) {
-      var options = map(detail.options, function (option) {
-        return {
-          dom: {
-            tag: 'option',
-            value: option.value,
-            innerHtml: option.text
-          }
-        };
-      });
-      var initialValues = detail.data.map(function (v) {
-        return wrap$1('initialValue', v);
-      }).getOr({});
-      return {
-        uid: detail.uid,
-        dom: {
-          tag: 'select',
-          classes: detail.selectClasses,
-          attributes: detail.selectAttributes
-        },
-        components: options,
-        behaviours: augment(detail.selectBehaviours, [
-          Focusing.config({}),
-          Representing.config({
-            store: __assign({
-              mode: 'manual',
-              getValue: function (select) {
-                return get$6(select.element);
-              },
-              setValue: function (select, newValue) {
-                var found = find(detail.options, function (opt) {
-                  return opt.value === newValue;
-                });
-                if (found.isSome()) {
-                  set$3(select.element, newValue);
-                }
-              }
-            }, initialValues)
-          })
-        ])
-      };
-    };
-    var HtmlSelect = single$2({
-      name: 'HtmlSelect',
-      configFields: [
-        strict$1('options'),
-        field$1('selectBehaviours', [
-          Focusing,
-          Representing
-        ]),
-        defaulted$1('selectClasses', []),
-        defaulted$1('selectAttributes', {}),
-        option('data')
-      ],
-      factory: factory$8
-    });
-
     var renderSelectBox = function (spec, providersBackstage) {
       var translatedOptions = map(spec.items, function (item) {
         return {
           text: providersBackstage.translate(item.text),
-          value: item.value
+          value: item.value,
+          selected: item.selected
         };
       });
       var pLabel = spec.label.map(function (label) {
@@ -20140,6 +21063,328 @@
       });
     };
 
+    var schema$m = constant([
+      defaulted$1('field1Name', 'field1'),
+      defaulted$1('field2Name', 'field2'),
+      defaulted$1('field3Name', 'field3'),
+      defaulted$1('field4Name', 'field4'),
+      defaulted$1('field5Name', 'field5'),
+      onStrictHandler('onTbChange'),
+      SketchBehaviours.field('fieldMultiBehaviours', [
+        Composing,
+        Representing
+      ])
+    ]);
+    var getField$4 = function (comp, detail, partName) {
+      return getPart(comp, detail, partName).bind(Composing.getCurrent);
+    };
+    var multiPart0$2 = function (selfName, otherName) {
+      return required({
+        factory: FormField,
+        name: selfName,
+        overrides: function (detail) {
+          return {
+            fieldBehaviours: derive$1([config('field-multi-behaviour', [run(change(), function (me) {
+                  var other = [];
+                  otherName.forEach(function (a) {
+                    return getField$4(me, detail, a).each(function (b) {
+                      other.push(b);
+                    });
+                  });
+                  detail.onTbChange(me, other);
+                })])])
+          };
+        }
+      });
+    };
+    var multiPart$2 = function (selfName) {
+      return required({
+        factory: FormField,
+        name: selfName
+      });
+    };
+    var parts$9 = constant([
+      multiPart0$2('field1', [
+        'field2',
+        'field3',
+        'field4',
+        'field5'
+      ]),
+      multiPart$2('field2'),
+      multiPart$2('field3'),
+      multiPart$2('field4'),
+      multiPart$2('field5')
+    ]);
+
+    var factory$c = function (detail, components, _spec, _externals) {
+      return {
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: SketchBehaviours.augment(detail.fieldMultiBehaviours, [
+          Composing.config({ find: Optional.some }),
+          Representing.config({
+            store: {
+              mode: 'manual',
+              getValue: function (comp) {
+                var _a;
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2',
+                  'field3',
+                  'field4',
+                  'field5'
+                ]);
+                return _a = {}, _a[detail.field1Name] = Representing.getValue(parts.field1()), _a[detail.field2Name] = Representing.getValue(parts.field2()), _a[detail.field3Name] = Representing.getValue(parts.field3()), _a[detail.field4Name] = Representing.getValue(parts.field4()), _a[detail.field5Name] = Representing.getValue(parts.field5()), _a;
+              },
+              setValue: function (comp, value) {
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2',
+                  'field3',
+                  'field4',
+                  'field5'
+                ]);
+                if (hasNonNullableKey(value, detail.field1Name)) {
+                  Representing.setValue(parts.field1(), value[detail.field1Name]);
+                }
+                if (hasNonNullableKey(value, detail.field2Name)) {
+                  Representing.setValue(parts.field2(), value[detail.field2Name]);
+                }
+                if (hasNonNullableKey(value, detail.field3Name)) {
+                  Representing.setValue(parts.field3(), value[detail.field3Name]);
+                }
+                if (hasNonNullableKey(value, detail.field4Name)) {
+                  Representing.setValue(parts.field4(), value[detail.field4Name]);
+                }
+                if (hasNonNullableKey(value, detail.field5Name)) {
+                  Representing.setValue(parts.field5(), value[detail.field5Name]);
+                }
+              }
+            }
+          })
+        ]),
+        apis: {
+          getField1: function (component) {
+            return getPart(component, detail, 'field1');
+          },
+          getField2: function (component) {
+            return getPart(component, detail, 'field2');
+          },
+          getField3: function (component) {
+            return getPart(component, detail, 'field3');
+          },
+          getField4: function (component) {
+            return getPart(component, detail, 'field4');
+          },
+          getField5: function (component) {
+            return getPart(component, detail, 'field5');
+          }
+        }
+      };
+    };
+    var FormFieldMulti = composite$1({
+      name: 'FormFieldMulti',
+      configFields: schema$m(),
+      partFields: parts$9(),
+      factory: factory$c,
+      apis: {
+        getField1: function (apis, component) {
+          return apis.getField1(component);
+        },
+        getField2: function (apis, component) {
+          return apis.getField2(component);
+        },
+        getField3: function (apis, component) {
+          return apis.getField3(component);
+        },
+        getField4: function (apis, component) {
+          return apis.getField4(component);
+        },
+        getField5: function (apis, component) {
+          return apis.getField5(component);
+        }
+      }
+    });
+
+    var global$h = tinymce.util.Tools.resolve('tinymce.util.XHR');
+
+    var renderSelectMulti = function (spec, providersBackstage) {
+      var selectWrap = [];
+      spec.items.forEach(function (a) {
+        var translatedOptions = map(a.items, function (item) {
+          return {
+            text: providersBackstage.translate(item.text),
+            value: item.value,
+            selected: item.selected
+          };
+        });
+        var pField = FormField.parts.field({
+          dom: {},
+          selectAttributes: { size: a.size },
+          options: translatedOptions,
+          factory: HtmlSelect,
+          selectBehaviours: derive$1([
+            Disabling.config({
+              disabled: function () {
+                return a.disabled || providersBackstage.isDisabled();
+              }
+            }),
+            Tabstopping.config({}),
+            config('selectmulti-change', [run(change(), function (component, _) {
+                emitWith(component, formChangeEvent, { name: a.name });
+              })])
+          ])
+        });
+        var chevron = a.size > 1 ? Optional.none() : Optional.some({
+          dom: {
+            tag: 'div',
+            classes: ['tox-selectfield__icon-js'],
+            innerHtml: get$e('chevron-down', providersBackstage.icons)
+          }
+        });
+        selectWrap.push({
+          dom: {
+            tag: 'div',
+            classes: ['tox-selectfield']
+          },
+          components: flatten([
+            [pField],
+            chevron.toArray()
+          ])
+        });
+      });
+      var formGroup = function (components) {
+        return {
+          dom: {
+            tag: 'div',
+            classes: ['tox-form__group--stretched']
+          },
+          components: components
+        };
+      };
+      var getLabel = function (label) {
+        return {
+          dom: {
+            tag: 'label',
+            classes: ['tox-label'],
+            innerHtml: providersBackstage.translate(label)
+          }
+        };
+      };
+      var tb = FormFieldMulti.parts.field1(formGroup([
+        FormField.parts.label(getLabel('lkTb')),
+        selectWrap[0]
+      ]));
+      var col = FormFieldMulti.parts.field2(formGroup([
+        FormField.parts.label(getLabel('lkCol')),
+        selectWrap[1]
+      ]));
+      var lnk = FormFieldMulti.parts.field3(formGroup([
+        FormField.parts.label(getLabel('lkLnk')),
+        selectWrap[2]
+      ]));
+      var exeObs = FormFieldMulti.parts.field4(formGroup([
+        FormField.parts.label(getLabel('lkExeObs')),
+        selectWrap[3]
+      ]));
+      var exeTime = FormFieldMulti.parts.field5(formGroup([
+        FormField.parts.label(getLabel('lkExeTime')),
+        selectWrap[4]
+      ]));
+      var getCol = function (op) {
+        return new global$4(function (resolve, reject) {
+          global$h.send({
+            url: '/hrms.dll/colD?op=' + op,
+            success: function (html) {
+              resolve(html);
+            },
+            error: function (e) {
+              reject(e);
+            }
+          });
+        });
+      };
+      return FormFieldMulti.sketch({
+        dom: {
+          tag: 'div',
+          classes: ['tox-form__group']
+        },
+        components: [
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-form__controls-h-stack']
+            },
+            components: [
+              tb,
+              col
+            ]
+          },
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-form__controls-h-stack']
+            },
+            components: [
+              lnk,
+              exeObs,
+              exeTime
+            ]
+          }
+        ],
+        field1Name: 'tb',
+        field2Name: 'col',
+        field3Name: 'lnk',
+        field4Name: 'exeObs',
+        field5Name: 'exeTime',
+        onTbChange: function (current, other) {
+          var cur = Representing.getValue(current);
+          if (cur === 'none') {
+            other.forEach(function (a) {
+              return Disabling.disable(a);
+            });
+            spec.items[1].disabled = true;
+            spec.items[2].disabled = true;
+            spec.items[3].disabled = true;
+            spec.items[4].disabled = true;
+          } else {
+            other.forEach(function (a) {
+              return Disabling.enable(a);
+            });
+            getCol(cur).then(function (s) {
+              var data = JSON.parse(s).data;
+              Replacing.set(other[0], data);
+              spec.items[1].items = data.map(function (a) {
+                return {
+                  text: a.dom.innerHtml,
+                  value: a.dom.attributes.value
+                };
+              });
+            }).catch();
+            spec.items[1].disabled = false;
+            spec.items[2].disabled = false;
+            spec.items[3].disabled = false;
+            spec.items[4].disabled = false;
+          }
+        },
+        fieldMultiBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            onDisabled: function (comp) {
+              FormFieldMulti.getField1(comp).bind(FormField.getField).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormFieldMulti.getField1(comp).bind(FormField.getField).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
+    };
+
     var renderTable = function (spec, providersBackstage) {
       var renderTh = function (text) {
         return {
@@ -20194,6 +21439,246 @@
       };
     };
 
+    var schema$n = constant([
+      defaulted$1('field1Name', 'field1'),
+      defaulted$1('field2Name', 'field2'),
+      onStrictHandler('onTbChange'),
+      SketchBehaviours.field('tbColBehaviours', [
+        Composing,
+        Representing
+      ])
+    ]);
+    var getField$5 = function (comp, detail, partName) {
+      return getPart(comp, detail, partName).bind(Composing.getCurrent);
+    };
+    var multiPart0$3 = function (selfName, otherName) {
+      return required({
+        factory: FormField,
+        name: selfName,
+        overrides: function (detail) {
+          return {
+            fieldBehaviours: derive$1([config('field-multi-behaviour', [run(change(), function (me) {
+                  var other = [];
+                  getField$5(me, detail, otherName).each(function (b) {
+                    other.push(b);
+                  });
+                  detail.onTbChange(me, other);
+                })])])
+          };
+        }
+      });
+    };
+    var multiPart$3 = function (selfName) {
+      return required({
+        factory: FormField,
+        name: selfName
+      });
+    };
+    var parts$a = constant([
+      multiPart0$3('field1', 'field2'),
+      multiPart$3('field2')
+    ]);
+
+    var factory$d = function (detail, components, _spec, _externals) {
+      return {
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: SketchBehaviours.augment(detail.tbColBehaviours, [
+          Composing.config({ find: Optional.some }),
+          Representing.config({
+            store: {
+              mode: 'manual',
+              getValue: function (comp) {
+                var _a;
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2'
+                ]);
+                return _a = {}, _a[detail.field1Name] = Representing.getValue(parts.field1()), _a[detail.field2Name] = Representing.getValue(parts.field2()), _a;
+              },
+              setValue: function (comp, value) {
+                var parts = getPartsOrDie(comp, detail, [
+                  'field1',
+                  'field2'
+                ]);
+                if (hasNonNullableKey(value, detail.field1Name)) {
+                  Representing.setValue(parts.field1(), value[detail.field1Name]);
+                }
+                if (hasNonNullableKey(value, detail.field2Name)) {
+                  Representing.setValue(parts.field2(), value[detail.field2Name]);
+                }
+              }
+            }
+          })
+        ]),
+        apis: {
+          getField1: function (component) {
+            return getPart(component, detail, 'field1');
+          },
+          getField2: function (component) {
+            return getPart(component, detail, 'field2');
+          }
+        }
+      };
+    };
+    var FormTbCol = composite$1({
+      name: 'FormTbCol',
+      configFields: schema$n(),
+      partFields: parts$a(),
+      factory: factory$d,
+      apis: {
+        getField1: function (apis, component) {
+          return apis.getField1(component);
+        },
+        getField2: function (apis, component) {
+          return apis.getField2(component);
+        }
+      }
+    });
+
+    var renderTbCol = function (spec, providersBackstage) {
+      var selectWrap = [];
+      spec.items.forEach(function (a) {
+        var translatedOptions = map(a.items, function (item) {
+          return {
+            text: providersBackstage.translate(item.text),
+            value: item.value,
+            selected: item.selected
+          };
+        });
+        var pField = FormField.parts.field({
+          dom: {},
+          selectAttributes: { size: a.size },
+          options: translatedOptions,
+          factory: HtmlSelect,
+          selectBehaviours: derive$1([
+            Disabling.config({
+              disabled: function () {
+                return a.disabled || providersBackstage.isDisabled();
+              }
+            }),
+            Tabstopping.config({}),
+            config('tbcol-change', [run(change(), function (component, _) {
+                emitWith(component, formChangeEvent, { name: a.name });
+              })])
+          ])
+        });
+        var chevron = a.size > 1 ? Optional.none() : Optional.some({
+          dom: {
+            tag: 'div',
+            classes: ['tox-selectfield__icon-js'],
+            innerHtml: get$e('chevron-down', providersBackstage.icons)
+          }
+        });
+        selectWrap.push({
+          dom: {
+            tag: 'div',
+            classes: ['tox-selectfield']
+          },
+          components: flatten([
+            [pField],
+            chevron.toArray()
+          ])
+        });
+      });
+      var formGroup = function (components) {
+        return {
+          dom: {
+            tag: 'div',
+            classes: ['tox-form__group--stretched']
+          },
+          components: components
+        };
+      };
+      var getLabel = function (label) {
+        return {
+          dom: {
+            tag: 'label',
+            classes: ['tox-label'],
+            innerHtml: providersBackstage.translate(label)
+          }
+        };
+      };
+      var tb = FormTbCol.parts.field1(formGroup([
+        FormField.parts.label(getLabel('Tb')),
+        selectWrap[0]
+      ]));
+      var col = FormTbCol.parts.field2(formGroup([
+        FormField.parts.label(getLabel('Col')),
+        selectWrap[1]
+      ]));
+      var getCol = function (op) {
+        return new global$4(function (resolve, reject) {
+          global$h.send({
+            url: '/hrms.dll/cellD?op=' + op,
+            success: function (html) {
+              resolve(html);
+            },
+            error: function (e) {
+              reject(e);
+            }
+          });
+        });
+      };
+      return FormTbCol.sketch({
+        dom: {
+          tag: 'div',
+          classes: ['tox-form__group']
+        },
+        components: [{
+            dom: {
+              tag: 'div',
+              classes: ['tox-form__controls-h-stack']
+            },
+            components: [
+              tb,
+              col
+            ]
+          }],
+        field1Name: 'tb',
+        field2Name: 'col',
+        onTbChange: function (current, other) {
+          var cur = Representing.getValue(current);
+          if (cur === 'none') {
+            other.forEach(function (a) {
+              return Disabling.disable(a);
+            });
+            spec.items[1].disabled = true;
+          } else {
+            other.forEach(function (a) {
+              return Disabling.enable(a);
+            });
+            getCol(cur).then(function (s) {
+              var data = JSON.parse(s).data;
+              Replacing.set(other[0], data);
+              spec.items[1].items = data.map(function (a) {
+                return {
+                  text: a.dom.innerHtml,
+                  value: a.dom.attributes.value
+                };
+              });
+            }).catch();
+            spec.items[1].disabled = false;
+          }
+        },
+        tbColBehaviours: derive$1([
+          Disabling.config({
+            disabled: function () {
+              return spec.disabled || providersBackstage.isDisabled();
+            },
+            onDisabled: function (comp) {
+              FormTbCol.getField1(comp).bind(FormField.getField).each(Disabling.disable);
+            },
+            onEnabled: function (comp) {
+              FormTbCol.getField1(comp).bind(FormField.getField).each(Disabling.enable);
+            }
+          }),
+          receivingConfig()
+        ])
+      });
+    };
+
     var renderTextField = function (spec, providersBackstage) {
       var pLabel = spec.label.map(function (label) {
         return renderLabel(label, providersBackstage);
@@ -20243,10 +21728,13 @@
       var placeholder = spec.placeholder.fold(constant({}), function (p) {
         return { placeholder: providersBackstage.translate(p) };
       });
+      var value = spec.value.fold(constant({}), function (p) {
+        return { value: providersBackstage.translate(p) };
+      });
       var inputMode = spec.inputMode.fold(constant({}), function (mode) {
         return { inputmode: mode };
       });
-      var inputAttributes = __assign(__assign({}, placeholder), inputMode);
+      var inputAttributes = __assign(__assign(__assign({}, placeholder), value), inputMode);
       var pField = FormField.parts.field({
         tag: spec.multiline === true ? 'textarea' : 'input',
         inputAttributes: inputAttributes,
@@ -20283,6 +21771,7 @@
         label: spec.label,
         inputMode: spec.inputMode,
         placeholder: spec.placeholder,
+        value: spec.value,
         flex: false,
         disabled: spec.disabled,
         classname: 'tox-textfield',
@@ -20297,6 +21786,7 @@
         label: spec.label,
         inputMode: Optional.none(),
         placeholder: spec.placeholder,
+        value: spec.value,
         flex: true,
         disabled: spec.disabled,
         classname: 'tox-textarea',
@@ -20618,7 +22108,7 @@
       };
     };
 
-    var schema$j = constant([
+    var schema$o = constant([
       option('lazySink'),
       strict$1('fetch'),
       defaulted$1('minChars', 5),
@@ -20657,8 +22147,8 @@
       state$1('previewing', function () {
         return Cell(true);
       })
-    ].concat(schema$f()).concat(sandboxFields()));
-    var parts$6 = constant([external$1({
+    ].concat(schema$g()).concat(sandboxFields()));
+    var parts$b = constant([external$1({
         schema: [tieredMenuMarkers()],
         name: 'menu',
         overrides: function (detail) {
@@ -20702,8 +22192,8 @@
 
     var Typeahead = composite$1({
       name: 'Typeahead',
-      configFields: schema$j(),
-      partFields: parts$6(),
+      configFields: schema$o(),
+      partFields: parts$b(),
       factory: make$5
     });
 
@@ -21182,7 +22672,10 @@
         dom: {
           tag: 'input',
           classes: ['tox-checkbox__input'],
-          attributes: { type: 'checkbox' }
+          attributes: {
+            type: 'checkbox',
+            checked: spec.checked ? 'checked' : ''
+          }
         },
         behaviours: derive$1([
           ComposingConfigs.self(),
@@ -21326,6 +22819,9 @@
       iframe: makeIframe(function (spec, backstage) {
         return renderIFrame(spec, backstage.shared.providers);
       }),
+      auth: make$6(function (spec, backstage) {
+        return renderAuth(spec, backstage.shared.providers);
+      }),
       button: make$6(function (spec, backstage) {
         return renderDialogButton(spec, backstage.shared.providers);
       }),
@@ -21336,8 +22832,14 @@
         return renderColorInput(spec, backstage.shared, backstage.colorinput);
       }),
       colorpicker: make$6(renderColorPicker),
+      defaultvalue: make$6(function (spec, backstage) {
+        return renderDefaultValue(spec, backstage.shared.providers);
+      }),
       dropzone: make$6(function (spec, backstage) {
         return renderDropZone(spec, backstage.shared.providers);
+      }),
+      fieldtype: make$6(function (spec, backstage) {
+        return renderFieldType(spec, backstage.shared.providers);
       }),
       grid: make$6(function (spec, backstage) {
         return renderGrid(spec, backstage.shared);
@@ -21348,8 +22850,14 @@
       selectbox: make$6(function (spec, backstage) {
         return renderSelectBox(spec, backstage.shared.providers);
       }),
+      selectmulti: make$6(function (spec, backstage) {
+        return renderSelectMulti(spec, backstage.shared.providers);
+      }),
       sizeinput: make$6(function (spec, backstage) {
         return renderSizeInput(spec, backstage.shared.providers);
+      }),
+      tbcol: make$6(function (spec, backstage) {
+        return renderTbCol(spec, backstage.shared.providers);
       }),
       urlinput: make$6(function (spec, backstage) {
         return renderUrlInput(spec, backstage, backstage.urlinput);
@@ -22134,7 +23642,7 @@
     var showContextToolbarEvent = 'contexttoolbar-show';
     var hideContextToolbarEvent = 'contexttoolbar-hide';
 
-    var schema$k = constant([
+    var schema$p = constant([
       strict$1('dom'),
       defaulted$1('shell', true),
       field$1('toolbarBehaviours', [Replacing])
@@ -22142,12 +23650,12 @@
     var enhanceGroups = function () {
       return { behaviours: derive$1([Replacing.config({})]) };
     };
-    var parts$7 = constant([optional({
+    var parts$c = constant([optional({
         name: 'groups',
         overrides: enhanceGroups
       })]);
 
-    var factory$9 = function (detail, components, _spec, _externals) {
+    var factory$e = function (detail, components, _spec, _externals) {
       var setGroups = function (toolbar, groups) {
         getGroupContainer(toolbar).fold(function () {
           console.error('Toolbar was defined to not be a shell, but no groups container was specified in components');
@@ -22177,9 +23685,9 @@
     };
     var Toolbar = composite$1({
       name: 'Toolbar',
-      configFields: schema$k(),
-      partFields: parts$7(),
-      factory: factory$9,
+      configFields: schema$p(),
+      partFields: parts$c(),
+      factory: factory$e,
       apis: {
         setGroups: function (apis, toolbar, groups) {
           apis.setGroups(toolbar, groups);
@@ -22307,36 +23815,36 @@
       focusedComp.each(Focusing.focus);
     };
 
-    var schema$l = constant([
+    var schema$q = constant([
       field$1('splitToolbarBehaviours', [Coupling]),
       state$1('builtGroups', function () {
         return Cell([]);
       })
     ]);
 
-    var schema$m = constant([
+    var schema$r = constant([
       markers(['overflowToggledClass']),
       optionFunction('getOverflowBounds'),
       strict$1('lazySink'),
       state$1('overflowGroups', function () {
         return Cell([]);
       })
-    ].concat(schema$l()));
-    var parts$8 = constant([
+    ].concat(schema$q()));
+    var parts$d = constant([
       required({
         factory: Toolbar,
-        schema: schema$k(),
+        schema: schema$p(),
         name: 'primary'
       }),
       external$1({
-        schema: schema$k(),
+        schema: schema$p(),
         name: 'overflow'
       }),
       external$1({ name: 'overflow-button' }),
       external$1({ name: 'overflow-group' })
     ]);
 
-    var schema$n = constant([
+    var schema$s = constant([
       markers(['toggledClass']),
       strict$1('lazySink'),
       strictFunction('fetch'),
@@ -22344,7 +23852,7 @@
       optionObjOf('fireDismissalEventInstead', [defaulted$1('event', dismissRequested())]),
       schema$1()
     ]);
-    var parts$9 = constant([
+    var parts$e = constant([
       external$1({
         name: 'button',
         overrides: function (detail) {
@@ -22360,7 +23868,7 @@
       }),
       external$1({
         factory: Toolbar,
-        schema: schema$k(),
+        schema: schema$p(),
         name: 'toolbar',
         overrides: function (detail) {
           return {
@@ -22452,7 +23960,7 @@
         ])
       };
     };
-    var factory$a = function (detail, components, spec, externals) {
+    var factory$f = function (detail, components, spec, externals) {
       return __assign(__assign({}, Button.sketch(__assign(__assign({}, externals.button()), {
         action: function (button) {
           toggle$2(button, externals);
@@ -22490,9 +23998,9 @@
     };
     var FloatingToolbarButton = composite$1({
       name: 'FloatingToolbarButton',
-      factory: factory$a,
-      configFields: schema$n(),
-      partFields: parts$9(),
+      factory: factory$f,
+      configFields: schema$s(),
+      partFields: parts$e(),
       apis: {
         setGroups: function (apis, button, groups) {
           apis.setGroups(button, groups);
@@ -22512,17 +24020,17 @@
       }
     });
 
-    var schema$o = constant([
+    var schema$t = constant([
       strict$1('items'),
       markers(['itemSelector']),
       field$1('tgroupBehaviours', [Keying])
     ]);
-    var parts$a = constant([group({
+    var parts$f = constant([group({
         name: 'items',
         unit: 'item'
       })]);
 
-    var factory$b = function (detail, components, _spec, _externals) {
+    var factory$g = function (detail, components, _spec, _externals) {
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -22536,9 +24044,9 @@
     };
     var ToolbarGroup = composite$1({
       name: 'ToolbarGroup',
-      configFields: schema$o(),
-      partFields: parts$a(),
-      factory: factory$b
+      configFields: schema$t(),
+      partFields: parts$f(),
+      factory: factory$g
     });
 
     var buildGroups = function (comps) {
@@ -22554,7 +24062,7 @@
         });
       });
     };
-    var factory$c = function (detail, components, spec, externals) {
+    var factory$h = function (detail, components, spec, externals) {
       var memFloatingToolbarButton = record(FloatingToolbarButton.sketch({
         fetch: function () {
           return Future.nu(function (resolve) {
@@ -22637,9 +24145,9 @@
     };
     var SplitFloatingToolbar = composite$1({
       name: 'SplitFloatingToolbar',
-      configFields: schema$m(),
-      partFields: parts$8(),
-      factory: factory$c,
+      configFields: schema$r(),
+      partFields: parts$d(),
+      factory: factory$h,
       apis: {
         setGroups: function (apis, toolbar, groups) {
           apis.setGroups(toolbar, groups);
@@ -22890,7 +24398,7 @@
       state: SlidingState
     });
 
-    var schema$p = constant([
+    var schema$u = constant([
       markers([
         'closedClass',
         'openClass',
@@ -22900,16 +24408,16 @@
       ]),
       onHandler('onOpened'),
       onHandler('onClosed')
-    ].concat(schema$l()));
-    var parts$b = constant([
+    ].concat(schema$q()));
+    var parts$g = constant([
       required({
         factory: Toolbar,
-        schema: schema$k(),
+        schema: schema$p(),
         name: 'primary'
       }),
       required({
         factory: Toolbar,
-        schema: schema$k(),
+        schema: schema$p(),
         name: 'overflow',
         overrides: function (detail) {
           return {
@@ -22988,7 +24496,7 @@
         Sliding.refresh(overflow);
       });
     };
-    var factory$d = function (detail, components, spec, externals) {
+    var factory$i = function (detail, components, spec, externals) {
       var toolbarToggleEvent = 'alloy.toolbar.toggle';
       var doSetGroups = function (toolbar, groups) {
         var built = map(groups, toolbar.getSystem().build);
@@ -23036,9 +24544,9 @@
     };
     var SplitSlidingToolbar = composite$1({
       name: 'SplitSlidingToolbar',
-      configFields: schema$p(),
-      partFields: parts$b(),
-      factory: factory$d,
+      configFields: schema$u(),
+      partFields: parts$g(),
+      factory: factory$i,
       apis: {
         setGroups: function (apis, toolbar, groups) {
           apis.setGroups(toolbar, groups);
@@ -23342,7 +24850,7 @@
       state: ReflectingState
     });
 
-    var schema$q = constant([
+    var schema$v = constant([
       strict$1('toggleClass'),
       strict$1('fetch'),
       onStrictHandler('onExecute'),
@@ -23407,7 +24915,7 @@
         };
       }
     });
-    var parts$c = constant([
+    var parts$h = constant([
       arrowPart,
       buttonPart,
       optional({
@@ -23443,7 +24951,7 @@
       partType()
     ]);
 
-    var factory$e = function (detail, components, spec, externals) {
+    var factory$j = function (detail, components, spec, externals) {
       var _a;
       var switchToMenu = function (sandbox) {
         Composing.getCurrent(sandbox).each(function (current) {
@@ -23533,9 +25041,9 @@
     };
     var SplitDropdown = composite$1({
       name: 'SplitDropdown',
-      configFields: schema$q(),
-      partFields: parts$c(),
-      factory: factory$e,
+      configFields: schema$v(),
+      partFields: parts$h(),
+      factory: factory$j,
       apis: {
         repositionMenus: function (apis, comp) {
           return apis.repositionMenus(comp);
@@ -25570,10 +27078,10 @@
       });
     };
 
-    var parts$d = AlloyParts;
+    var parts$i = AlloyParts;
     var partType$1 = PartType;
 
-    var schema$r = constant([
+    var schema$w = constant([
       defaulted$1('shell', false),
       strict$1('makeItem'),
       defaulted$1('setupItem', noop),
@@ -25586,10 +27094,10 @@
       name: 'items',
       overrides: customListDetail
     });
-    var parts$e = constant([itemsPart]);
+    var parts$j = constant([itemsPart]);
     var name$2 = constant('CustomList');
 
-    var factory$f = function (detail, components, _spec, _external) {
+    var factory$k = function (detail, components, _spec, _external) {
       var setItems = function (list, items) {
         getListContainer(list).fold(function () {
           console.error('Custom List was defined to not be a shell, but no item container was specified in components');
@@ -25634,9 +27142,9 @@
     };
     var CustomList = composite$1({
       name: name$2(),
-      configFields: schema$r(),
-      partFields: parts$e(),
-      factory: factory$f,
+      configFields: schema$w(),
+      partFields: parts$j(),
+      factory: factory$k,
       apis: {
         setItems: function (apis, list, items) {
           apis.setItems(list, items);
@@ -26184,7 +27692,7 @@
       };
     };
 
-    var factory$g = function (detail, spec) {
+    var factory$l = function (detail, spec) {
       var setMenus = function (comp, menus) {
         var newMenus = map(menus, function (m) {
           var buttonSpec = {
@@ -26260,7 +27768,7 @@
       };
     };
     var SilverMenubar = single$2({
-      factory: factory$g,
+      factory: factory$l,
       name: 'silver.Menubar',
       configFields: [
         strict$1('dom'),
@@ -26280,7 +27788,7 @@
     });
 
     var owner$4 = 'container';
-    var schema$s = [field$1('slotBehaviours', [])];
+    var schema$x = [field$1('slotBehaviours', [])];
     var getPartName$1 = function (name) {
       return '<alloy.field.' + name + '>';
     };
@@ -26306,7 +27814,7 @@
           pname: getPartName$1(n)
         });
       });
-      return composite(owner$4, schema$s, fieldParts, make$7, spec);
+      return composite(owner$4, schema$x, fieldParts, make$7, spec);
     };
     var make$7 = function (detail, components) {
       var getSlotNames = function (_) {
@@ -26699,78 +28207,78 @@
       });
     };
 
-    var factory$h = function (detail, components, _spec) {
+    var factory$m = function (detail, components, _spec) {
       var apis = {
         getSocket: function (comp) {
-          return parts$d.getPart(comp, detail, 'socket');
+          return parts$i.getPart(comp, detail, 'socket');
         },
         setSidebar: function (comp, panelConfigs) {
-          parts$d.getPart(comp, detail, 'sidebar').each(function (sidebar) {
+          parts$i.getPart(comp, detail, 'sidebar').each(function (sidebar) {
             return setSidebar(sidebar, panelConfigs);
           });
         },
         toggleSidebar: function (comp, name) {
-          parts$d.getPart(comp, detail, 'sidebar').each(function (sidebar) {
+          parts$i.getPart(comp, detail, 'sidebar').each(function (sidebar) {
             return toggleSidebar(sidebar, name);
           });
         },
         whichSidebar: function (comp) {
-          return parts$d.getPart(comp, detail, 'sidebar').bind(whichSidebar).getOrNull();
+          return parts$i.getPart(comp, detail, 'sidebar').bind(whichSidebar).getOrNull();
         },
         getHeader: function (comp) {
-          return parts$d.getPart(comp, detail, 'header');
+          return parts$i.getPart(comp, detail, 'header');
         },
         getToolbar: function (comp) {
-          return parts$d.getPart(comp, detail, 'toolbar');
+          return parts$i.getPart(comp, detail, 'toolbar');
         },
         setToolbar: function (comp, groups) {
-          parts$d.getPart(comp, detail, 'toolbar').each(function (toolbar) {
+          parts$i.getPart(comp, detail, 'toolbar').each(function (toolbar) {
             toolbar.getApis().setGroups(toolbar, groups);
           });
         },
         setToolbars: function (comp, toolbars) {
-          parts$d.getPart(comp, detail, 'multiple-toolbar').each(function (mToolbar) {
+          parts$i.getPart(comp, detail, 'multiple-toolbar').each(function (mToolbar) {
             CustomList.setItems(mToolbar, toolbars);
           });
         },
         refreshToolbar: function (comp) {
-          var toolbar = parts$d.getPart(comp, detail, 'toolbar');
+          var toolbar = parts$i.getPart(comp, detail, 'toolbar');
           toolbar.each(function (toolbar) {
             return toolbar.getApis().refresh(toolbar);
           });
         },
         toggleToolbarDrawer: function (comp) {
-          parts$d.getPart(comp, detail, 'toolbar').each(function (toolbar) {
+          parts$i.getPart(comp, detail, 'toolbar').each(function (toolbar) {
             mapFrom(toolbar.getApis().toggle, function (toggle) {
               return toggle(toolbar);
             });
           });
         },
         isToolbarDrawerToggled: function (comp) {
-          return parts$d.getPart(comp, detail, 'toolbar').bind(function (toolbar) {
+          return parts$i.getPart(comp, detail, 'toolbar').bind(function (toolbar) {
             return Optional.from(toolbar.getApis().isOpen).map(function (isOpen) {
               return isOpen(toolbar);
             });
           }).getOr(false);
         },
         getThrobber: function (comp) {
-          return parts$d.getPart(comp, detail, 'throbber');
+          return parts$i.getPart(comp, detail, 'throbber');
         },
         focusToolbar: function (comp) {
-          var optToolbar = parts$d.getPart(comp, detail, 'toolbar').orThunk(function () {
-            return parts$d.getPart(comp, detail, 'multiple-toolbar');
+          var optToolbar = parts$i.getPart(comp, detail, 'toolbar').orThunk(function () {
+            return parts$i.getPart(comp, detail, 'multiple-toolbar');
           });
           optToolbar.each(function (toolbar) {
             Keying.focusIn(toolbar);
           });
         },
         setMenubar: function (comp, menus) {
-          parts$d.getPart(comp, detail, 'menubar').each(function (menubar) {
+          parts$i.getPart(comp, detail, 'menubar').each(function (menubar) {
             SilverMenubar.setMenus(menubar, menus);
           });
         },
         focusMenubar: function (comp) {
-          parts$d.getPart(comp, detail, 'menubar').each(function (menubar) {
+          parts$i.getPart(comp, detail, 'menubar').each(function (menubar) {
             SilverMenubar.focus(menubar);
           });
         }
@@ -26886,7 +28394,7 @@
     });
     var OuterContainer = composite$1({
       name: 'OuterContainer',
-      factory: factory$h,
+      factory: factory$m,
       configFields: [
         strict$1('dom'),
         strict$1('behaviours')
@@ -28788,7 +30296,7 @@
       defaulted$1('mustSnap', false)
     ]);
 
-    var schema$t = [
+    var schema$y = [
       defaulted$1('useFixed', never),
       strict$1('blockerClass'),
       defaulted$1('getTarget', identity),
@@ -28942,7 +30450,7 @@
           start();
         })];
     };
-    var schema$u = __spreadArrays(schema$t, [output('dragger', { handlers: handlers(events$g) })]);
+    var schema$z = __spreadArrays(schema$y, [output('dragger', { handlers: handlers(events$g) })]);
 
     var init$d = function (dragApi) {
       return derive([
@@ -29014,16 +30522,16 @@
         })
       ];
     };
-    var schema$v = __spreadArrays(schema$t, [output('dragger', { handlers: handlers(events$h) })]);
+    var schema$A = __spreadArrays(schema$y, [output('dragger', { handlers: handlers(events$h) })]);
 
     var events$i = function (dragConfig, dragState, updateStartState) {
       return __spreadArrays(events$g(dragConfig, dragState, updateStartState), events$h(dragConfig, dragState, updateStartState));
     };
-    var schema$w = __spreadArrays(schema$t, [output('dragger', { handlers: handlers(events$i) })]);
+    var schema$B = __spreadArrays(schema$y, [output('dragger', { handlers: handlers(events$i) })]);
 
-    var mouse = schema$u;
-    var touch = schema$v;
-    var mouseOrTouch = schema$w;
+    var mouse = schema$z;
+    var touch = schema$A;
+    var mouseOrTouch = schema$B;
 
     var DraggingBranches = /*#__PURE__*/Object.freeze({
         __proto__: null,
@@ -29871,7 +31379,7 @@
       set$1(labelledElement, 'aria-labelledby', labelId);
     };
 
-    var schema$x = constant([
+    var schema$C = constant([
       strict$1('lazySink'),
       option('dragBlockClass'),
       defaultedFunction('getBounds', win),
@@ -29882,7 +31390,7 @@
       onStrictKeyboardHandler('onEscape')
     ]);
     var basic = { sketch: identity };
-    var parts$f = constant([
+    var parts$k = constant([
       optional({
         name: 'draghandle',
         overrides: function (detail, spec) {
@@ -30016,7 +31524,7 @@
       state: BlockingState
     });
 
-    var factory$i = function (detail, components, spec, externals) {
+    var factory$n = function (detail, components, spec, externals) {
       var _a;
       var dialogComp = Cell(Optional.none());
       var showDialog = function (dialog) {
@@ -30094,9 +31602,9 @@
     };
     var ModalDialog = composite$1({
       name: 'ModalDialog',
-      configFields: schema$x(),
-      partFields: parts$f(),
-      factory: factory$i,
+      configFields: schema$C(),
+      partFields: parts$k(),
+      factory: factory$n,
       apis: {
         show: function (apis, dialog) {
           apis.show(dialog);
@@ -30171,6 +31679,17 @@
     ];
     var alertBannerSchema = objOf(alertBannerFields);
 
+    var authFields = [
+      strictString('type'),
+      strictString('name'),
+      strictString('label'),
+      defaultedBoolean('disabled', false),
+      defaultedBoolean('checked0', true),
+      defaultedBoolean('checked1', false)
+    ];
+    var authSchema = objOf(authFields);
+    var authDataProcessor = objOf([]);
+
     var createBarFields = function (itemsField) {
       return [
         strictString('type'),
@@ -30195,7 +31714,8 @@
       strictString('type'),
       strictString('name'),
       strictString('label'),
-      defaultedBoolean('disabled', false)
+      defaultedBoolean('disabled', false),
+      defaultedBoolean('checked', false)
     ];
     var checkboxSchema = objOf(checkboxFields);
     var checkboxDataProcessor = boolean;
@@ -30243,6 +31763,36 @@
     var dropZoneSchema = objOf(dropZoneFields);
     var dropZoneDataProcessor = arrOfVal();
 
+    var defaultValueFields = formComponentWithLabelFields.concat([
+      strictArrayOfObj('items', [
+        strictArrayOfObj('items', [
+          strictString('text'),
+          strictString('value'),
+          defaultedBoolean('selected', false)
+        ]),
+        defaultedNumber('size', 1),
+        defaultedBoolean('disabled', false)
+      ]),
+      defaultedBoolean('disabled', false),
+      defaultedString('value', '')
+    ]);
+    var defaultValueSchema = objOf(defaultValueFields);
+    var defaultValueDataProcessor = objOf([strictString('dv')]);
+
+    var fieldTypeFields = formComponentWithLabelFields.concat([
+      strictArrayOfObj('items', [
+        strictString('text'),
+        strictString('value'),
+        defaultedBoolean('selected', false)
+      ]),
+      defaultedNumber('size', 1),
+      defaultedBoolean('disabled', false),
+      defaultedBoolean('checked', false),
+      defaultedBoolean('hidden', true)
+    ]);
+    var fieldTypeSchema = objOf(fieldTypeFields);
+    var fieldTypeDataProcessor = objOf([]);
+
     var createGridFields = function (itemsField) {
       return [
         strictString('type'),
@@ -30274,6 +31824,7 @@
     var inputFields = formComponentWithLabelFields.concat([
       optionString('inputMode'),
       optionString('placeholder'),
+      optionString('value'),
       defaultedBoolean('maximized', false),
       defaultedBoolean('disabled', false)
     ]);
@@ -30312,13 +31863,35 @@
     var selectBoxFields = formComponentWithLabelFields.concat([
       strictArrayOfObj('items', [
         strictString('text'),
-        strictString('value')
+        strictString('value'),
+        defaultedBoolean('selected', false)
       ]),
       defaultedNumber('size', 1),
       defaultedBoolean('disabled', false)
     ]);
     var selectBoxSchema = objOf(selectBoxFields);
     var selectBoxDataProcessor = string;
+
+    var selectMultiFields = formComponentWithLabelFields.concat([
+      strictArrayOfObj('items', [
+        strictArrayOfObj('items', [
+          strictString('text'),
+          strictString('value'),
+          defaultedBoolean('selected', false)
+        ]),
+        defaultedNumber('size', 1),
+        defaultedBoolean('disabled', false)
+      ]),
+      defaultedBoolean('disabled', false)
+    ]);
+    var selectMultiSchema = objOf(selectMultiFields);
+    var selectMultiDataProcessor = objOf([
+      strictString('tb'),
+      strictString('col'),
+      strictString('lnk'),
+      strictString('exeObs'),
+      strictString('exeTime')
+    ]);
 
     var sizeInputFields = formComponentWithLabelFields.concat([
       defaultedBoolean('constrain', true),
@@ -30337,8 +31910,27 @@
     ];
     var tableSchema = objOf(tableFields);
 
+    var tbColFields = formComponentWithLabelFields.concat([
+      strictArrayOfObj('items', [
+        strictArrayOfObj('items', [
+          strictString('text'),
+          strictString('value'),
+          defaultedBoolean('selected', false)
+        ]),
+        defaultedNumber('size', 1),
+        defaultedBoolean('disabled', false)
+      ]),
+      defaultedBoolean('disabled', false)
+    ]);
+    var tbColSchema = objOf(tbColFields);
+    var tbColDataProcessor = objOf([
+      strictString('tb'),
+      strictString('col')
+    ]);
+
     var textAreaFields = formComponentWithLabelFields.concat([
       optionString('placeholder'),
+      optionString('value'),
       defaultedBoolean('maximized', false),
       defaultedBoolean('disabled', false)
     ]);
@@ -30371,18 +31963,23 @@
     var itemSchema$3 = valueThunkOf(function () {
       return chooseProcessor('type', {
         alertbanner: alertBannerSchema,
+        auth: authSchema,
         bar: objOf(createBarFields(createItemsField('bar'))),
         button: buttonSchema,
         checkbox: checkboxSchema,
         colorinput: colorInputSchema,
         colorpicker: colorPickerSchema,
         dropzone: dropZoneSchema,
+        defaultvalue: defaultValueSchema,
+        fieldtype: fieldTypeSchema,
         grid: objOf(createGridFields(createItemsField('grid'))),
         iframe: iframeSchema,
         input: inputSchema,
         listbox: listBoxSchema,
         selectbox: selectBoxSchema,
+        selectmulti: selectMultiSchema,
         sizeinput: sizeInputSchema,
+        tbcol: tbColSchema,
         textarea: textAreaSchema,
         urlinput: urlInputSchema,
         customeditor: customEditorSchema,
@@ -30469,16 +32066,21 @@
       return isString(obj.type) && isString(obj.name);
     };
     var dataProcessors = {
+      auth: authDataProcessor,
       checkbox: checkboxDataProcessor,
       colorinput: colorInputDataProcessor,
       colorpicker: colorPickerDataProcessor,
       dropzone: dropZoneDataProcessor,
+      defaultvalue: defaultValueDataProcessor,
+      fieldtype: fieldTypeDataProcessor,
       input: inputDataProcessor,
       iframe: iframeDataProcessor,
       sizeinput: sizeInputDataProcessor,
+      selectmulti: selectMultiDataProcessor,
       selectbox: selectBoxDataProcessor,
       listbox: listBoxDataProcessor,
       size: sizeInputDataProcessor,
+      tbcol: tbColDataProcessor,
       textarea: textAreaDataProcessor,
       urlinput: urlInputDataProcessor,
       customeditor: customEditorDataProcessor,
@@ -30585,7 +32187,7 @@
       };
     };
 
-    var factory$j = function (detail, _spec) {
+    var factory$o = function (detail, _spec) {
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -30631,10 +32233,10 @@
         ]),
         strict$1('view')
       ],
-      factory: factory$j
+      factory: factory$o
     });
 
-    var schema$y = constant([
+    var schema$D = constant([
       strict$1('tabs'),
       strict$1('dom'),
       defaulted$1('clickToDismiss', false),
@@ -30685,9 +32287,9 @@
         };
       }
     });
-    var parts$g = constant([tabsPart]);
+    var parts$l = constant([tabsPart]);
 
-    var factory$k = function (detail, components, _spec, _externals) {
+    var factory$p = function (detail, components, _spec, _externals) {
       return {
         'uid': detail.uid,
         'dom': detail.dom,
@@ -30720,12 +32322,12 @@
     };
     var Tabbar = composite$1({
       name: 'Tabbar',
-      configFields: schema$y(),
-      partFields: parts$g(),
-      factory: factory$k
+      configFields: schema$D(),
+      partFields: parts$l(),
+      factory: factory$p
     });
 
-    var factory$l = function (detail, _spec) {
+    var factory$q = function (detail, _spec) {
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -30736,10 +32338,10 @@
     var Tabview = single$2({
       name: 'Tabview',
       configFields: [field$1('tabviewBehaviours', [Replacing])],
-      factory: factory$l
+      factory: factory$q
     });
 
-    var schema$z = constant([
+    var schema$E = constant([
       defaulted$1('selectFirst', true),
       onHandler('onChangeTab'),
       onHandler('onDismissTab'),
@@ -30764,12 +32366,12 @@
       factory: Tabview,
       name: 'tabview'
     });
-    var parts$h = constant([
+    var parts$m = constant([
       barPart,
       viewPart
     ]);
 
-    var factory$m = function (detail, components, _spec, _externals) {
+    var factory$r = function (detail, components, _spec, _externals) {
       var changeTab$1 = function (button) {
         var tabValue = Representing.getValue(button);
         getPart(button, detail, 'tabview').each(function (tabview) {
@@ -30834,9 +32436,9 @@
     };
     var TabSection = composite$1({
       name: 'TabSection',
-      configFields: schema$z(),
-      partFields: parts$h(),
-      factory: factory$m,
+      configFields: schema$E(),
+      partFields: parts$m(),
+      factory: factory$r,
       apis: {
         getViewItems: function (apis, component) {
           return apis.getViewItems(component);
@@ -31977,7 +33579,7 @@
       };
     };
 
-    var global$h = tinymce.util.Tools.resolve('tinymce.util.URI');
+    var global$i = tinymce.util.Tools.resolve('tinymce.util.URI');
 
     var getUrlDialogApi = function (root) {
       var withRoot = function (f) {
@@ -32085,14 +33687,14 @@
         };
       }));
       var classes = internalDialog.width.isNone() && internalDialog.height.isNone() ? ['tox-dialog--width-lg'] : [];
-      var iframeUri = new global$h(internalDialog.url, { base_uri: new global$h(window.location.href) });
+      var iframeUri = new global$i(internalDialog.url, { base_uri: new global$i(window.location.href) });
       var iframeDomain = iframeUri.protocol + '://' + iframeUri.host + (iframeUri.port ? ':' + iframeUri.port : '');
       var messageHandlerUnbinder = Cell(Optional.none());
       var extraBehaviours = [
         config('messages', [
           runOnAttached(function () {
             var unbind = bind$3(SugarElement.fromDom(window), 'message', function (e) {
-              if (iframeUri.isSameOrigin(new global$h(e.raw.origin))) {
+              if (iframeUri.isSameOrigin(new global$i(e.raw.origin))) {
                 var data = e.raw.data;
                 if (isSupportedMessage(data)) {
                   handleMessage(editor, instanceApi, data);

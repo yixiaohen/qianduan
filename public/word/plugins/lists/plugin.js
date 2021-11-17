@@ -755,7 +755,8 @@
     var setAll = function (element, attrs) {
       var dom = element.dom;
       each$1(attrs, function (v, k) {
-        rawSet(dom, k, v);
+        if (v !== '')
+          rawSet(dom, k, v);
       });
     };
     var clone = function (element) {

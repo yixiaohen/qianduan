@@ -35,6 +35,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            style="margin-top: 7px"
             type="info"
             icon="el-icon-search"
             size="mini"
@@ -54,6 +55,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            style="margin-top: 7px"
             :loading="downloadLoading"
             :disabled="listLoading"
             type="success"
@@ -174,6 +176,7 @@
         </el-col>
         <el-col :span="20">
           <el-pagination
+            style="margin-top: 10px"
             background
             :current-page.sync="pagination.pageIndex"
             :page-size="pagination.pageSize"

@@ -68,6 +68,15 @@ export function BaseMonitor(data) {
     params: data
   });
 }
+// 查询单条监测数据
+export function GetDataDetail(data) {
+  return request({
+    url: 'I_Monitor/GetDataDetail',
+    method: 'get',
+    params: data
+  });
+}
+
 // 查询监测列表数据、基本监测返回list,有分页
 export function GetmonthRatio(data) {
   return request({

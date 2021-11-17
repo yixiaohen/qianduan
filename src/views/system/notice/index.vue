@@ -275,6 +275,7 @@ export default {
     ...mapGetters(['device'])
   },
   methods: {
+
     handleChange(file, fileList) {
       this.uploadEnd = true;
       fileList.forEach((item) => {

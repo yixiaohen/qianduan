@@ -92,7 +92,7 @@ export default {
     },
     // 修改评审查阅显示状态
     async changeState() {
-      this.$emit('changeCatalogID2', this.ShowRes);
+      this.$emit('changeCatalogID', this.ShowRes);
       try {
         const { code } = await UpdateRepVersion(
           { ReviewVersion: this.ShowRes }

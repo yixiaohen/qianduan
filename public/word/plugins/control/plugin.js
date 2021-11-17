@@ -21,20 +21,29 @@
           width: '',
           height: ''
         },
-        option: ''
+        option: '',
+        n: '',
+        ln: '',
+        dv: ''
       };
     };
     var read = function (control) {
       var css = DOM.styles.parse(getAttrib(control, 'style'));
       var w = css.width ? css.width : '';
       var h = css.height ? css.height : '';
+      var n = getAttrib(control, 'n');
+      var ln = getAttrib(control, 'ln');
+      var dv = getAttrib(control, 'dv');
       if (control.tagName === 'SELECT') {
         return {
           style: {
             width: w,
             height: h
           },
-          option: control.innerHTML.replace(/<\/option><option>/g, ',').replace('<option>', '').replace('</option>', '')
+          option: control.innerHTML.replace(/<\/option><option.*?>/g, ',').replace(/<option.*?>/g, '').replace('</option>', ''),
+          n: n,
+          ln: ln,
+          dv: dv
         };
       } else if (control.tagName === 'TEXTAREA') {
         return {
@@ -42,7 +51,10 @@
             width: w,
             height: h
           },
-          option: control.innerHTML
+          option: control.innerHTML,
+          n: n,
+          ln: ln,
+          dv: dv
         };
       } else if (control.tagName === 'INPUT') {
         return {
@@ -50,7 +62,10 @@
             width: w,
             height: h
           },
-          option: getAttrib(control, 'value')
+          option: getAttrib(control, 'value'),
+          n: n,
+          ln: ln,
+          dv: dv
         };
       }
     };
@@ -69,6 +84,11 @@
     var isRadio = function (elm) {
       return elm.nodeName === 'INPUT' && DOM.getAttrib(elm, 'type') === 'radio';
     };
+    var isFile = function (elm) {
+      return elm.nodeName === 'INPUT' && DOM.getAttrib(elm, 'type') === 'file';
+    };
+
+    var Global = typeof window !== 'undefined' ? window : Function('return this;')();
 
     var typeOf = function (x) {
       var t = typeof x;
@@ -117,7 +137,29 @@
     };
     var deepMerge = baseMerge(deep);
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.EditorManager');
+
+    var ToolbarMode;
+    (function (ToolbarMode) {
+      ToolbarMode['default'] = 'wrap';
+      ToolbarMode['floating'] = 'floating';
+      ToolbarMode['sliding'] = 'sliding';
+      ToolbarMode['scrolling'] = 'scrolling';
+    }(ToolbarMode || (ToolbarMode = {})));
+    var ToolbarLocation;
+    (function (ToolbarLocation) {
+      ToolbarLocation['auto'] = 'auto';
+      ToolbarLocation['top'] = 'top';
+      ToolbarLocation['bottom'] = 'bottom';
+    }(ToolbarLocation || (ToolbarLocation = {})));
+    var getControlDlgGet = function (editor) {
+      return editor.getParam('control_dlg_get');
+    };
+    var getControlDlgSet = function (editor) {
+      return editor.getParam('control_dlg_set');
+    };
+
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
     var getSelectedControl = function (editor) {
       var controlElm = editor.selection.getNode();
@@ -138,7 +180,7 @@
     };
 
     var collect = function (editor) {
-      var controlList = new global$2(function (completer) {
+      var controlList = new global$3(function (completer) {
         completer();
       });
       var control = readControlDataFromSelection(editor);
@@ -153,60 +195,60 @@
           width: control.style.width,
           height: control.style.height
         },
-        option: control.option
+        option: control.option,
+        n: control.n,
+        ln: control.ln,
+        dv: { dv: control.dv }
       };
     };
-    var makeDialogBody = function (info, type) {
-      if (type === 'select') {
-        var tabPanel = {
-          type: 'tabpanel',
-          tabs: [{
-              title: 'General',
-              name: 'general',
-              items: [
-                {
-                  name: 'style',
-                  type: 'sizeinput',
-                  constrain: true
-                },
-                {
-                  name: 'option',
-                  type: 'input',
-                  label: 'Option'
-                }
-              ]
-            }]
-        };
-        return tabPanel;
-      } else {
-        var tabPanel = {
-          type: 'tabpanel',
-          tabs: [{
-              title: 'General',
-              name: 'general',
-              items: [
-                {
-                  name: 'style',
-                  type: 'sizeinput',
-                  constrain: false
-                },
-                {
-                  name: 'option',
-                  type: 'input',
-                  label: 'Value'
-                }
-              ]
-            }]
-        };
-        return tabPanel;
-      }
-    };
-    var makeDialog = function (helpers) {
+    var makeDialog = function (helpers, editor) {
       return function (info) {
-        return {
+        var tabPanel;
+        if (helpers.type === 'select') {
+          tabPanel = {
+            type: 'tabpanel',
+            tabs: [{
+                title: 'General',
+                name: 'general',
+                items: [
+                  {
+                    name: 'style',
+                    type: 'sizeinput',
+                    constrain: true
+                  },
+                  {
+                    name: 'option',
+                    type: 'input',
+                    label: 'Option'
+                  }
+                ]
+              }]
+          };
+        } else {
+          tabPanel = {
+            type: 'tabpanel',
+            tabs: [{
+                title: 'General',
+                name: 'general',
+                items: [
+                  {
+                    name: 'style',
+                    type: 'sizeinput',
+                    constrain: false
+                  },
+                  {
+                    name: 'option',
+                    type: 'input',
+                    label: 'Value'
+                  }
+                ]
+              }]
+          };
+        }
+        var dlg = {
           title: helpers.type,
           size: 'normal',
-          body: makeDialogBody(info, helpers.type),
+          body: null,
           buttons: [
             {
               type: 'cancel',
@@ -221,15 +263,77 @@
             }
           ],
           initialData: fromControlData(info.control),
-          onSubmit: helpers.onSubmit(info)
+          onSubmit: helpers.onSubmit(info),
+          onChange: helpers.onChange()
         };
+        var func = getControlDlgGet(editor);
+        if (func !== undefined) {
+          func(helpers.type, info.control.n, info.control.ln).then(function (re) {
+            if (re.code === 200) {
+              tabPanel.tabs.push({
+                title: 'Db',
+                name: 'db',
+                items: []
+              });
+              tabPanel.tabs.push({
+                title: 'Flow',
+                name: 'flow',
+                items: []
+              });
+              tabPanel.tabs.push({
+                title: 'Formula',
+                name: 'formula',
+                items: []
+              });
+              tabPanel.tabs.push({
+                title: 'SumTb',
+                name: 'sumTb',
+                items: []
+              });
+              tabPanel.tabs.push({
+                title: 'Permission',
+                name: 'permission',
+                items: []
+              });
+              tabPanel.tabs[1].items = re.data[0];
+              tabPanel.tabs[2].items = re.data[1];
+              tabPanel.tabs[3].items = re.data[2];
+              tabPanel.tabs[4].items = re.data[3];
+              tabPanel.tabs[5].items = re.data[4];
+              Global.console.log(re.data);
+            }
+            dlg.body = tabPanel;
+            return dlg;
+          }).then(editor.windowManager.open);
+        } else {
+          dlg.body = tabPanel;
+          editor.windowManager.open(dlg);
+        }
       };
     };
-    var submitHandler = function (editor) {
+    var submitHandler = function (editor, type) {
       return function (info) {
         return function (api) {
           var data = deepMerge(fromControlData(info.control), api.getData());
           var control = editor.selection.control;
+          var func = getControlDlgSet(editor);
+          if (func !== undefined) {
+            Global.console.log(data);
+            func(type, data).then(function (re) {
+              Global.console.log(re);
+              if (re.code === 300) {
+                api.close();
+                return;
+              }
+              if (re.code !== 200) {
+                Global.alert(re.msg);
+                return;
+              }
+              control.setAttribute('n', re.data.n);
+              control.setAttribute('ln', re.data.ln);
+              api.close();
+            });
+          }
           if (control.style) {
             control.style.width = data.style.width;
             control.style.height = data.style.height;
@@ -245,17 +349,34 @@
           } else if (control.tagName === 'INPUT') {
             control.setAttribute('value', data.option);
           }
-          api.close();
+          control.setAttribute('dv', data.dv.dv);
+          if (func === undefined) {
+            api.close();
+          }
+        };
+      };
+    };
+    var changeHandler = function () {
+      return function () {
+        return function (api) {
+          var data = api.getData();
+          Global.console.log(data);
+          if ('lnk' in data) {
+            if (data.lnk.vcLnkTb === 'tblStaff') {
+              Global.console.log('yes');
+            }
+          }
         };
       };
     };
     var Dialog = function (editor, type) {
       var helpers = {
         type: type,
-        onSubmit: submitHandler(editor)
+        onSubmit: submitHandler(editor, type),
+        onChange: changeHandler()
       };
       var open = function () {
-        collect(editor).then(makeDialog(helpers)).then(editor.windowManager.open);
+        collect(editor).then(makeDialog(helpers, editor));
       };
       return { open: open };
     };
@@ -285,12 +406,19 @@
           type: 'radio'
         }));
       };
+      var file = function () {
+        editor.insertContent(editor.dom.createHTML('input', {
+          name: 'h',
+          type: 'file'
+        }));
+      };
       return {
         select: select,
         input: input,
         textarea: textarea,
         checkbox: checkbox,
-        radio: radio
+        radio: radio,
+        file: file
       };
     };
     var register = function (editor) {
@@ -298,7 +426,7 @@
         icon: 'control',
         tooltip: 'Control',
         fetch: function (callback) {
-          return callback('selectInsert inputInsert textareaInsert checkboxInsert radioInsert');
+          return callback('selectInsert inputInsert textareaInsert checkboxInsert radioInsert fileInsert');
         }
       });
       editor.ui.registry.addMenuItem('selectInsert', {
@@ -361,6 +489,16 @@
         text: 'Radio',
         onAction: Dialog(editor, 'radio').open
       });
+      editor.ui.registry.addMenuItem('fileInsert', {
+        icon: 'file',
+        text: 'File',
+        onAction: insert(editor).file
+      });
+      editor.ui.registry.addMenuItem('file', {
+        icon: 'file',
+        text: 'File',
+        onAction: Dialog(editor, 'file').open
+      });
       editor.ui.registry.addContextMenu('input', {
         update: function (element) {
           if (isInput(element)) {
@@ -369,6 +507,8 @@
             return ['checkbox'];
           } else if (isRadio(element)) {
             return ['radio'];
+          } else if (isFile(element)) {
+            return ['file'];
           } else {
             return [];
           }

@@ -1,7 +1,7 @@
 <template>
   <el-container class="user">
     <el-header>
-      <el-form :label-position="labelPosition" :inline="true" size="mini">
+      <el-form :label-position="labelPosition" :inline="true" size="mini" style="margin-top: 6px">
         <el-form-item>
           <el-button
             type="primary"
@@ -30,11 +30,15 @@
           />
         </el-form-item>
         <el-form-item>
-          <!-- 科室 -->
-          <defaultDept
-            :multiple="false"
-            @getDefaultDeptsValue="getDefaultDeptValues"
-          />
+          <div   style="margin-top: 0px;margin-bottom: 5px">
+
+            <!-- 科室 -->
+            <defaultDept
+              :multiple="true"
+              @getDefaultDeptsValue="getDefaultDeptValues"
+            />
+          </div>
+
         </el-form-item>
         <el-form-item>
           <!-- 职位 -->
@@ -82,7 +86,7 @@
       <el-table
         v-loading="listLoading"
         :data="tableData"
-        style="width: 100%"
+        style="width: 100%;margin-top: 10px"
         height="calc(100vh - 180px)"
         border
         size="mini"
@@ -237,7 +241,7 @@
               <el-form-item label="职称" prop="JobID">
                 <job :value="fromData.JobID" @getJobValue="getJobValue"/>
               </el-form-item>
-              <el-form-item label="组别">
+              <el-form-item label="组别" prop="GroupID">
                 <el-select
                   v-model="fromData.GroupID"
                   clearable
@@ -327,8 +331,8 @@
                   font-size: 12px;
                   color: #8a8f97"
                 >
-                温馨提示:默认为空只能看到该用户以及对应科室创建的季度表单。如果要使该用户可以看到其他科室的季度表单
-                请在勾选相关科室，一旦勾选了相关科室，必须勾选该用户所在的科室，否则看不到该用户以及对应科室创建的季度表单！
+                  温馨提示:默认为空只能看到该用户以及对应科室创建的季度表单。如果要使该用户可以看到其他科室的季度表单
+                  请在勾选相关科室，一旦勾选了相关科室，必须勾选该用户所在的科室，否则看不到该用户以及对应科室创建的季度表单！
                 </div>
               </el-form-item>
             </el-tab-pane>
@@ -629,7 +633,7 @@ export default {
         JobID: 0,
         PositionID: 0,
         DeptID: 0,
-        RoleID: 0
+        RoleID:0
       },
       fromData: {
         UserName: '',
@@ -898,9 +902,8 @@ export default {
         if (v) {
           const data = {
             UserID: this.fromData.UserID,
-            DeptID: this.TreeDepts
+            DeptID: this.fromData.DeptID
           };
-          this.fromData.DeptID = this.TreeDepts;
           this.fromData.DeptIDs = this.fromData.DeptIDs.toString() || null;
           this.fromData.RoleID = this.RoleID || [];
           this.fromData.GroupID = this.fromData.GroupID || 0;
@@ -938,6 +941,7 @@ export default {
         ReviewUserID: '',
         DeptIDs: []
       };
+      console.log('这个里面', row);
       this.dialogTitle = '增加用户';
       this.TreeDepts = [];
       this.defaultchecked = '';
@@ -974,7 +978,9 @@ export default {
       this.fromData.DeptID = [];
       this.$refs.treeDepts.setCheckedKeys([value.DeptID]);
       this.selectOrg.orgsid.push(value.DeptID);
+      console.log('value是', value);
       this.fromData.DeptID.push(value.DeptID);
+      console.log('选中的是', this.fromData.DeptID);
     },
     getSelectTreeDept2(value) {
       this.fromData.DeptIDs = this.$refs.treeDepts2.getCheckedKeys();
@@ -1001,6 +1007,7 @@ export default {
     },
     getDefaultDeptValues(value) {
       this.listQuery.DeptID = value || 0;
+      this.listQuery.DeptID = this.listQuery.DeptID.toString(); // 可以多选部门搜索，数组转为字符串
     },
     getPositionValues(value) {
       this.listQuery.PositionID = value || 0;

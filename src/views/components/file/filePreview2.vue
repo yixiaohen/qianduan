@@ -121,8 +121,13 @@ export default {
       }
     },
     async PreviewFile(title) {
+      // 由于已经加了/Annex/file，所以，如果有的就去掉/Annex/file
+      var res = title.search('/Annex/file');
+      if (res !== -1) {
+        title = title.replace(/Annex\/file\/|\//g, '');
+      }
       /* 文件预览 */
-      console.log('ll', title);
+      console.log('title', title);
       try {
         // title = title.replace(/Annex\/file\/|\//g, '');
         const { data } = await PreviewFile({

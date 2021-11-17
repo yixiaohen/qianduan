@@ -608,6 +608,7 @@
     <el-dialog
       title="提示"
       :visible.sync="addTestClassifyDialogVisible"
+      :close-on-click-modal="false"
       width="30%"
     >
       <el-input

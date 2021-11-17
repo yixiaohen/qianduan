@@ -6,6 +6,7 @@
       :load="loadNode"
       node-key="CatalogID"
       lazy
+      highlight-current
       :show-checkbox="multiples"
       @node-click="nodeClickCatalog"
       @check="getSelectTreeCatalog"
@@ -30,8 +31,10 @@
 
 <script>
 import { mapGetters } from 'vuex';
+// import { sortS } from '@/views/mixin/sortmixin'; // 导入排序功能函数
 import { SelectCatalogAuthorizationUser } from '@/api/catalog'; // 这里和kmCatalog.vue中的SelectCatalogByParentID区别在于这里有根据用户权限控制
 export default {
+  // mixins: [sortS],
   props: {
     value: {
       type: String,
@@ -76,7 +79,7 @@ export default {
     async loadNode(node, resolve) {
       if (node && node.level === 0) {
         try {
-          const { data } = await SelectCatalogAuthorizationUser({
+          let { data } = await SelectCatalogAuthorizationUser({
             dev: this.device,
             CatalogID: 0,
             UserID: window.userInfo[0].UserID,
@@ -85,17 +88,19 @@ export default {
           data.forEach(element => {
             element.CatalogCode = element.CatalogName;
           });
+          // data = sortS.sortw(data);
           // data.CatalogCode+= data.CatalogName;
           resolve && resolve(data);
         } catch {
         }
       } else {
         try {
-          const { data } = await SelectCatalogAuthorizationUser({
+          let { data } = await SelectCatalogAuthorizationUser({
             CatalogID: node && node.data.CatalogID,
             UserID: window.userInfo[0].UserID,
             UploadState: this.uploadstate
           });
+          // data = sortS.sortw(data);
           resolve && resolve(data);
         } catch {
         }
@@ -112,13 +117,13 @@ export default {
 
 /* 改变被点击节点背景颜色，字体颜色 */
 .el-tree-node:focus > .el-tree-node__content {
-  background-color: #4a9de7 !important;
+  background-color: #1890ff !important;
   color: #fff !important;
 }
 
 /*节点失焦时的背景颜色*/
 .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-  background-color: #4a9de7 !important;
+  background-color: #1890ff !important;
   color: #fff !important;
 }
 </style>

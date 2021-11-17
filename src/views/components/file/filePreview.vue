@@ -122,7 +122,11 @@ export default {
     },
     async PreviewFile(title) {
       /* 文件预览 */
-      console.log('看下啊',title);
+      // 由于已经加了/Annex/file，所以，如果有的就去掉/Annex/file
+      var res = title.search('/Annex/file');
+      if (res !== -1) {
+        title = title.replace(/Annex\/file\/|\//g, '');
+      }
       try {
         const { data } = await PreviewFile({
           Title: title

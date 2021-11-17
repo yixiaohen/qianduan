@@ -106,7 +106,7 @@
 
     <!--    通用模板-->
     <div v-if="temNameL===0" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
 
         <template slot="paneL">
           <div class="middle">
@@ -116,6 +116,7 @@
                 :data="tableData"
                 height="100%"
                 border
+                highlight-current-row
                 size="mini"
                 class="middleBodyTb"
                 @row-click="rowClick"
@@ -252,7 +253,7 @@
     </div>
     <!--医疗器械模板列表数据-->
     <div v-else-if="temNameL===1" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
@@ -261,6 +262,7 @@
                 :data="reportData"
                 height="100%"
                 border
+                highlight-current-row
                 size="mini"
                 class="middleBodyTb"
                 @row-click="rowClick"
@@ -334,7 +336,7 @@
                 :current-page.sync="listQueryYiLiao.pageIndex"
                 :page-size="listQueryYiLiao.pageSize"
                 :page-sizes="listQueryYiLiao.pageSizes"
-                :total="listQueryYiLiao.total"
+                :total="listQueryYiLiao.Total"
                 layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
@@ -397,7 +399,7 @@
     </div>
     <!--护理模板列表数据-->
     <div v-else-if="temNameL===2" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
@@ -406,6 +408,7 @@
                 :data="reportData"
                 height="100%"
                 border
+                highlight-current-row
                 size="mini"
                 class="middleBodyTb"
                 @row-click="rowClick"
@@ -479,7 +482,7 @@
                 :current-page.sync="listQueryHuLi.pageIndex"
                 :page-size="listQueryHuLi.pageSize"
                 :page-sizes="listQueryHuLi.pageSizes"
-                :total="listQueryHuLi.total"
+                :total="listQueryHuLi.Total"
                 layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
@@ -542,7 +545,7 @@
     </div>
     <!--医疗安全模板列表数据-->
     <div v-else-if="temNameL===3" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
@@ -551,6 +554,7 @@
                 :data="reportData"
                 height="100%"
                 border
+                highlight-current-row
                 size="mini"
                 class="middleBodyTb"
                 @row-click="rowClick"
@@ -624,7 +628,7 @@
                 :current-page.sync="listQueryYiLiaoAnQuan.pageIndex"
                 :page-size="listQueryYiLiaoAnQuan.pageSize"
                 :page-sizes="listQueryYiLiaoAnQuan.pageSizes"
-                :total="listQueryYiLiaoAnQuan.total"
+                :total="listQueryYiLiaoAnQuan.Total"
                 layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
@@ -687,7 +691,7 @@
     </div>
     <!--药品安全模板列表数据-->
     <div v-else-if="temNameL===4" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
@@ -696,6 +700,7 @@
                 :data="reportData"
                 height="100%"
                 border
+                highlight-current-row
                 size="mini"
                 class="middleBodyTb"
                 @row-click="rowClick"
@@ -769,7 +774,7 @@
                 :current-page.sync="listQueryYaoPin.pageIndex"
                 :page-size="listQueryYaoPin.pageSize"
                 :page-sizes="listQueryYaoPin.pageSizes"
-                :total="listQueryYaoPin.total"
+                :total="listQueryYaoPin.Total"
                 layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
@@ -1041,7 +1046,7 @@ export default {
       try {
         this.typeNum = 1; // 此时可以用1表示当前显示的是医疗器械安全表
         const { data } = await SelectReportqixie(this.listQueryYiLiao);
-        this.listQueryYiLiao.total = data.Total;
+        this.listQueryYiLiao.Total = data.Total;
         this.reportData = data.DataList;
         this.rowClick(data.DataList[0]);
         // this.temNamel = 1;
@@ -1060,7 +1065,7 @@ export default {
       try {
         this.typeNum = 2; // 此时可以用2表示当前显示的是护理安全表
         const { data } = await SelectReportHuli(this.listQueryHuLi);
-        this.listQueryHuLi.total = data.Total;
+        this.listQueryHuLi.Total = data.Total;
         this.reportData = data.DataList;
         this.rowClick(data.DataList[0]);
         // this.temNamel = 2;
@@ -1098,7 +1103,7 @@ export default {
       try {
         this.typeNum = 4; // 此时可以用4表示当前显示的是药品安全表
         const { data } = await SelectReportYaoPin(this.listQueryYaoPin);
-        this.listQueryYaoPin.total = data.Total;
+        this.listQueryYaoPin.Total = data.Total;
         this.reportData = data.DataList;
         this.rowClick(data.DataList[0]);
         // this.temNamel = 4;
@@ -1288,7 +1293,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 .box-card-view {
   margin: 4px;
   overflow: hidden;
@@ -1306,7 +1311,6 @@ export default {
 
     .middle {
       height: 100%;
-
       .middleBody {
         height: calc(100% - 37px);
         overflow-y: hidden;

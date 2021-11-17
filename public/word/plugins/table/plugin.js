@@ -1263,7 +1263,8 @@
     var setAll = function (element, attrs) {
       var dom = element.dom;
       each$1(attrs, function (v, k) {
-        rawSet(dom, k, v);
+        if (v !== '')
+          rawSet(dom, k, v);
       });
     };
     var get$2 = function (element, key) {
@@ -7195,7 +7196,11 @@
       });
     };
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.XHR');
+
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var getTDTHOverallStyle = function (dom, elm, name) {
       var cells = dom.select('td,th', elm);
@@ -7225,12 +7230,12 @@
       }
     };
     var unApplyAlign = function (editor, elm) {
-      global$1.each('left center right'.split(' '), function (name) {
+      global$3.each('left center right'.split(' '), function (name) {
         editor.formatter.remove('align' + name, {}, elm);
       });
     };
     var unApplyVAlign = function (editor, elm) {
-      global$1.each('top middle bottom'.split(' '), function (name) {
+      global$3.each('top middle bottom'.split(' '), function (name) {
         editor.formatter.remove('valign' + name, {}, elm);
       });
     };
@@ -7470,7 +7475,11 @@
         celltype: getNodeName(cell),
         class: dom.getAttrib(cell, 'class', ''),
         halign: getHAlignment(editor, cell),
-        valign: getVAlignment(editor, cell)
+        valign: getVAlignment(editor, cell),
+        sub: dom.getAttrib(cell, 'sub', ''),
+        subfield: dom.getAttrib(cell, 'subfield', ''),
+        rangetype: dom.getAttrib(cell, 'rangetype', ''),
+        rangecount: dom.getAttrib(cell, 'rangecount', '')
       }, hasAdvancedCellTab ? extractAdvancedStyles(dom, cell) : {});
     };
 
@@ -7624,6 +7633,19 @@
       ifTruthy: modifiers(true)
     };
 
+    var cellD = function (oldData) {
+      return new global$1(function (resolve, reject) {
+        global$2.send({
+          url: '/hrms.dll/cellD?sub=' + oldData.sub + '&subfield=' + oldData.subfield + '&rangetype=' + oldData.rangetype + '&rangecount=' + oldData.rangecount,
+          success: function (html) {
+            resolve(html);
+          },
+          error: function (e) {
+            reject(e);
+          }
+        });
+      });
+    };
     var getSelectedCells = function (cells) {
       return table(cells[0]).map(function (table) {
         var warehouse = Warehouse.fromTable(table);
@@ -7657,6 +7679,8 @@
     };
     var applyCellData = function (editor, cells, oldData, data) {
       var isSingleCell = cells.length === 1;
+      Global.console.log(oldData);
+      Global.console.log(data);
       var modifiedData = filter$1(data, function (value, key) {
         return oldData[key] !== value;
       });
@@ -7676,6 +7700,13 @@
             if (isSingleCell) {
               unApplyAlign(editor, cellElm);
               unApplyVAlign(editor, cellElm);
+              cellElm.setAttribute('sub', data.db.tb);
+              if (data.db.tb !== 'none') {
+                cellElm.innerText = '.';
+              }
+              cellElm.setAttribute('subfield', data.db.col);
+              cellElm.setAttribute('rangetype', data.rangetype);
+              cellElm.setAttribute('rangecount', data.rangecount);
             }
             if (data.halign) {
               applyAlign(editor, cellElm, data.halign);
@@ -7737,10 +7768,10 @@
             items: getItems(editor)
           }]
       };
-      editor.windowManager.open({
+      var dlg = {
         title: 'Cell Properties',
         size: 'normal',
-        body: hasAdvancedCellTab(editor) ? dialogTabPanel : dialogPanel,
+        body: null,
         buttons: [
           {
             type: 'cancel',
@@ -7756,7 +7787,27 @@
         ],
         initialData: data,
         onSubmit: curry(onSubmitCellForm, editor, cells, data)
-      });
+      };
+      if (cells.length === 1) {
+        cellD(data).then(function (s) {
+          var re = JSON.parse(s);
+          if (re.code === 200) {
+            dialogTabPanel.tabs.push({
+              title: 'Db',
+              name: 'db',
+              items: re.data
+            });
+            dlg.body = dialogTabPanel;
+            editor.windowManager.open(dlg);
+          } else {
+            dlg.body = hasAdvancedCellTab(editor) ? dialogTabPanel : dialogPanel;
+            editor.windowManager.open(dlg);
+          }
+        }).catch();
+      } else {
+        dlg.body = hasAdvancedCellTab(editor) ? dialogTabPanel : dialogPanel;
+        editor.windowManager.open(dlg);
+      }
     };
 
     var getClassList$1 = function (editor) {
@@ -7924,7 +7975,7 @@
       });
     };
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.Env');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var getItems$2 = function (editor, classes, insertNewTable) {
       var rowColCountItems = !insertNewTable ? [] : [
@@ -8091,7 +8142,7 @@
           }
           if (!captionElm && data.caption) {
             captionElm = dom.create('caption');
-            captionElm.innerHTML = !global$2.ie ? '<br data-mce-bogus="1"/>' : nbsp;
+            captionElm.innerHTML = !global$4.ie ? '<br data-mce-bogus="1"/>' : nbsp;
             tableElm.insertBefore(captionElm, tableElm.firstChild);
           }
           if (data.align === '') {
@@ -9076,7 +9127,7 @@
       });
     };
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.VK');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
     var forward = function (editor, isRoot, cell, actions) {
       return go(editor, isRoot, next(cell), actions);
@@ -9117,7 +9168,7 @@
       'dl'
     ];
     var handle$1 = function (event, editor, actions) {
-      if (event.keyCode === global$3.TAB) {
+      if (event.keyCode === global$5.TAB) {
         var body_1 = getBody$1(editor);
         var isRoot_1 = function (element) {
           var name$1 = name(element);
@@ -10279,7 +10330,7 @@
           if (raw.buttons === undefined) {
             return true;
           }
-          if (global$2.browser.isEdge() && raw.buttons === 0) {
+          if (global$4.browser.isEdge() && raw.buttons === 0) {
             return true;
           }
           return (raw.buttons & 1) !== 0;

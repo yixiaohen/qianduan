@@ -614,7 +614,9 @@
         vspace: getVspace(image),
         border: getBorder(image),
         borderStyle: getStyle(image, 'borderStyle'),
-        isDecorative: getIsDecorative(image)
+        isDecorative: getIsDecorative(image),
+        sub: getAttrib(image, 'sub'),
+        subfield: getAttrib(image, 'subfield')
       };
     };
     var updateProp = function (image, oldData, newData, name, set) {
@@ -668,6 +670,8 @@
       updateProp(image, oldData, newData, 'vspace', normalized(setVspace, normalizeCss));
       updateProp(image, oldData, newData, 'border', normalized(setBorder, normalizeCss));
       updateProp(image, oldData, newData, 'borderStyle', normalized(setBorderStyle, normalizeCss));
+      updateProp(image, oldData, newData, 'sub', updateAttrib);
+      updateProp(image, oldData, newData, 'subfield', updateAttrib);
       updateAlt(image, oldData, newData);
     };
 
@@ -1118,6 +1122,19 @@
     };
     var UploadTab = { makeTab: makeTab$2 };
 
+    var imgD = function (oldData) {
+      return new global$2(function (resolve, reject) {
+        global$3.send({
+          url: '/hrms.dll/imgD?sub=' + oldData.sub + '&subfield=' + oldData.subfield,
+          success: function (html) {
+            resolve(html);
+          },
+          error: function (e) {
+            reject(e);
+          }
+        });
+      });
+    };
     var createState = function (info) {
       return {
         prevImage: ListUtils.findEntry(info.imageList, info.image.src),
@@ -1146,7 +1163,11 @@
         hspace: image.hspace,
         borderstyle: image.borderStyle,
         fileinput: [],
-        isDecorative: image.isDecorative
+        isDecorative: image.isDecorative,
+        db: {
+          tb: image.sub,
+          col: image.subfield
+        }
       };
     };
     var toImageData = function (data, removeEmptyAlt) {
@@ -1163,7 +1184,9 @@
         vspace: data.vspace,
         border: data.border,
         borderStyle: data.borderstyle,
-        isDecorative: data.isDecorative
+        isDecorative: data.isDecorative,
+        sub: data.db.tb ? data.db.tb : '',
+        subfield: data.db.col ? data.db.col : ''
       };
     };
     var addPrependUrl2 = function (info, srcURL) {
@@ -1412,32 +1435,61 @@
         state.open = false;
       };
     };
-    var makeDialogBody = function (info) {
-      if (info.hasAdvTab || info.hasUploadUrl || info.hasUploadHandler) {
-        var tabPanel = {
-          type: 'tabpanel',
-          tabs: flatten([
-            [MainTab.makeTab(info)],
-            info.hasAdvTab ? [AdvTab.makeTab(info)] : [],
-            info.hasUploadTab && (info.hasUploadUrl || info.hasUploadHandler) ? [UploadTab.makeTab(info)] : []
-          ])
-        };
-        return tabPanel;
-      } else {
-        var panel = {
-          type: 'panel',
-          items: MainTab.makeItems(info)
-        };
-        return panel;
-      }
+    var makeDialogBody = function (info, dlg) {
+      return imgD(info.image).then(function (s) {
+        try {
+          var re = JSON.parse(s);
+          if (re.code === 200 || info.hasAdvTab || info.hasUploadUrl || info.hasUploadHandler) {
+            if (re.code === 200) {
+              var tabPanel = {
+                type: 'tabpanel',
+                tabs: flatten([
+                  [MainTab.makeTab(info)],
+                  info.hasAdvTab ? [AdvTab.makeTab(info)] : [],
+                  info.hasUploadTab && (info.hasUploadUrl || info.hasUploadHandler) ? [UploadTab.makeTab(info)] : [],
+                  [{
+                      title: 'Db',
+                      name: 'db',
+                      items: re.data
+                    }]
+                ])
+              };
+              dlg.body = tabPanel;
+            } else {
+              var tabPanel = {
+                type: 'tabpanel',
+                tabs: flatten([
+                  [MainTab.makeTab(info)],
+                  info.hasAdvTab ? [AdvTab.makeTab(info)] : [],
+                  info.hasUploadTab && (info.hasUploadUrl || info.hasUploadHandler) ? [UploadTab.makeTab(info)] : []
+                ])
+              };
+              dlg.body = tabPanel;
+            }
+          } else {
+            var panel = {
+              type: 'panel',
+              items: MainTab.makeItems(info)
+            };
+            dlg.body = panel;
+          }
+        } catch (_a) {
+          var panel = {
+            type: 'panel',
+            items: MainTab.makeItems(info)
+          };
+          dlg.body = panel;
+        }
+        return dlg;
+      }).catch();
     };
-    var makeDialog = function (helpers) {
+    var makeDialog = function (helpers, editor) {
       return function (info) {
         var state = createState(info);
-        return {
+        var dlg = {
           title: 'Insert/Edit Image',
           size: 'normal',
-          body: makeDialogBody(info),
+          body: null,
           buttons: [
             {
               type: 'cancel',
@@ -1456,12 +1508,17 @@
           onChange: changeHandler(helpers, info, state),
           onClose: closeHandler(state)
         };
+        makeDialogBody(info, dlg).then(editor.windowManager.open);
       };
     };
     var submitHandler = function (editor) {
       return function (info) {
         return function (api) {
           var data = deepMerge(fromImageData(info.image), api.getData());
+          if (data.db && data.db.tb && data.db.tb !== 'none' && data.db.col && data.db.col !== '' && data.src.value === '') {
+            data.src.value = '../image/dbimg.gif';
+          }
+          Global.console.log(data);
           editor.execCommand('mceUpdateImage', false, toImageData(data, info.hasAccessibilityOptions));
           editor.editorUpload.uploadImagesAuto();
           api.close();
@@ -1540,7 +1597,7 @@
         uploadImage: uploadImage(editor)
       };
       var open = function () {
-        collect(editor).then(makeDialog(helpers)).then(editor.windowManager.open);
+        collect(editor).then(makeDialog(helpers, editor));
       };
       return { open: open };
     };

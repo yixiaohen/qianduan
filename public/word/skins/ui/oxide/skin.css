@@ -432,6 +432,18 @@ button::-moz-focus-inner {
   color: rgba(34, 47, 62, 0.5);
   cursor: not-allowed;
 }
+.tox .tox-checkbox-b {
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  height: 36px;
+  margin-top: 15px;
+  min-width: 36px;
+}
+.tox .tox-checkbox--hidden {
+  display: none;
+}
 .tox .tox-checkbox--disabled .tox-checkbox__icons .tox-checkbox-icon__checked svg {
   fill: rgba(34, 47, 62, 0.5);
 }

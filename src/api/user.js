@@ -191,10 +191,11 @@ export function InsertRoleOnUser(data) {
   });
 }
 
-export function SelectMenu() {
+export function SelectMenu(data) {
   return request({
     url: '/User/SelectMenu',
-    method: 'post'
+    method: 'post',
+    data
   });
 }
 

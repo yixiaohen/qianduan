@@ -5,9 +5,8 @@
         :inline="true"
         size="mini"
       />
-
+<!--      v-if="device === 'desktop'"-->
       <div
-        v-if="device === 'desktop'"
         class="main"
       >
         <split-pane
@@ -21,7 +20,7 @@
                 <el-alert
                   :closable="false"
                   title="指标"
-                  type="success"
+                  type="info"
                   style="font-weight: bolder;"
                 />
               </div>
@@ -39,20 +38,18 @@
                   <el-alert
                     :closable="false"
                     :title="'指标名称：'+nodeValue.name"
-                    type="success"
+                    type="info"
                     style="font-weight: bolder;"
                   />
                 </div>
                 <div class="targetVis">
                   <div>目标值1：
-                    <el-tag>{{ settingTarget.Number1 }}</el-tag>
+                   {{ settingTarget.Number1 }}
                   </div>
                   <div>目标值2：
-                    <el-tag>{{ settingTarget.Number2 }}</el-tag>
+              {{ settingTarget.Number2 }}
                   </div>
-                  <div>目标值3：
-                    <el-tag>{{ settingTarget.Number3 }}</el-tag>
-                  </div>
+
                   <div>
                     <el-button icon="el-icon-search" size="mini" type="success" @click="openAddTargetDia()">设置目标值
                     </el-button>
@@ -60,9 +57,9 @@
                 </div>
                 <div class="TMContainer">
                   <el-row>
-                    <el-col :span="8">
-                      <td><span>年份：</span></td>
+                    <el-col :span="24">
                       <td>
+                        <span>年份：</span>
                         <el-date-picker
                           v-model="indexYear"
                           placeholder="选择年"
@@ -74,9 +71,9 @@
                           @change="changeTYear"
                         />
                       </td>
-                    </el-col>
-                    <el-col :span="8">
-                      <td><span>数值:</span></td>
+
+
+                      <td><span>数值:</span> <br></td>
                       <td>
                         <el-select v-model="downloadValue" size="mini" @change="changeTNum">
                           <el-option
@@ -95,7 +92,6 @@
                         </el-select>
                       </td>
                     </el-col>
-                    <el-col :span="8"/>
                   </el-row>
                   <el-row v-for="item1 in targetData">
                     <el-col :span="2" align="center">月/季度</el-col>
@@ -751,7 +747,7 @@ export default {
     .el-col {
       height: 40px;
       //border: 1px solid #13ce66;
-      background-color: #e7faf0;
+      background-color: #f4f4f5;
       line-height: 40px;
       text-align: center;
       padding-left: 5%;

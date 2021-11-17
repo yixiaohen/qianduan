@@ -52,15 +52,16 @@
     </div>
     <!--通用模板列表数据-->
     <div v-if="temNameL===0" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
                 v-loading="listLoading"
                 :data="tableData"
-                height="100%"
+                height="80%"
                 border
+                highlight-current-row
                 size="mini"
                 class="middleBodyTb"
                 @row-click="rowClick"
@@ -228,6 +229,13 @@
                                                  }}
                   </template>
                 </el-table-column>
+                <el-table-column
+                  label="部门审核意见"
+                  width="150"
+                  align="center"
+                >
+                  <el-button @click="dialogSelectOpinion=true" type="primary" size="mini">查看</el-button>
+                </el-table-column>
               </el-table>
             </div>
           </div>
@@ -236,12 +244,13 @@
     </div>
     <!--医疗器械模板列表数据-->
     <div v-else-if="temNameL===1" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
                 border
+                highlight-current-row
                 height="80%"
                 size="mini"
                 :data="reportData"
@@ -398,6 +407,13 @@
                                                  }}
                   </template>
                 </el-table-column>
+                <el-table-column
+                  label="部门审核意见"
+                  width="150"
+                  align="center"
+                >
+                  <el-button @click="dialogSelectOpinion=true" type="primary" size="mini">查看</el-button>
+                </el-table-column>
               </el-table>
             </div>
           </div>
@@ -406,13 +422,14 @@
     </div>
     <!--护理模板列表数据-->
     <div v-else-if="temNameL===2" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
                 height="80%"
                 border
+                highlight-current-row
                 size="mini"
                 :data="reportData"
                 style="width: 100%;"
@@ -571,6 +588,13 @@
                                                  }}
                   </template>
                 </el-table-column>
+                <el-table-column
+                  label="部门审核意见"
+                  width="150"
+                  align="center"
+                >
+                  <el-button @click="dialogSelectOpinion=true" type="primary" size="mini">查看</el-button>
+                </el-table-column>
               </el-table>
             </div>
           </div>
@@ -579,12 +603,13 @@
     </div>
     <!--医疗安全模板列表数据-->
     <div v-else-if="temNameL===3" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
                 border
+                highlight-current-row
                 height="80%"
                 size="mini"
                 :data="reportData"
@@ -730,6 +755,13 @@
                                                  }}
                   </template>
                 </el-table-column>
+                <el-table-column
+                  label="部门审核意见"
+                  width="150"
+                  align="center"
+                >
+                  <el-button @click="dialogSelectOpinion=true" type="primary" size="mini">查看</el-button>
+                </el-table-column>
               </el-table>
             </div>
           </div>
@@ -738,13 +770,14 @@
     </div>
     <!--药品安全模板列表数据-->
     <div v-else-if="temNameL===4" class="main">
-      <split-pane :min-percent="50" :default-percent="60" split="horizontal">
+      <split-pane :min-percent="50" :default-percent="80" split="horizontal">
         <template slot="paneL">
           <div class="middle">
             <div class="middleBody">
               <el-table
                 height="80%"
                 border
+                highlight-current-row
                 size="mini"
                 :data="reportData"
                 style="width: 100%"
@@ -905,6 +938,13 @@
                                                  }}
                   </template>
                 </el-table-column>
+                <el-table-column
+                  label="部门审核意见"
+                  width="150"
+                  align="center"
+                >
+                  <el-button @click="dialogSelectOpinion=true" type="primary" size="mini">查看</el-button>
+                </el-table-column>
               </el-table>
             </div>
           </div>
@@ -974,6 +1014,24 @@
         >确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="查询反馈意见"
+      :visible.sync="dialogSelectOpinion"
+      width="60%"
+    >
+      <el-table :data="OpinionData.SelctOpinionContent" style="width: 100%">
+        <el-table-column prop="CreateUserName" label="提出者"/>
+        <el-table-column prop="CreateDate" label="提交时间" width="160"/>
+        <el-table-column prop="OpinionContent" label="意见"/>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogSelectOpinion = false">取 消</el-button>
+        <el-button
+          type="primary"
+          @click="dialogSelectOpinion = false"
+        >确定</el-button>
+      </span>
+    </el-dialog>
 
 
   </el-card>
@@ -981,7 +1039,7 @@
 </template>
 
 <script>
-import { DeleteReport, DeleteReport1, SelectHandleReport1, SelectReview } from '@/api/AE_Event';
+import { DeleteReport, DeleteReport1, SelectHandleReport1, SelectOpinion, SelectReview } from '@/api/AE_Event';
 import splitPane from 'vue-splitpane';
 import { mapGetters } from 'vuex';
 
@@ -990,6 +1048,14 @@ export default {
   components: { splitPane },
   data() {
     return {
+      dialogSelectOpinion: false, // 查询反馈意见对话框
+      /* 反馈意见 */
+      OpinionData: {
+        ReviewID: '',
+        OpinionContent: '',
+        SelctOpinionContent: '',
+        CreateUserID: window.userInfo[0].UserID
+      },
       eventTitle: 0,// 默认展示的报告页面，
       cellOverflow: false, // 折叠
       yiliaoqixie: false,
@@ -1108,7 +1174,7 @@ export default {
       try {
         this.typeNum = 0; // 此时可以用0表示当前显示的是通用表
         const { data } = await SelectHandleReport1(this.listQuery);
-        this.listQuery.Total = data.Total;
+        this.listQuery.total = data.Total;
         this.tableData = data.DataList;
         this.rowClick(data.DataList[0]);
         // this.temNameL = 0;
@@ -1333,6 +1399,16 @@ export default {
       const data = await SelectReview(val);
       this.activities = data.data;
       this.activities[0]['VictimName'] = this.VictimNameS;
+      // 下面是新增的查询反馈意见
+      // 先把当前选中条目的id获取到
+      this.OpinionData.ReviewID = this.activities[0].ReviewID;
+      // 查询反馈的意见
+      const yiJian = await SelectOpinion(this.OpinionData);
+      // 获取得到反馈意见的数据放进this.OpinionData.SelctOpinionContent里
+      yiJian.data.map((item, index) => {
+        item.CreateDate = item.CreateDate.replace('T', ' ');
+      });
+      this.OpinionData.SelctOpinionContent = yiJian.data;
     },
     edit(row) {
       this.formData = row;
@@ -1355,7 +1431,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 .box-card-view {
   margin: 4px;
   overflow: hidden;

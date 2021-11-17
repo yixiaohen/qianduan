@@ -341,7 +341,6 @@ export default {
         ks_detailcontent: this.selectTopicSelection
       };
       try {
-        debugger;
         const { msg } = await UpdateTotalScore(form);
         this.$message({
           type: 'success',

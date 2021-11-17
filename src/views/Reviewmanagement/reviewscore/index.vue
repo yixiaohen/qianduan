@@ -16,9 +16,9 @@
             >
               <el-radio-button v-if="checkEvaluateStatus === 1" label="评审结果">评审结果（等级制）</el-radio-button>
               <el-radio-button v-else label="评审结果">评审结果（分数制）</el-radio-button>
-              <el-radio-button label="科室通过率">科室通过率(条款)</el-radio-button>
               <el-radio-button label="科室上传率">科室上传率</el-radio-button>
-              <el-radio-button label="科室材料通过率">科室通过率(材料)</el-radio-button>
+              <el-radio-button label="科室材料通过率">材料通过率</el-radio-button>
+              <el-radio-button label="科室通过率">条款通过率</el-radio-button>
               <el-radio-button label="达标统计">达标统计</el-radio-button>
               <!--              <el-radio-button label="指标分数">指标分数</el-radio-button>-->
 
@@ -69,8 +69,9 @@
           <!--          </el-form-item>-->
           <el-form-item v-if="radio1 === '科室材料通过率'">
             <default-dept2
-              :value="SelectDeptPassRateVal.DeptID"
+             v-model="SelectDeptPassRateVal.DeptID"
               :multiple="true"
+              @clear="clear1"
               @getDefaultDeptsValue="getDeptsValueUploadrate2"
             />
           </el-form-item>
@@ -117,9 +118,9 @@
           v-loading="loading"
           :data="tableData"
           border
-          style="width: 100%; padding: 0; margin: 0"
-          size="mini"
-          height="calc(100vh - 192px)"
+          style="width: 98%; padding: 0; margin-left: 10px;margin-right: 10px"
+          size="medium"
+          height="calc(100vh - 200px)"
         >
           <el-table-column
             prop="DeptName"
@@ -475,6 +476,7 @@
         <el-col :span="20">
           <el-pagination
             v-if="radio1 === '科室上传率'"
+            style="margin-top: 10px"
             :current-page="formInline.pageIndex"
             :page-sizes="[10, 15, 20, 30, 40, 50, 100]"
             :page-size="formInline.pageSize"
@@ -485,6 +487,7 @@
           />
           <el-pagination
             v-if="radio1 === '科室材料通过率'"
+            style="margin-top: 10px"
             :current-page="SelectDeptPassRateVal.pageIndex"
             :page-sizes="[10, 15, 20, 30, 40, 50, 100]"
             :page-size="SelectDeptPassRateVal.pageSize"
@@ -837,6 +840,7 @@
             </el-col>
             <el-col :span="20">
               <el-pagination
+                style="margin-top: 10px"
                 :current-page="SelectDeptCatalogVal.pageIndex"
                 :page-sizes="[10, 15, 20, 30, 50, 100,500,1000,5000,10000]"
                 :page-size="SelectDeptCatalogVal.pageSize"
@@ -1102,6 +1106,7 @@
             </el-col>
             <el-col :span="20">
               <el-pagination
+                style="margin-top: 10px"
                 :current-page="SelectDeptCatalogVal.pageIndex"
                 :page-sizes="[10, 15, 20, 30, 50, 100]"
                 :page-size="SelectDeptCatalogVal.pageSize"
@@ -1229,7 +1234,7 @@ export default {
       formInline: {
         DeptID: '',
         pageIndex: 1,
-        pageSize: 20,
+        pageSize: 10,
         Total: 0
       },
       dialogVisibArticleTable: false,
@@ -1238,7 +1243,7 @@ export default {
       dialogVisibArticleTabletitle2: '',
       SelectDeptCatalogVal: {
         pageIndex: 1,
-        pageSize: 15,
+        pageSize: 10,
         total: 0,
         DeptID: 0,
         CatalogCode: '',
@@ -1253,9 +1258,9 @@ export default {
       spanTwoArr: [],
       downloadLoading: false,
       SelectDeptPassRateVal: {
-        DeptID: '',
+        DeptID: null,
         pageIndex: 1,
-        pageSize: 20,
+        pageSize: 10,
         Total: 0
       },
       menu_one: '',
@@ -1315,7 +1320,7 @@ export default {
       try {
         const { data } = await SelectCatalogCode();
         this.options = data;
-        console.log('this.options',this.options);
+        console.log('this.options', this.options);
       } catch (error) {
       }
     },
@@ -1345,7 +1350,7 @@ export default {
       try {
         const { data } = await SelectCatalogScore();
         this.ScoreTableData = data;
-        console.log('这里有数据吗this.ScoreTableData',this.ScoreTableData);
+        console.log('这里有数据吗this.ScoreTableData', this.ScoreTableData);
       } catch (error) {
       }
     },
@@ -1602,22 +1607,22 @@ export default {
     },
     async radioGroup(val) {
       if (val === '科室通过率') {
-        this.DeptPassRate();
+        await this.DeptPassRate();
       } else if (val === '评审结果') {
-        this.initChart();
+        await this.initChart();
       } else if (val === '科室材料通过率') {
         this.formInline.pageIndex = 1;
-        this.SelectDeptPassRate();
+        await this.SelectDeptPassRate();
       } else if (val === '达标统计') {
-        this.GetStandardRate();
+        await this.GetStandardRate();
       } else if (val === '指标分数') {
-        this.GetStandardRate();
+        await this.GetStandardRate();
       } else {
         this.SelectDeptPassRateVal.pageIndex = 1;
-        this.SelectDeptUploadRate();
+        await this.SelectDeptUploadRate();
       }
       this.formInline.DeptID = '';
-      this.SelectDeptPassRateVal.DeptID = window.userInfo[0].DeptID;
+      // this.SelectDeptPassRateVal.DeptID = window.userInfo[0].DeptID; // 一开始加载就加载本科室部门的材料通过率
     },
     async DeptPassRate() {
       this.chart = echarts.init(document.querySelector('#main'));
@@ -1664,18 +1669,26 @@ export default {
       this.formInline.DeptID = val.toString();
       this.SelectDeptUploadRate();
     },
+    clear1(val){
+      console.log('触发了吗',val);
+    },
     getDeptsValueUploadrate2(val) {
       this.SelectDeptPassRateVal.pageIndex = 1;
       this.SelectDeptPassRateVal.DeptID = val.toString();
-      this.SelectDeptPassRate();
+      this.$nextTick(()=>{
+        this.SelectDeptPassRate();
+      });
+
     },
     async SelectDeptUploadRate() {
+      this.loading = true;
+
       try {
-        this.loading = true;
         const { data } = await SelectDeptUploadRate(this.formInline);
         this.tableData = data.DataList;
         this.formInline.Total = data.Total;
       } catch (error) {
+        this.loading = false;
       }
       this.loading = false;
     },
@@ -1816,18 +1829,24 @@ export default {
       this.formInline.pageIndex = val;
       this.SelectDeptUploadRate();
     },
+    // 加载材料通过率列表，通过选择科室相应加载
     async SelectDeptPassRate() {
       try {
-        this.loading = true;
-        const { data } = await SelectDeptPassRate(this.SelectDeptPassRateVal);
-        const para = this.$store.getters.iniPara;
-        this.menu_one = para.menu_one;
-        this.menu_two = para.menu_two;
-        this.menu_three = para.menu_three;
-        this.SelectDeptPassRateVal.Total = data.Total;
-        this.tableData = data.DataList;
+        // 加nextTick是为了能够点击清空科室选择后，列表能够显示加载条
+        this.$nextTick(async() => {
+          this.loading = true;
+          const { data } = await SelectDeptPassRate(this.SelectDeptPassRateVal);
+          const para = this.$store.getters.iniPara;
+          this.menu_one = para.menu_one;
+          this.menu_two = para.menu_two;
+          this.menu_three = para.menu_three;
+          this.SelectDeptPassRateVal.Total = data.Total;
+          this.tableData = data.DataList;
+          this.loading = false;
+        });
       } catch (error) {
         console.log(error);
+        this.loading = false;
       }
       this.loading = false;
     },
