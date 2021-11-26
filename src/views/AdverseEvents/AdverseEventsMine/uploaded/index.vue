@@ -872,7 +872,7 @@ import {
 import splitPane from 'vue-splitpane';
 
 export default {
-  name: 'AdverseEventsMine',
+  name: 'AdverseEventsMineUploaded',
   components: { splitPane },
   data() {
     return {

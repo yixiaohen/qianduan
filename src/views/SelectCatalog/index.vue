@@ -1,7 +1,7 @@
 <template>
   <div id="selectCatalog" class="selectCatalog">
     <el-backtop target=".selectCatalog"/>
-    <Headers/>
+    <Headers ref="Headers" @SelectContent="SelectContent"/>
     <!--    @changeCatalogID2="changeCatalogID2"-->
     <mainHeader ref="mainHeader" @changeCatalogID="changeCatalogID" @changeShowHeader="changeShowHeader"/>
     <mains ref="catalogID" :dialog-visible="dialogVisible" @changeShow="changeShow"/>
@@ -36,10 +36,20 @@ export default {
       test: 'tests',
       tableData: [],
       catalogID: 0,
-      catalogID2: ''
+      catalogID2: '',
+      Content: '' // 要搜索的内容
     };
   },
   methods: {
+    // 获取输入框传过来的内容，进行当前章节搜索
+    SelectContent(val) {
+      this.Content = val;
+      this.changeCatalogID(this.catalogID);
+      this.$nextTick(() => {
+        this.Content = '';
+      });
+
+    },
     changeShowHeader(para) { // 从mainHeader让等待条开启
       this.dialogVisible = para;
     },
@@ -60,7 +70,7 @@ export default {
             this.percentage += this.percentageIndex;
           }
         }, 60);
-        this.$refs.catalogID.GetcatalogSecond(val);
+        this.$refs.catalogID.GetcatalogSecond(val, this.Content);
       });
     }
     // async changeCatalogID2(val) {

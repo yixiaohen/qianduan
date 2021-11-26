@@ -6,6 +6,7 @@
       :load="loadNode"
       node-key="index_id"
       lazy
+      v-loading="indexAllotDataLoading"
       highlight-current
       :show-checkbox="multiples"
       @node-click="nodeClickCatalog"
@@ -63,6 +64,7 @@ export default {
   },
   data() {
     return {
+      indexAllotDataLoading: false, // 导航树数据加载等待条开关
       listLoading: false,
       props: {
         label: 'name',
@@ -85,13 +87,16 @@ export default {
     },
     async loadNode(node, resolve) {
       if (node && node.level === 0) {
+        this.indexAllotDataLoading= true; // 导航树数据加载等待条开
         try {
           const { data } = await SelectDeptIndex({
             index_id: 0,
             UserID: window.userInfo[0].UserID
           });
           resolve && resolve(data);
+          this.indexAllotDataLoading= false; // 导航树数据加载等待条关
         } catch (e) {
+          this.indexAllotDataLoading= false; // 导航树数据加载等待条关
           console.log(e);
         }
       } else {

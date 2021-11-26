@@ -19,7 +19,12 @@ const port = 1314;
 
 const IP = '192.168.2.11';
 const backPort = 81;
+// const IP = 'localhost';
+// const backPort = 58257;
 
+// const IP = '192.168.2.19';
+// const backPort = 58257;
+//
 // const IP = '192.168.2.21';
 // const backPort = 80;
 

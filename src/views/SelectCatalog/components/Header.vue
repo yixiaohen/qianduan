@@ -16,25 +16,28 @@
     </div>
     <div class="right">
       <div>
-        <el-input
-          ref="keySelect"
-          v-model="searchText"
-          size="small"
-          placeholder="请输入"
-        >
-          <button
-            slot="append"
-            class="selectButton"
-            @click="Selectclick"
+        <td>
+          <el-input
+            v-model="searchText"
+            size="small"
+            placeholder="搜索当前章节"
+          >
+
+          </el-input>
+        </td>
+        <td>
+          <el-button
+            type="primary"
+            size="small"
+            @click="SelectContent"
           >
             搜索
-          </button>
-        </el-input>
-
+          </el-button>
+        </td>
       </div>
-      <div style="margin-left: 6px">
+      <div style="margin-left: 6px;margin-top: 6px">
         <el-radio-group v-model="ShowRes" size="small" @change="changeState">
-          <el-radio-button label="显示全部"  round/>
+          <el-radio-button label="显示全部" round/>
           <el-radio-button label="不显示退回资料" round/>
         </el-radio-group>
       </div>
@@ -80,6 +83,11 @@ export default {
     this.GetRepVersion();
   },
   methods: {
+    // 根据当前章内容搜索
+    SelectContent() {
+      console.log('出发了');
+      this.$emit('SelectContent', this.searchText);
+    },
     // 获取显示状态
     async GetRepVersion() {
       try {

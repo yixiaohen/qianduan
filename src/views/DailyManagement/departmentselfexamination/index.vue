@@ -1,876 +1,1172 @@
 <template>
   <div class="DepartmentSelfExamination">
-    <div slot="header" class="clearfix">
-      <el-form :inline="true" :model="listQuery" size="mini">
-        <el-form-item>
-          <el-button
-            style="margin-top: 7px"
-            type="primary"
-            icon="el-icon-circle-plus"
-            size="mini"
-            @click="userTemplateButton"
-          >使用表单
-          </el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-input
-            v-model="listQuery.RC_ProjectName"
-            placeholder="项目名称"
-            style="width: 220px"
-            size="mini"
-            clearable
-            @keyup.enter.native="clickSelectUseTemp()"
-          />
-        </el-form-item>
-        <el-form-item>
-          <default-depts
-            v-if="!addFormData.RC_InspectionDepartmentID"
-            w="100%"
-            :value="addFormData.RC_InspectionDepartmentID"
-            @getDefaultDeptsValue="getDefaultDeptValues2"
-          />
-          <el-input
-            v-else
-            v-model="listQuery.RC_InspectionDepartment"
-            @focus="focus"
-          />
-        </el-form-item>
-        <el-form-item prop="CheckMonth">
-          <el-date-picker
-            v-model="listQuery.CheckMonth"
-            type="month"
-            value-format="yyyy-MM"
-            placeholder="选择自查月份"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            style="margin-top: 7px"
-            type="info"
-            icon="el-icon-search"
-            size="mini"
-            :loading="listLoading"
-            @click="clickSelectUseTemp"
-          >搜索
-          </el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-checkbox
-            style="margin-top: 7px"
-            v-model="checked"
-            @change="checkbox"
-          >只看草稿
-          </el-checkbox>
-        </el-form-item>
-        <el-form-item style="width: 150px">
-          <el-select v-model="downloadValue" placeholder="请选择要导出数据">
-            <el-option label="前一百条" :value="100"/>
-            <el-option label="前三百条" :value="300"/>
-            <el-option label="前五百条" :value="500"/>
-            <el-option label="前一千条" :value="1000"/>
-            <el-option label="全部" :value="pagination.total"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            style="margin-top: 7px"
-            :loading="downloadLoading"
-            :disabled="listLoading"
-            type="success"
-            icon="el-icon-document"
-            size="mini"
-            @click="handleDownload"
-          >导出
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div class="content">
-      <el-table
-        v-loading="listLoading"
-        :data="tableData"
-        style="width: 100%"
-        border
-        size="mini"
-        height="calc(100vh - 240px)"
-        stripe
-      >
-        <el-table-column type="index" label="序号" width="60" align="center"/>
-        <el-table-column
-          prop="RC_ProjectName"
-          label="项目名称"
-          min-width="300"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          prop="RC_InspectionTimeStat"
-          label="检查日期"
-          width="145"
-          align="center"
-        >
-          <!-- .split("T").join(" ") -->
-          <template slot-scope="scope">
-            {{
-              typeof scope.row.RC_InspectionTimeStat !== 'string'
-                ? ''
-                : scope.row.RC_InspectionTimeStat.split('T').join(' ')
-            }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="RC_InspectionDepartmentName"
-          label="自查科室"
-          width="120"
-          align="center"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          prop="Score"
-          label="自查得分"
-          width="80"
-          align="center"
-        />
-        <el-table-column
-          prop="ZCScore"
-          label="督查得分"
-          width="80"
-          align="center"
-        />
-
-        <!--        <el-table-column-->
-        <!--          prop="ZgCScore"-->
-        <!--          label="督导得分"-->
-        <!--          width="80"-->
-        <!--          align="center"-->
-        <!--        />-->
-        <el-table-column
-          prop="StatusName"
-          label="状态"
-          width="130"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <p
-              :style="{
-                color:
-                  scope.row.StatusName == '已提交'
-                    ? 'green'
-                    : scope.row.StatusName == '质管审核退回'
-                      ? 'red'
-                      : scope.row.StatusName == '主管审核退回'
-                        ? 'red'
-                        : 'black',
-                margin: '0px',
-              }"
-            >
-              {{ scope.row.StatusName }}
-            </p>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="RC_AllAuditOpinion"
-          label="总审核意见"
-          width="150"
-          align="center"
-        />
-        <el-table-column
-          prop="RC_StateType"
-          label="提交"
-          width="60"
-          align="center"
-        >
-          <template slot-scope="{ row }">
+    <el-card style="margin: 10px;width: 98%">
+      <div slot="header" class="clearfix">
+        <el-form :inline="true" :model="listQuery" size="mini">
+          <el-form-item>
             <el-button
-              class="iconfont al-icon-tijiao4"
+              style="margin-top: 7px"
+              type="primary"
+              icon="el-icon-circle-plus"
               size="mini"
-              circle
-              @click="submit(row)"
+              @click="userTemplateButton"
+            >使用表单
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-input
+              v-model="listQuery.RC_ProjectName"
+              placeholder="项目名称"
+              style="width: 220px"
+              size="mini"
+              clearable
+              @keyup.enter.native="clickSelectUseTemp()"
             />
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="RC_DeductedPoints"
-          label="自查存在的问题"
-          width="300"
-          :show-overflow-tooltip="cellOverflow"
-        />
-
-        <el-table-column
-          prop="RC_InspectorName"
-          label="检查者"
-          width="100"
-          align="center"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          prop="RC_InspectorOtherName"
-          label="协同检查者"
-          width="140"
-          align="center"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          prop="RC_FillerName"
-          label="填写者"
-          width="100"
-          align="center"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          prop="RC_Remarks"
-          label="项目备注"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column label="操作" fixed="right" align="center" width="120">
-          <template slot-scope="{ row }">
+          </el-form-item>
+          <el-form-item>
+            <default-depts
+              v-if="!addFormData.RC_InspectionDepartmentID"
+              w="100%"
+              :value="addFormData.RC_InspectionDepartmentID"
+              @getDefaultDeptsValue="getDefaultDeptValues2"
+            />
+            <el-input
+              v-else
+              v-model="listQuery.RC_InspectionDepartment"
+              @focus="focus"
+            />
+          </el-form-item>
+          <el-form-item prop="CheckMonth">
+            <el-date-picker
+              v-model="listQuery.CheckMonth"
+              type="month"
+              value-format="yyyy-MM"
+              placeholder="选择自查月份"
+            />
+          </el-form-item>
+          <el-form-item>
             <el-button
+              style="margin-top: 7px"
               type="info"
+              icon="el-icon-search"
               size="mini"
-              icon="el-icon-edit"
-              @click="SelectUseTempDetail(row)"
-            />
-            <el-popconfirm
-              v-if="checked"
-              style="margin-left: 3px"
-              confirm-button-text="是"
-              cancel-button-text="否"
-              icon="el-icon-info"
-              icon-color="red"
-              title="确定删除吗？"
-              @confirm="DeleteUseTemplateDraft(row)"
-            >
-              <el-button
-                slot="reference"
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-              />
-            </el-popconfirm>
-            <el-popconfirm
-              style="margin-left: 3px"
-              confirm-button-text="是"
-              cancel-button-text="否"
-              icon="el-icon-info"
-              icon-color="red"
-              title="确定删除吗？"
-              @confirm="DeleteUseTemplate(row)"
-            >
-              <el-button
-                v-if="RoleCode == 'R0001' && !checked"
-                slot="reference"
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-              />
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-row>
-        <el-col :span="1">
-          <el-switch v-model="cellOverflow" style="margin: 6px 0"/>
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            style="margin-top: 10px"
-            background
-            :current-page.sync="pagination.pageIndex"
-            :page-size="pagination.pageSize"
-            :page-sizes="pagination.pageSizes"
-            :total="pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-col>
-      </el-row>
-    </div>
-    <el-dialog
-      :title="useTemplateDialogTitle"
-      :visible.sync="dialogUseTemplate"
-      :width="device === 'desktop' ? '50%' : '90%'"
-      :before-close="cancle"
-      :top="device === 'desktop' ? '0' : '1rem'"
-      style="overflow: auto"
-      fullscreen
-      @resize="resize"
-    >
-      <div style="height: 90vh; overflow: auto">
-        <div>
-          <el-form
-            ref="addFormData"
-            size="mini"
-            :model="addFormData"
-            :rules="rule"
-            label-position="top"
-            :inline="true"
-            class="demo-form-inline"
-            label-width="100px"
-          >
-            <el-form-item label="项目名称" prop="RC_ProjectName">
-              <el-input v-model="addFormData.RC_ProjectName" clearable/>
-            </el-form-item>
-            <el-form-item label="主检查者" prop="RC_Inspector">
-              <el-input v-model="addFormData.RC_Inspector" clearable/>
-            </el-form-item>
-            <el-form-item label="协同检查者" prop="RC_InspectorOther">
-              <el-input v-model="addFormData.RC_InspectorOther" clearable/>
-            </el-form-item>
-          </el-form>
-          <el-form
-            size="mini"
-            label-position="top"
-            :inline="true"
-            class="demo-form-inline"
-            label-width="100px"
-          >
-            <el-form-item label="检查日期" :required="true">
-              <el-date-picker
-                v-model="addFormData.RC_InspectionTimeStat"
-                type="datetime"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                style="width: 100%"
-                placeholder="选择日期"
-                clearable
-              />
-            </el-form-item>
-            <el-form-item label="自查月份" :required="true">
-              <el-date-picker
-                v-model="addFormData.CheckMonth"
-                type="month"
-                value-format="yyyy-MM"
-                placeholder="选择月"
-              />
-            </el-form-item>
-            <el-form-item
-              label="
-            审核人"
-            >
-              <el-select
-                v-model="addFormData.CheckUserID"
-                filterable
-                placeholder="请选择"
-                clearable
-                @change="selectUserID"
-              >
-                <el-option
-                  v-for="item in options"
-                  :key="item.UserID"
-                  :label="item.UserName"
-                  :value="item.UserID"
-                >
-                  <span style="float: left">{{ item.UserName }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">
-                    {{ item.UserCode }}
-                  </span>
-                </el-option>
-              </el-select>
-            </el-form-item>
+              :loading="listLoading"
+              @click="clickSelectUseTemp"
+            >搜索
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-checkbox
+              v-model="checked"
+              style="margin-top: 7px"
+              @change="checkbox"
+            >只看草稿
+            </el-checkbox>
+          </el-form-item>
+          <el-form-item style="width: 150px">
+            <el-select v-model="downloadValue" placeholder="请选择要导出数据">
+              <el-option label="前一百条" :value="100"/>
+              <el-option label="前三百条" :value="300"/>
+              <el-option label="前五百条" :value="500"/>
+              <el-option label="前一千条" :value="1000"/>
+              <el-option label="全部" :value="pagination.total"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              style="margin-top: 7px"
+              :loading="downloadLoading"
+              :disabled="listLoading"
+              type="success"
+              icon="el-icon-document"
+              size="mini"
+              @click="handleDownload"
+            >导出
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
 
-            <el-form-item label="自查科室" :required="true">
-              <default-dept
-                w="100%"
-                :value="addFormData.RC_InspectionDepartmentID"
-                @getDefaultDeptsValue="getDefaultDeptValues"
-              />
-            </el-form-item>
-            <el-form-item prop="RC_AllAuditOpinion">
-              <span
-                style="font-weight: bold"
-              >总满分:{{ addFormData.fullMark || 0 }}</span>
-              <span style="font-weight: bold">
-                总得分:{{ addFormData.totalPoints || 0 }}</span>
-            </el-form-item>
-          </el-form>
-          <el-form
-            ref="addFormData"
-            size="mini"
-            :model="addFormData"
-            :rules="rule"
-            :inline="true"
-            label-position="top"
+      <div class="content">
+        <el-table
+          v-loading="listLoading"
+          :data="tableData"
+          style="width: 100%"
+          border
+          size="mini"
+          height="calc(100vh - 240px)"
+          stripe
+        >
+          <el-table-column type="index" label="序号" width="60" align="center"/>
+          <el-table-column
+            prop="RC_ProjectName"
+            label="项目名称"
+            min-width="300"
+            :show-overflow-tooltip="cellOverflow"
           >
-            <el-form-item label="表单模板名称" prop="RC_TemplateName">
-              <el-input
-                v-model="addFormData.RC_TemplateName"
-                disabled
-                type="textarea"
-              />
-            </el-form-item>
-            <el-form-item label="总审核意见" prop="RC_AllAuditOpinion">
-              <el-input
-                v-model="addFormData.RC_AllAuditOpinion"
-                disabled
-                type="textarea"
-              />
-            </el-form-item>
-            <el-form-item label="项目备注">
-              <el-input
-                v-model="addFormData.RC_Remarks"
-                clearable
-                type="textarea"
-              />
-            </el-form-item>
-            <el-form-item label="注意事项">
-              <el-input
-                v-model="addFormData.Precautions"
-                :disabled="true"
-                type="textarea"
-              />
-            </el-form-item>
-          </el-form>
-        </div>
-        <div style="flex: 1">
-          <h3 v-if="true">病例数据</h3>
-          <el-table
-            v-if="true"
-            ref="multipleTable"
-            :data="addFormData.Rc_CaseDetail"
-            size="mini"
-            height="130"
+            <template slot-scope="{ row }">
+              {{ row.RC_ProjectName }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="RC_InspectionTimeStat"
+            label="检查日期"
+            width="145"
+            align="center"
           >
-            <el-table-column type="index" align="center"/>
-            <el-table-column label="住院号">
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.HospitalNumber"
-                  size="mini"
-                  placeholder="必填"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column label="患者姓名">
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.PatientName"
-                  size="mini"
-                  placeholder=""
-                />
-              </template>
-            </el-table-column>
-            <el-table-column label="医疗组名称">
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.MedicalGroupName"
-                  size="mini"
-                  placeholder=""
-                />
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="50px" align="center">
-              <template slot-scope="{ $index }">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteCase($index)"
-                /></span>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-form v-if="true">
-            <el-form-item style="margin-bottom: 0">
+            <!-- .split("T").join(" ") -->
+            <template slot-scope="scope">
+              {{
+                typeof scope.row.RC_InspectionTimeStat !== 'string'
+                  ? ''
+                  : scope.row.RC_InspectionTimeStat.split('T').join(' ')
+              }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="RC_InspectionDepartmentName"
+            label="自查科室"
+            width="120"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            prop="Score"
+            label="自查得分"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            prop="ZCScore"
+            label="督查得分"
+            width="80"
+            align="center"
+          />
+
+          <!--        <el-table-column-->
+          <!--          prop="ZgCScore"-->
+          <!--          label="督导得分"-->
+          <!--          width="80"-->
+          <!--          align="center"-->
+          <!--        />-->
+          <el-table-column
+            prop="StatusName"
+            label="状态"
+            width="130"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <p
+                :style="{
+                  color:
+                    scope.row.StatusName == '已提交'
+                      ? 'green'
+                      : scope.row.StatusName == '质管审核退回'
+                        ? 'red'
+                        : scope.row.StatusName == '主管审核退回'
+                          ? 'red'
+                          : 'black',
+                  margin: '0px',
+                }"
+              >
+                {{ scope.row.StatusName }}
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="RC_AllAuditOpinion"
+            label="总审核意见"
+            width="150"
+            align="center"
+          />
+
+          <el-table-column
+            prop="RC_DeductedPoints"
+            label="自查存在的问题"
+            width="300"
+            :show-overflow-tooltip="cellOverflow"
+          />
+
+          <el-table-column
+            prop="RC_InspectorName"
+            label="检查者"
+            width="100"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            prop="RC_InspectorOtherName"
+            label="协同检查者"
+            width="140"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            prop="RC_FillerName"
+            label="填写者"
+            width="100"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            prop="RC_Remarks"
+            label="项目备注"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            prop="RC_StateType"
+            label="提交"
+            width="60"
+            align="center"
+            fixed="right"
+          >
+            <template slot-scope="{ row }">
               <el-button
-                icon="el-icon-plus"
+                class="iconfont al-icon-tijiao4"
                 size="mini"
+                circle
+                @click="submit(row)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" fixed="right" align="center" width="180">
+            <template slot-scope="{ row }">
+              <el-button
                 type="primary"
-                plain
-                @click="addCase"
-              >新增一条
-              </el-button>
-              <span>(在此增加添加病例信息)</span>
-            </el-form-item>
-          </el-form>
-          <el-table
-            :data="TemplateTableData"
-            style="width:96%;margin:0 auto"
-            border
-            size="mini"
-            :span-method="objectSpanMethod"
-          >
-            <el-table-column
-              type="index"
-              label="序号"
-              width="45"
-              align="center"
-            />
-            <el-table-column
-              label="类别"
-              prop="Category"
-              width="50px"
-              align="center"
-            />
-            <el-table-column
-              label="检查项目"
-              prop="ProjectContent"
-              width="100px"
-              align="center"
-            />
-            <el-table-column label="检查内容" prop="Content" width="300px"/>
-            <el-table-column
-              label="满分"
-              width="80"
-              align="center"
-              prop="ScoreCriteria"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.RC_TotalScore }}
-                <!--                <el-input v-model.trim="scope.row.RC_TotalScore" size="mini" />-->
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="自查得分"
-              width="80"
-              align="center"
-              prop="RC_Score"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.RC_Score }}
-                <!--                <el-input v-model.trim="scope.row.RC_Score" size="mini" />-->
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="扣分选项"
-              align="center"
-              prop="RC_DeductedPoints"
-              min-width="100"
-            >
-              <template slot-scope="scope">
-                <el-select
-                  v-model="scope.row.RC_DeductedPoints"
-                  multiple
-                  collapse-tags
+                size="mini"
+                icon="el-icon-view"
+                @click="SelectUseTempDetail(row,1)"
+              />
+              <el-button
+                type="info"
+                size="mini"
+                icon="el-icon-edit"
+                @click="SelectUseTempDetail(row)"
+              />
+              <el-popconfirm
+                style="margin-left: 3px"
+                confirm-button-text="是"
+                cancel-button-text="否"
+                icon="el-icon-info"
+                icon-color="green"
+                title="确定拷贝当前分配的表单吗？适用于再次提交。"
+                @confirm="moreUseTempDetail(row)"
+              >
+                <el-button
+                  slot="reference"
+                  type="success"
+                  icon="el-icon-position"
                   size="mini"
-                  placeholder="请选择扣分原因"
+                />
+              </el-popconfirm>
+              <el-popconfirm
+                v-if="checked"
+                style="margin-left: 3px"
+                confirm-button-text="是"
+                cancel-button-text="否"
+                icon="el-icon-info"
+                icon-color="red"
+                title="确定删除吗？"
+                @confirm="DeleteUseTemplateDraft(row)"
+              >
+                <el-button
+                  slot="reference"
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                />
+              </el-popconfirm>
+              <el-popconfirm
+                style="margin-left: 3px"
+                confirm-button-text="是"
+                cancel-button-text="否"
+                icon="el-icon-info"
+                icon-color="red"
+                title="确定删除吗？"
+                @confirm="DeleteUseTemplate(row)"
+              >
+                <el-button
+                  v-if="RoleCode == 'R0001' && !checked"
+                  slot="reference"
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                />
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-row>
+          <el-col :span="1">
+            <el-switch v-model="cellOverflow" style="margin: 6px 0"/>
+          </el-col>
+          <el-col :span="20">
+            <el-pagination
+              style="margin-top: 10px"
+              background
+              :current-page.sync="pagination.pageIndex"
+              :page-size="pagination.pageSize"
+              :page-sizes="pagination.pageSizes"
+              :total="pagination.total"
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
+          </el-col>
+        </el-row>
+      </div>
+      <!--      查看详情-->
+      <el-dialog
+        :title="useTemplateDialogTitle"
+        :visible.sync="dialogUseTemplateView"
+        :width="device === 'desktop' ? '50%' : '90%'"
+        :top="device === 'desktop' ? '0' : '1rem'"
+        style="overflow: auto"
+        @resize="resize"
+      >
+        <div style="height: 90vh; overflow: auto">
+          <div>
+            <el-form
+              ref="addFormData"
+              size="mini"
+              :model="addFormData"
+              :rules="rule"
+              class="seeAddFormData"
+
+              label-position="top"
+              :inline="true"
+              label-width="100px"
+            >
+              <el-row>
+                <el-col :span="8"><span>项目名称：{{ addFormData.RC_ProjectName }}</span></el-col>
+                <el-col :span="8"><span>主检查者：{{ addFormData.RC_Inspector }}</span></el-col>
+                <el-col :span="8"><span>协同检查者：{{ addFormData.RC_InspectorOther }} </span></el-col>
+              </el-row>
+
+
+              <el-row>
+                <el-col :span="8"><span>检查日期：{{
+                    addFormData.RC_InspectionTimeStat
+                      ? addFormData.RC_InspectionTimeStat.replace('T', ' ')
+                      : ''
+                                        }}</span></el-col>
+                <el-col :span="8"><span>自查月份：{{ addFormData.CheckMonth }}</span></el-col>
+                <el-col :span="8"><span>审核人：{{ auditorName }} </span>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="8"><span>自查科室：</span>
+                  <span>{{ addFormData.RC_InspectionDepartmentName }}</span>
+                </el-col>
+                <el-col :span="8"><span>总满分：{{ addFormData.fullMark || 0 }}</span></el-col>
+                <el-col :span="8"><span>总得分：{{ addFormData.totalPoints || 0 }} </span>
+                </el-col>
+              </el-row>
+
+              <el-row>
+                <el-col :span="12"><span>表单模板名称：{{ addFormData.RC_TemplateName }}</span></el-col>
+                <el-col :span="12"><span>总审核意见：{{ addFormData.RC_AllAuditOpinion }}</span></el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12"><span>项目备注：{{ addFormData.RC_Remarks }} </span></el-col>
+                <el-col :span="12"><span>注意事项：{{ addFormData.Precautions }} </span></el-col>
+              </el-row>
+            </el-form>
+          </div>
+          <div style="flex: 1">
+            <h4    v-if="addFormData.CaseJudgment == 1">病例数据</h4>
+            <el-table
+              v-if="addFormData.CaseJudgment == 1"
+              ref="multipleTable"
+              :data="addFormData.Rc_CaseDetail"
+              size="mini"
+              height="130"
+            >
+              <el-table-column type="index" align="center"/>
+              <el-table-column label="住院号" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.HospitalNumber }}</span>
+
+                </template>
+              </el-table-column>
+              <el-table-column label="患者姓名" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.PatientName }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="医疗组名称" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.MedicalGroupName }}</span>
+
+                </template>
+              </el-table-column>
+
+            </el-table>
+
+            <el-table
+              v-loading="TemplateTableDataLoading"
+              :data="TemplateTableData"
+              style="width:96%;margin:0 auto"
+              border
+              size="mini"
+              :span-method="objectSpanMethod"
+            >
+              <el-table-column
+                type="index"
+                label="序号"
+                width="45"
+                align="center"
+              />
+              <el-table-column
+                label="类别"
+                prop="Category"
+                width="50px"
+                align="center"
+              />
+              <el-table-column
+                label="检查项目"
+                prop="ProjectContent"
+                width="100px"
+                align="center"
+              />
+              <el-table-column label="检查内容" prop="Content" width="300px"/>
+              <el-table-column
+                label="满分"
+                width="80"
+                align="center"
+                prop="ScoreCriteria"
+              >
+                <template slot-scope="scope">
+                  {{ scope.row.RC_TotalScore }}
+                  <!--                <el-input v-model.trim="scope.row.RC_TotalScore" size="mini" />-->
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="自查得分"
+                width="80"
+                align="center"
+                prop="RC_Score"
+              >
+                <template slot-scope="scope">
+                  {{ scope.row.RC_Score }}
+                  <!--                <el-input v-model.trim="scope.row.RC_Score" size="mini" />-->
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="扣分选项"
+                align="center"
+                prop="RC_DeductedPoints"
+                min-width="100"
+              >
+                <template slot-scope="scope">
+                  <el-select
+                    v-model="scope.row.RC_DeductedPoints"
+                    multiple
+                    :disabled="true"
+                    collapse-tags
+                    size="mini"
+                    placeholder="请选择扣分原因"
+                    clearable
+                    :style="{ width: '100%' }"
+                    @change="
+                      DeductedPoints(scope.row.RC_DeductedPoints, scope.row)
+                    "
+                  >
+                    <el-option
+                      v-for="(item, indexCheck) in scope.row.Check"
+                      :key="indexCheck"
+                      :label="item.ErrorContent"
+                      :value="item.ErrorContent"
+                    />
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="科室整改措施"
+                align="center"
+                prop="RC_RectificationMeasures"
+                min-width="150"
+              />
+
+              <el-table-column
+                label="效果评价"
+                align="center"
+                prop="RC_Opinion"
+                min-width="150"
+              />
+
+              <el-table-column
+                label="自查备注"
+                align="center"
+                prop="RC_DeductedPointsRemarks"
+                min-width="120"
+              />
+
+              <el-table-column
+                label="预览资料"
+                width="150"
+                align="center"
+                prop="FileList_dto"
+              >
+                <template slot-scope="{ row }">
+
+                  <el-tag
+                    v-for="(itemHref, indexHref) in row.FileList_dto"
+                    :key="itemHref.FileName"
+                    style="margin: 10px"
+                    :disable-transitions="false"
+                  >
+                    <el-link
+                      :key="indexHref"
+                      target="_blank"
+                      @click="PreviewFile(itemHref.FileUrl)"
+                    >
+                      {{ itemHref.FileName }}
+                    </el-link>
+
+                  </el-tag>
+
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="下载资料"
+                width="150"
+                align="center"
+                prop="FileList_dto"
+              >
+                <template slot-scope="{ row }">
+                  <el-tag
+                    v-for="itemHref in row.FileList_dto"
+                    :key="itemHref.FileName"
+                    style="margin: 10px"
+                    :disable-transitions="false"
+                  >
+                    <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
+
+                  </el-tag>
+                </template>
+              </el-table-column>
+
+
+              <el-table-column
+                label="督查得分"
+                width="80"
+                align="center"
+                prop="ZCScore"
+              />
+
+              <el-table-column
+                label="督查意见"
+                prop="ZCErro"
+                align="center"
+              />
+
+              <el-table-column
+                label="主管部门整改措施"
+                prop="ZgCErro"
+                align="center"
+              />
+
+
+              <el-table-column
+                label="审核意见"
+                align="center"
+                prop="RC_AuditOpinion"
+                width="100"
+              />
+            </el-table>
+          </div>
+        </div>
+        <el-footer slot="footer" style="height: 35px">
+
+          <el-button
+            type="info"
+            size="small"
+            @click="
+              cancle(2)
+              innerDisabled = false
+            "
+          >关闭
+          </el-button>
+        </el-footer>
+
+      </el-dialog>
+      <!--      编辑-->
+      <el-dialog
+        :title="useTemplateDialogTitle"
+        :visible.sync="dialogUseTemplate"
+        :width="device === 'desktop' ? '50%' : '90%'"
+        :before-close="cancle"
+        :top="device === 'desktop' ? '0' : '1rem'"
+        style="overflow: auto"
+
+        @resize="resize"
+      >
+        <div style="height: 90vh; overflow: auto">
+          <div>
+            <el-form
+              ref="addFormData"
+              size="mini"
+              :model="addFormData"
+              :rules="rule"
+              label-position="top"
+              :inline="true"
+              class="demo-form-inline"
+              label-width="100px"
+            >
+              <el-form-item label="项目名称" prop="RC_ProjectName">
+                <el-input v-model="addFormData.RC_ProjectName" clearable/>
+              </el-form-item>
+              <el-form-item label="主检查者" prop="RC_Inspector">
+                <el-input v-model="addFormData.RC_Inspector" clearable/>
+              </el-form-item>
+              <el-form-item label="协同检查者" prop="RC_InspectorOther">
+                <el-input v-model="addFormData.RC_InspectorOther" clearable/>
+              </el-form-item>
+            </el-form>
+            <el-form
+              size="mini"
+              label-position="top"
+              :inline="true"
+              class="demo-form-inline"
+              label-width="100px"
+            >
+              <el-form-item label="检查日期" :required="true">
+                <el-date-picker
+                  v-model="addFormData.RC_InspectionTimeStat"
+                  type="datetime"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  style="width: 100%"
+                  placeholder="选择日期"
                   clearable
-                  :style="{ width: '100%' }"
-                  @change="
-                    DeductedPoints(scope.row.RC_DeductedPoints, scope.row)
-                  "
+                />
+              </el-form-item>
+              <el-form-item label="自查月份" :required="true">
+                <el-date-picker
+                  v-model="addFormData.CheckMonth"
+                  type="month"
+                  value-format="yyyy-MM"
+                  placeholder="选择月"
+                />
+              </el-form-item>
+              <el-form-item
+                label="
+            审核人"
+              >
+                <el-select
+                  v-model="addFormData.CheckUserID"
+                  filterable
+                  placeholder="请选择"
+                  clearable
+                  @change="selectUserID"
                 >
                   <el-option
-                    v-for="(item, indexCheck) in scope.row.Check"
-                    :key="indexCheck"
-                    :label="item.ErrorContent"
-                    :value="item.ErrorContent"
-                  />
+                    v-for="item in options"
+                    :key="item.UserID"
+                    :label="item.UserName"
+                    :value="item.UserID"
+                  >
+                    <span style="float: left">{{ item.UserName }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">
+                      {{ item.UserCode }}
+                    </span>
+                  </el-option>
                 </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="科室整改措施"
-              align="center"
-              prop="RC_RectificationMeasures"
-              min-width="150"
-            >
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.RC_RectificationMeasures"
-                  type="textarea"
-                  size="mini"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="效果评价"
-              align="center"
-              prop="RC_Opinion"
-              min-width="150"
-            >
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.RC_Opinion"
-                  type="textarea"
-                  size="mini"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="自查备注"
-              align="center"
-              prop="RC_DeductedPointsRemarks"
-              min-width="120"
-            >
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.RC_DeductedPointsRemarks"
-                  type="textarea"
-                  size="mini"
-                />
-              </template>
-            </el-table-column>
+              </el-form-item>
 
-            <el-table-column label="上传资料" width="70" align="center">
-              <template slot-scope="scope">
-                <el-upload
-                  :file-list="fileList"
-                  :multiple="true"
-                  :show-file-list="false"
-                  :on-success="handleSuccess"
-                  :on-change="handleChange"
-                  class="editor-slide-upload"
-                  action="/api/RC_File/UploadFile"
-                >
+              <el-form-item label="自查科室" :required="true">
+                <default-dept
+                  w="100%"
+                  :value="addFormData.RC_InspectionDepartmentID"
+                  @getDefaultDeptsValue="getDefaultDeptValues"
+                />
+
+              </el-form-item>
+
+              <el-form-item prop="RC_AllAuditOpinion">
+                <span
+                  style="font-weight: bold"
+                >总满分:{{ addFormData.fullMark || 0 }}</span>
+                <span style="font-weight: bold">
+                  总得分:{{ addFormData.totalPoints || 0 }}</span>
+              </el-form-item>
+            </el-form>
+            <el-form
+              ref="addFormData"
+              size="mini"
+              :model="addFormData"
+              :rules="rule"
+              :inline="true"
+              label-position="top"
+            >
+              <el-form-item label="表单模板名称" prop="RC_TemplateName">
+                <el-input
+                  v-model="addFormData.RC_TemplateName"
+                  disabled
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item label="总审核意见" prop="RC_AllAuditOpinion">
+                <el-input
+                  v-model="addFormData.RC_AllAuditOpinion"
+                  disabled
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item label="项目备注">
+                <el-input
+                  v-model="addFormData.RC_Remarks"
+                  clearable
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item label="注意事项">
+                <el-input
+                  v-model="addFormData.Precautions"
+                  :disabled="true"
+                  type="textarea"
+                />
+              </el-form-item>
+            </el-form>
+          </div>
+          <div style="flex: 1">
+            <h3    v-if="addFormData.CaseJudgment == 1">病例数据</h3>
+            <el-table
+              v-if="addFormData.CaseJudgment == 1"
+              ref="multipleTable"
+              :data="addFormData.Rc_CaseDetail"
+              size="mini"
+              height="130"
+            >
+              <el-table-column type="index" align="center"/>
+              <el-table-column label="住院号">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.HospitalNumber"
+                    size="mini"
+                    placeholder="必填"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="患者姓名">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.PatientName"
+                    size="mini"
+                    placeholder=""
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="医疗组名称">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.MedicalGroupName"
+                    size="mini"
+                    placeholder=""
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="50px" align="center">
+                <template slot-scope="{ $index }">
+                  <span><i
+                    style="cursor: pointer"
+                    class="el-icon-delete"
+                    @click="deleteCase($index)"
+                  /></span>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-form    v-if="addFormData.CaseJudgment == 1">
+              <el-form-item style="margin-bottom: 0">
+                <el-button
+                  icon="el-icon-plus"
+                  size="mini"
+                  type="primary"
+                  plain
+                  @click="addCase"
+                >新增一条
+                </el-button>
+                <span>(在此增加添加病例信息)</span>
+              </el-form-item>
+            </el-form>
+            <el-table
+              v-loading="TemplateTableDataLoading"
+              :data="TemplateTableData"
+              style="width:96%;margin:0 auto"
+              border
+              size="mini"
+              :span-method="objectSpanMethod"
+            >
+              <el-table-column
+                type="index"
+                label="序号"
+                width="45"
+                align="center"
+              />
+              <el-table-column
+                label="类别"
+                prop="Category"
+                width="50px"
+                align="center"
+              />
+              <el-table-column
+                label="检查项目"
+                prop="ProjectContent"
+                width="100px"
+                align="center"
+              />
+              <el-table-column label="检查内容" prop="Content" width="300px"/>
+              <el-table-column
+                label="满分"
+                width="80"
+                align="center"
+                prop="ScoreCriteria"
+              >
+                <template slot-scope="scope">
+                  {{ scope.row.RC_TotalScore }}
+                  <!--                <el-input v-model.trim="scope.row.RC_TotalScore" size="mini" />-->
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="自查得分"
+                width="80"
+                align="center"
+                prop="RC_Score"
+              >
+                <template slot-scope="scope">
+                  {{ scope.row.RC_Score }}
+                  <!--                <el-input v-model.trim="scope.row.RC_Score" size="mini" />-->
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="扣分选项"
+                align="center"
+                prop="RC_DeductedPoints"
+                min-width="100"
+              >
+                <template slot-scope="scope">
+                  <el-select
+                    v-model="scope.row.RC_DeductedPoints"
+                    multiple
+                    collapse-tags
+                    size="mini"
+                    placeholder="请选择扣分原因"
+                    clearable
+                    :style="{ width: '100%' }"
+                    @change="
+                      DeductedPoints(scope.row.RC_DeductedPoints, scope.row)
+                    "
+                  >
+                    <el-option
+                      v-for="(item, indexCheck) in scope.row.Check"
+                      :key="indexCheck"
+                      :label="item.ErrorContent"
+                      :value="item.ErrorContent"
+                    />
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="科室整改措施"
+                align="center"
+                prop="RC_RectificationMeasures"
+                min-width="150"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.RC_RectificationMeasures"
+                    type="textarea"
+                    size="mini"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="效果评价"
+                align="center"
+                prop="RC_Opinion"
+                min-width="150"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.RC_Opinion"
+                    type="textarea"
+                    size="mini"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="自查备注"
+                align="center"
+                prop="RC_DeductedPointsRemarks"
+                min-width="120"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.RC_DeductedPointsRemarks"
+                    type="textarea"
+                    size="mini"
+                  />
+                </template>
+              </el-table-column>
+
+              <el-table-column label="上传资料" width="70" align="center">
+                <template slot-scope="scope">
+                  <el-upload
+                    :file-list="fileList"
+                    :multiple="true"
+                    :show-file-list="false"
+                    :on-success="handleSuccess"
+                    :on-change="handleChange"
+                    class="editor-slide-upload"
+                    action="/api/RC_File/UploadFile"
+                  >
+                    <el-button
+                      size="mini"
+                      circle
+                      class="iconfont al-icon-tijiao1"
+                      @click="handleSuccessIndex(scope)"
+                    />
+                  </el-upload>
+                </template>
+
+
+              </el-table-column>
+              <el-table-column
+                label="预览资料"
+                width="150"
+                align="center"
+                prop="FileList_dto"
+              >
+                <template slot-scope="{ row }">
+
+                  <el-tag
+                    v-for="(itemHref, indexHref) in row.FileList_dto"
+                    :key="itemHref.FileName"
+                    style="margin: 10px"
+                    :disable-transitions="false"
+                  >
+                    <el-link
+                      :key="indexHref"
+                      target="_blank"
+                      @click="PreviewFile(itemHref.FileUrl)"
+                    >
+                      {{ itemHref.FileName }}
+                    </el-link>
+
+                  </el-tag>
+
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="下载资料"
+                width="150"
+                align="center"
+                prop="FileList_dto"
+              >
+                <template slot-scope="{ row }">
+                  <el-tag
+                    v-for="(itemHref, indexHref) in row.FileList_dto"
+                    :key="itemHref.FileName"
+                    style="margin: 10px"
+                    :disable-transitions="false"
+                  >
+                    <el-link
+                      :key="indexHref"
+                      target="_blank"
+                      @click="PreviewFile(itemHref.FileUrl)"
+                    >
+                      {{ itemHref.FileName }}
+                    </el-link>
+
+                  </el-tag>
+
+                </template>
+              </el-table-column>
+
+
+              <el-table-column
+                label="督查得分"
+                width="80"
+                align="center"
+                prop="ZCScore"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.ZCScore"
+                    disabled
+                    size="mini"
+                    width="80"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="督查意见"
+                prop="ZCErro"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.ZCErro"
+                    disabled
+                    size="mini"
+                    type="textarea"
+                    width="200"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="主管部门整改措施"
+                prop="ZgCErro"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.ZgCErro"
+                    disabled
+                    size="mini"
+                    type="textarea"
+                    width="200"
+                  />
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                label="审核意见"
+                align="center"
+                prop="RC_AuditOpinion"
+                width="100"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.RC_AuditOpinion"
+                    type="textarea"
+                    size="mini"
+                    :disabled="true"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" align="center" width="100px">
+                <template slot-scope="scope">
                   <el-button
                     size="mini"
-                    circle
-                    class="iconfont al-icon-tijiao1"
-                    @click="handleSuccessIndex(scope)"
-                  />
-                </el-upload>
-              </template>
-
-
-            </el-table-column>
-            <el-table-column
-              label="预览资料"
-              width="80"
-              align="center"
-              prop="FileList_dto"
-            >
-              <template slot-scope="{ row }">
-
-                <el-tag
-                  v-for="(itemHref, indexHref) in row.FileList_dto"
-                  :key="itemHref.FileName"
-                  closable
-                  :disable-transitions="false"
-                  @close="handleClose(indexHref,row.FileList_dto)"
-                >
-                  <el-link
-                    :key="indexHref"
-                    target="_blank"
-                    @click="PreviewFile(itemHref.FileUrl)"
-                  >
-                    {{ itemHref.FileName }}
-                  </el-link>
-
-                </el-tag>
-                <br>
-                <br>
-                <!--                <el-link-->
-                <!--                  v-for="(itemHref, indexHref) in row.FileList_dto"-->
-                <!--                  :key="indexHref"-->
-                <!--                  target="_blank"-->
-                <!--                  @click="PreviewFile(itemHref.FileUrl)"-->
-                <!--                >-->
-
-                <!--                  {{ itemHref.FileName }}-->
-
-                <!--                </el-link>-->
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="下载资料"
-              width="70"
-              align="center"
-              prop="FileList_dto"
-            >
-              <template slot-scope="{ row }">
-                <el-tag
-                  v-for="(itemHref, indexHref) in row.FileList_dto"
-                  :key="itemHref.FileName"
-                  closable
-                  :disable-transitions="false"
-                  @close="handleClose(indexHref,row.FileList_dto)"
-                >
-                  <el-link
-                    :key="indexHref"
-                    target="_blank"
-                    @click="PreviewFile(itemHref.FileUrl)"
-                  >
-                    {{ itemHref.FileName }}
-                  </el-link>
-
-                </el-tag>
-                <br>
-                <br>
-              </template>
-            </el-table-column>
-
-
-            <el-table-column
-              label="督查得分"
-              width="80"
-              align="center"
-              prop="ZCScore"
-            >
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.ZCScore"
-                  disabled
-                  size="mini"
-                  width="80"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="督查意见"
-              prop="ZCErro"
-              minwidth="80"
-              align="center"
-            >
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.ZCErro"
-                  disabled
-                  size="mini"
-                  type="textarea"
-                  width="200"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="主管部门整改措施"
-              prop="ZgCErro"
-              minwidth="80"
-              align="center"
-            >
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.ZgCErro"
-                  disabled
-                  size="mini"
-                  type="textarea"
-                  width="200"
-                />
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              label="审核意见"
-              align="center"
-              prop="RC_AuditOpinion"
-              width="100"
-            >
-              <template slot-scope="scope">
-                <el-input
-                  v-model="scope.row.RC_AuditOpinion"
-                  type="textarea"
-                  size="mini"
-                  :disabled="true"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" width="100px">
-              <template slot-scope="scope">
-                <el-button
-                  size="mini"
-                  @click="SelectContent(scope.row, scope)"
-                >选择扣分原因
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+                    @click="SelectContent(scope.row, scope)"
+                  >选择扣分原因
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </div>
-      </div>
-      <el-footer v-if="!checked" style="height: 35px">
-        <el-button
-          v-if="useTemplateDialogTitle != '制作表单'"
-          v-show="!checked"
-          size="small"
-          @click="ExportUseTemp"
-        >导出
-        </el-button>
-        <el-button
-          size="small"
-          :disabled="innerDisabled"
-          @click="innerDialog"
-        >选择表单模板
-        </el-button>
-        <el-button
-          type="primary"
-          size="small"
-          :disabled="
-            addFormData.Status == 1
-              ? false
-              : addFormData.Status == 2
+        <el-footer v-if="!checked" style="height: 35px">
+          <el-button
+            v-if="useTemplateDialogTitle != '制作表单'"
+            v-show="!checked"
+            size="small"
+            @click="ExportUseTemp"
+          >导出
+          </el-button>
+          <el-button
+            size="small"
+            :disabled="innerDisabled"
+            @click="innerDialog"
+          >选择表单模板
+          </el-button>
+          <el-button
+            :loading="tableBtnLoading"
+            type="primary"
+            size="small"
+            :disabled="
+              addFormData.Status == 1
                 ? false
-                : addFormData.Status == 5
+                : addFormData.Status == 2
                   ? false
-                  : addFormData.Status == 7
+                  : addFormData.Status == 5
                     ? false
-                    : true
-          "
-          @click="submitTemplate"
-        >确定提交
-        </el-button>
-        <el-button
-          v-if="useTemplateDialogTitle == '制作表单'"
-          size="small"
-          @click="addDraft"
-        >存为草稿
-        </el-button>
-        <el-button
-          size="small"
-          @click="
-            cancle()
-            innerDisabled = false
-          "
-        >关闭
-        </el-button>
-      </el-footer>
-      <!-- 草稿 -->
-      <el-footer v-if="checked" style="height: 35px">
-        <el-button
-          v-if="useTemplateDialogTitle === '制作表单'"
-          size="small"
-          @click="addDraft"
-        >存为草稿
-        </el-button>
-        <el-button
-          type="primary"
-          size="small"
-          @click="submitUseTemp"
-        >确定提交
-        </el-button>
-        <el-button
-          v-if="useTemplateDialogTitle === '编辑草稿:'"
-          type="primary"
-          size="small"
-          @click="UpdateUseTempDraftDetail"
-        >更新草稿
-        </el-button>
-        <el-button
-          size="small"
-          :disabled="innerDisabled"
-          @click="innerDialog"
-        >选择表单模板
-        </el-button>
-        <el-button
-          size="small"
-          @click="
-            cancle()
-            innerDisabled = false
-          "
-        >关闭
-        </el-button>
-      </el-footer>
-    </el-dialog>
-    <el-dialog
-      title="选择扣分原因"
-      :width="device === 'desktop' ? '50%' : '99%'"
-      :close-on-click-modal="false"
-      :visible.sync="dialogError"
-    >
-      <!--传入switch时 只能增加选项不能减少 -->
-      <reasonfordeduction
-        ref="reasonfordeduction"
-        @handleSelectionChange="handleSelectionChange"
+                    : addFormData.Status == 7
+                      ? false
+                      : true
+            "
+            @click="submitTemplate"
+          >确定提交
+          </el-button>
+          <el-button
+            v-if="useTemplateDialogTitle == '制作表单'"
+            size="small"
+            @click="addDraft"
+          >存为草稿
+          </el-button>
+          <el-button
+            size="small"
+            @click="
+              cancle()
+              innerDisabled = false
+            "
+          >关闭
+          </el-button>
+        </el-footer>
+        <!-- 草稿 -->
+        <el-footer v-if="checked" style="height: 35px">
+          <el-button
+            v-if="useTemplateDialogTitle === '制作表单'"
+            size="small"
+            @click="addDraft"
+          >存为草稿
+          </el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="submitUseTemp"
+          >确定提交
+          </el-button>
+          <el-button
+            v-if="useTemplateDialogTitle === '编辑草稿:'"
+            type="primary"
+            size="small"
+            @click="UpdateUseTempDraftDetail"
+          >更新草稿
+          </el-button>
+          <el-button
+            size="small"
+            :disabled="innerDisabled"
+            @click="innerDialog"
+          >选择表单模板
+          </el-button>
+          <el-button
+            size="small"
+            @click="
+              cancle()
+              innerDisabled = false
+            "
+          >关闭
+          </el-button>
+        </el-footer>
+      </el-dialog>
+      <el-dialog
+        title="选择扣分原因"
+        :width="device === 'desktop' ? '50%' : '99%'"
+        :close-on-click-modal="false"
+        :visible.sync="dialogError"
+      >
+        <!--传入switch时 只能增加选项不能减少 -->
+        <reasonfordeduction
+          ref="reasonfordeduction"
+          @handleSelectionChange="handleSelectionChange"
+        />
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            size="mini"
+            type="primary"
+            @click="getErrorSelection()"
+          >确 定
+          </el-button>
+        </div>
+      </el-dialog>
+      <template-list
+        ref="templatelist"
+        :visible="innerVisible"
+        @getTemplateID="templateList"
       />
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="getErrorSelection()"
-        >确 定
-        </el-button>
-      </div>
-    </el-dialog>
-    <template-list
-      ref="templatelist"
-      :visible="innerVisible"
-      @getTemplateID="templateList"
-    />
+    </el-card>
   </div>
 </template>
 <script>
@@ -894,6 +1190,7 @@ import {
   DeleteUseTemplate,
   DeleteUseTemplateDraft,
   InsertUseTempDraft,
+  ReuseTemplate,
   SelectUseTempDraft,
   SelectUseTempDraftDetail,
   UpdateUseTempDraftDetail
@@ -912,6 +1209,10 @@ export default {
   mixins: [tableHeight],
   data() {
     return {
+      tableBtnLoading: false, // 新增和编辑表单对话框提交按钮等待
+      auditorName: '', // 审核人名称
+      dialogUseTemplateView: false, // 查看详情对话框开关
+      TemplateTableDataLoading: false, // 表单内容加载等待
       test1: true,
       UserNameIf: true,
       useTemplateDialogTitle: '制作表单',
@@ -962,6 +1263,7 @@ export default {
         totalPoints: 0,
         DraftID: '',
         CheckMonth: ''
+
       },
       RC_InspectionDepartmentID: 0,
       rule: {
@@ -1122,7 +1424,7 @@ export default {
         value = value.map((item, index) => {
           this.TemplateTableData[
             this.SelectRC_ErrorData.indexs
-          ].ErrorIDArray.push(item.ErrorID);
+            ].ErrorIDArray.push(item.ErrorID);
           return {
             ErrorContent: item.ErrorContent,
             Grade: item.Grade,
@@ -1140,7 +1442,7 @@ export default {
 
         this.TemplateTableData[
           this.SelectRC_ErrorData.indexs
-        ].ScoreCriteria = num;
+          ].ScoreCriteria = num;
       });
       this.SelectionChangeValue = value;
     },
@@ -1150,14 +1452,18 @@ export default {
     focus() {
       this.addFormData.RC_InspectionDepartmentID = 0;
     },
-    async SelectUseTempDetail(row) {
+    // 点击编辑按钮
+    async SelectUseTempDetail(row, num) {
+      console.log('row', row);
+      this.TemplateTableDataLoading = true; // 打开内容等待加载条
       this.UserNameIf = false;
       this.innerDisabled = true;
       row = JSON.parse(JSON.stringify(row));
       this.useTemplateDialogTitle = this.checked
         ? '编辑草稿:'
         : '编辑项目：' + row.RC_ProjectName;
-      this.dialogUseTemplate = true;
+
+
       this.RC_InspectionDepartmentID = parseInt(row.RC_InspectionDepartmentID);
       this.addFormData = {
         ID: row.ID,
@@ -1205,12 +1511,14 @@ export default {
             TemplateID: row.RC_TemplateID,
             RC_ProjectName: row.RC_ProjectName,
             RC_InspectionDepartment: row.RC_InspectionDepartmentID,
-            DraftID: row.DraftID
+            DraftID: row.DraftID,
+            guId: row.GUID
           })
           : await SelectUseTempDetail({
             TemplateID: row.RC_TemplateID,
             RC_ProjectName: row.RC_ProjectName,
-            RC_InspectionDepartment: row.RC_InspectionDepartmentID
+            RC_InspectionDepartment: row.RC_InspectionDepartmentID,
+            guId: row.GUID
           });
         this.addFormData.Rc_CaseDetail = data.CaseDetail_dto_list;
         this.TemplateTableData = data.CheckContent_dto_list.map(item => {
@@ -1261,8 +1569,38 @@ export default {
             parseFloat(item.RC_Score);
         });
         this.getJBXXTableData();
+        this.TemplateTableDataLoading = false; // 关闭打开内容等待加载条
+        this.options.map((item) => {
+          while (this.addFormData.CheckUserID === item.UserID) {
+            this.auditorName = item.UserName;
+            break;
+          }
+        });
+        // 如果num=1代表是按查看详情进来的，否则就是点击编辑按钮进来的
+        if (num === 1) {
+          this.useTemplateDialogTitle = '查看项目';
+          this.dialogUseTemplateView = true;
+          // 先遍历出审核人，因为只知道审核人id,和所有审核人的数据，现在要取审核人名称
+        } else {
+          this.dialogUseTemplate = true;
+        }
       } catch (error) {
+        this.TemplateTableDataLoading = false; // 关闭打开内容等待加载条
         console.log(error);
+      }
+    },
+    async moreUseTempDetail(row) {
+      console.log(row);
+      try {
+        const { code } = await ReuseTemplate({
+          guId: row.GUID
+        });
+        if (code === 200) {
+          await this.SelectUseTemp(); // 刷新列表
+          this.$message.success('生成复用表单成功');
+        }
+      } catch (e) {
+        console.log(e);
       }
     },
     getJBXXTableData() {
@@ -1337,9 +1675,15 @@ export default {
     resetForm() {
       this.$refs.addFormData.resetFields();
     },
-    cancle() {
+    cancle(cancleNum) {
       if (!this.addFormData.RC_ProjectName) {
-        this.dialogUseTemplate = false;
+        // 如果有参数2传进来，说明是查看详情的对话框点击关闭，否则是编辑框点击关闭
+        if (cancleNum === 2) {
+          this.dialogUseTemplateView = false;
+        } else {
+          this.dialogUseTemplate = false;
+        }
+
         return;
       }
       if (this.useTemplateDialogTitle == '制作表单') {
@@ -1349,7 +1693,12 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            this.dialogUseTemplate = false;
+            // 如果有参数2传进来，说明是查看详情的对话框点击关闭，否则是编辑框点击关闭
+            if (cancleNum === 2) {
+              this.dialogUseTemplateView = false;
+            } else {
+              this.dialogUseTemplate = false;
+            }
             this.addDraft();
           })
           .catch(() => {
@@ -1359,7 +1708,12 @@ export default {
       this.innerDisabled = false;
       this.TemplateTableData = [];
       this.addFormData.RC_TemplateName = '';
-      this.dialogUseTemplate = false;
+      // 如果有参数2传进来，说明是查看详情的对话框点击关闭，否则是编辑框点击关闭
+      if (cancleNum === 2) {
+        this.dialogUseTemplateView = false;
+      } else {
+        this.dialogUseTemplate = false;
+      }
     },
     async submitTemplate() {
       try {
@@ -1409,18 +1763,28 @@ export default {
               this.$message.warning('请您选择月份!');
               return;
             }
-            const { msg } =
+            this.tableBtnLoading = true; // 开启提交按钮等待圈
+            const { msg} =
               this.useTemplateDialogTitle === '制作表单'
                 ? await InsertUseTemp(this.addFormData)
                 : await UpdateUseTempDetail(this.addFormData);
             this.$message.success(msg);
             this.dialogUseTemplate = false;
+            this.$nextTick(()=>{
+              this.tableBtnLoading = false; // 关闭提交按钮等待圈
+            });
+
           } else {
+            this.$nextTick(()=>{
+              this.tableBtnLoading = false; // 关闭提交按钮等待圈
+            });
             return false;
           }
           this.SelectUseTemp();
         });
+        this.tableBtnLoading = false; // 关闭提交按钮等待圈
       } catch (error) {
+        this.tableBtnLoading = false; // 关闭提交按钮等待圈
         console.log(error);
       }
     },
@@ -1526,6 +1890,7 @@ export default {
       this.$refs.templatelist.open();
     },
     userTemplateButton() {
+      // this.moreUse = true;
       this.UserNameIf = true;
       this.dialogUseTemplate = true;
       this.innerDisabled = false;
@@ -1961,6 +2326,14 @@ export default {
 };
 </script>
 <style lang="scss">
+.seeAddFormData {
+  font-weight: bolder;
+
+  .el-row {
+    margin-bottom: 25px;
+  }
+}
+
 .DepartmentSelfExamination {
   margin: 4px;
 

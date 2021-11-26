@@ -74,7 +74,7 @@ export default {
   },
   data() {
     return {
-      checkStrictly: false, // false为,选中父级，将子级叶子全选，true就不会选子级叶子
+      checkStrictly: true, // false为,选中父级，将子级叶子全选，true就不会选子级叶子
       width: this.w,
       num: '',
       dept_value:

@@ -167,7 +167,8 @@
             v-else
           >
             <iframe
-              :src="videoUrl" width="90%"
+              :src="videoUrl"
+              width="90%"
               height="600px"
             ></iframe>
           </div>
@@ -302,7 +303,7 @@
                   border
                   size="small"
                   :data="fileListTable2"
-                  @row-click="downloadFileList"
+
                 >
                   <el-table-column label="课件名称" prop="Title">
                     <template slot-scope="{ row }">
@@ -314,7 +315,7 @@
                       <el-tag type="info" size="mini"> {{ row.Title }}</el-tag>
 
 
-                      <el-button type="primary" size="mini">学习
+                      <el-button type="primary" size="mini" @click="downloadFileList(row)">学习
 
                       </el-button>
 
@@ -531,6 +532,7 @@ export default {
         this.isVideo = true; // 是video
       } else {
         this.isVideo = false; // 不是video
+
       }
 
     },

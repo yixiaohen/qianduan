@@ -1044,7 +1044,7 @@ import splitPane from 'vue-splitpane';
 import { mapGetters } from 'vuex';
 
 export default {
-  name: 'AdverseEventsMine',
+  name: 'Processed',
   components: { splitPane },
   data() {
     return {

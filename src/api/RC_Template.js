@@ -191,3 +191,11 @@ export function ExportUseTemp(data) {
   });
 }
 
+// 表单另存为功能
+export function CopyTemplate(data) {
+  return request({
+    url: 'RC_Template/CopyTemplate',
+    method: 'get',
+    params: data
+  });
+}

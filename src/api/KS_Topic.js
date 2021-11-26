@@ -20,8 +20,8 @@ export function SelectTopic(data) {
 export function DeleteTopic(data) {
   return service({
     url: '/KS_Topic/DeleteTopic',
-    method: 'post',
-    data
+    method: 'get',
+    params: data
   });
 }
 

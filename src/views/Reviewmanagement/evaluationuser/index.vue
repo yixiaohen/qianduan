@@ -298,6 +298,7 @@
           border
           row-key="CatalogID"
           size="mini"
+          tooltip-effect="light"
           height="calc(100vh - 200px)"
           highlight-current-row
           @selection-change="handleSelectionChange"
@@ -350,19 +351,43 @@
             prop="ReviewName"
             :label="menu_one"
             :show-overflow-tooltip="cellOverflow"
-          />
+          >
+            <template slot-scope="{ row }">
+              <el-popover placement="top-start" :title="menu_one" width="90%" trigger="hover">
+                <div>{{ row.ReviewName }}</div>
+                <span slot="reference">{{ row.ReviewName}}</span>
+              </el-popover>
+            </template>
+
+          </el-table-column>
           <el-table-column
             v-if="menu_two != undefined"
             prop="ManageName"
             :label="menu_two"
             :show-overflow-tooltip="cellOverflow"
-          />
+          >
+            <template slot-scope="{ row }">
+              <el-popover placement="top-start" :title="menu_two" width="90%" trigger="hover">
+                <div>{{ row.ManageName }}</div>
+                <span slot="reference">{{ row.ManageName}}</span>
+              </el-popover>
+            </template>
+
+          </el-table-column>
           <el-table-column
             v-if="menu_three != undefined"
             prop="VisitName"
             :label="menu_three"
             :show-overflow-tooltip="cellOverflow"
-          />
+          >
+            <template slot-scope="{ row }">
+              <el-popover placement="top-start" :title="menu_three" width="90%" trigger="hover">
+                <div>{{ row.VisitName }}</div>
+                <span slot="reference">{{ row.VisitName }}</span>
+              </el-popover>
+            </template>
+
+          </el-table-column>
           <el-table-column
             prop="GroupName"
             label="组别"

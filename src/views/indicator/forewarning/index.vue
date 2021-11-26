@@ -65,6 +65,7 @@
                 </div>
                 <el-card>
                   <el-table
+                    v-loading="fwmListDataLoading"
                     :data="fwmListData"
                     border
                     style="width:100%;height:calc(100vh - 220px)"
@@ -84,7 +85,7 @@
                       align="center"
                     />
                     <el-table-column
-                      prop="AnticDeployName"
+                      prop="name"
                       label="指标名称"
                       align="center"
                     />
@@ -551,6 +552,7 @@ export default {
   },
   data() {
     return {
+      fwmListDataLoading: false, // 表格加载条控制
       listQuery2: { // 粒度分页数据
         pageIndex: 1,
         pageSize: 10
@@ -694,6 +696,7 @@ export default {
     async SelectFwmListData() {
       // this.listQuery.pageIndex = 1; // 重置页码为1
       try {
+        this.fwmListDataLoading = true; // 打开表格加载等待条
         const { data, code } = await SelectAnticDeploy({
           index_id: this.nodeValue.index_id,
           pageIndex: this.listQuery.pageIndex,
@@ -702,9 +705,11 @@ export default {
         if (code === 200) {
           this.fwmListData = data.DataList;
           this.pagination.Total = data.Total; // 获取总条数
+          this.fwmListDataLoading = false; // 关闭表格加载等待条
         }
       } catch (e) {
         console.log(e);
+        this.fwmListDataLoading = false; // 关闭表格加载等待条
       }
     },
     // 查询全部的数据源
@@ -1033,6 +1038,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+// 导入等待条样式
+@import "src/styles/loading.scss";
 //分页栏距离预警表格
 .block {
   margin-top: 10px;

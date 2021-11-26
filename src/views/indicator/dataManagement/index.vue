@@ -17,7 +17,8 @@
                   type="info"
                   :closable="false"
                 />
-                <el-button :disabled="isUseAllot" type="success" size="mini" @click="openAllotIndex1()">指标分配
+                <!--                <el-button :disabled="isUseAllot" type="success" size="mini" @click="openAllotIndex1()">指标分配-->
+                <el-button :disabled="nodeValue===''" type="success" size="mini" @click="openAllotIndex1()">指标分配
                 </el-button>
               </div>
               <IndexNavTree
@@ -40,14 +41,14 @@
                 </div>
                 <div class="DMContainer">
                   <el-row type="flex" justify="center">
-                    <el-col :span="5">
+                    <el-col :span="4">
                       <span>指标名称：{{ nodeValue.name }}</span>
                     </el-col>
-                    <el-col :span="4">
+                    <el-col :span="3">
                       <span>指标编码：{{ nodeValue.formulaObj }}</span>
                     </el-col>
 
-                    <el-col :span="5">
+                    <el-col :span="12">
                       <span class="demonstration">查找:</span>
                       <el-radio-group
                         v-model="isYearOrMonth"
@@ -58,8 +59,7 @@
                         <el-radio-button :label="1">按年份</el-radio-button>
                         <el-radio-button :label="2">按年月</el-radio-button>
                       </el-radio-group>
-                    </el-col>
-                    <el-col :span="11">
+
                       <el-date-picker
                         v-if="isYearOrMonth===1"
                         v-model="selectYear"
@@ -71,7 +71,7 @@
                         format="yyyy"
                       />
                       <span v-if="isYearOrMonth===1" class="demonstration">年</span>
-                      <el-button v-if="isYearOrMonth===1" type="primary" size="mini" @click="searchYear">搜索</el-button>
+                      <el-button v-if="isYearOrMonth===1" type="primary" size="mini" @click="searchYear">查找</el-button>
 
                       <el-date-picker
                         v-if="isYearOrMonth===2"
@@ -95,8 +95,24 @@
                         placeholder="选择月"
                       />
                       <span v-if="isYearOrMonth===2" class="demonstration">月</span>
-                      <el-button v-if="isYearOrMonth===2" type="primary" size="mini" @click="searchMonth">搜索</el-button>
+                      <el-button v-if="isYearOrMonth===2" type="primary" size="mini" @click="searchMonth">查找</el-button>
 
+                    </el-col>
+                    <el-col :span="6">
+                      <el-input
+                        v-model="searchDet"
+                        style="width: 50%"
+                        size="mini"
+                        placeholder="部门名称"
+                      >
+                      </el-input>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        @click="searchContent"
+                      >
+                        搜索
+                      </el-button>
                     </el-col>
 
                   </el-row>
@@ -104,6 +120,7 @@
                     <el-col :span="24">
                       <el-table
                         :data="indexAllotData"
+                        v-loading="tableDataLoading"
                         border
                         stripe
                         height="calc(100vh - 300px)"
@@ -120,9 +137,16 @@
                           :show-overflow-tooltip="cellOverflow"
                         />
                         <el-table-column
+                          prop="cycName"
+                          label="周期名称"
+                          align="center"
+                          :show-overflow-tooltip="cellOverflow"
+                        />
+                        <el-table-column
                           prop="dateTime"
                           label="周期"
-                          width="160px"
+                          sortable
+                          width="180px"
                           align="center"
                           :show-overflow-tooltip="cellOverflow"
                         />
@@ -133,9 +157,16 @@
                           :show-overflow-tooltip="cellOverflow"
                         />
                         <el-table-column
-                          prop="number"
-                          label="指标值"
+                          prop="paraName"
+                          label="参数名称"
                           align="center"
+                          :show-overflow-tooltip="cellOverflow"
+                        />
+                        <el-table-column
+                          prop="number"
+                          label="最终指标值"
+                          align="center"
+                          width="120px"
                           :show-overflow-tooltip="cellOverflow"
                         />
                         <el-table-column
@@ -147,12 +178,14 @@
                         <el-table-column
                           prop="LastMatchTime"
                           label="创建日期"
+                          sortable
+                          width="190px"
                           align="center"
                           :show-overflow-tooltip="cellOverflow"
                         >
                           <template slot-scope="{ row }">{{
-                            row.LastMatchTime ? row.LastMatchTime.replace('T', ' ') : ''
-                          }}
+                              row.LastMatchTime ? row.LastMatchTime.replace('T', ' ') : ''
+                                                         }}
                           </template>
 
                         </el-table-column>
@@ -173,12 +206,13 @@
                     </el-col>
                   </el-row>
                   <span>展开 </span>
-                  <el-switch v-model="cellOverflow" style="margin: 6px 0" />
+                  <el-switch v-model="cellOverflow" style="margin: 6px 0"/>
                   <span> 折叠</span>
 
                   <!--      分页-->
                   <div class="block">
                     <el-pagination
+                      style="margin: 6px 0 0 0"
                       :page-sizes="pagination.pageSizes"
                       :page-size="pagination.pageSize"
                       layout="total, sizes, prev, pager, next, jumper"
@@ -199,7 +233,7 @@
     </div>
     <!--添加弹框-->
     <el-dialog :title="configIndexTitle" :visible.sync="showConfig">
-      <el-form ref="addDia" :model="indexAllot" label-width="120px" status-icon>
+      <el-form ref="addDia" :model="indexAllot" label-width="150px" status-icon>
         <el-form-item
           label="周期"
         >
@@ -207,9 +241,10 @@
             v-model="indexAllot.cycle_id"
             filterable
             clearable
-            style="width: 240px"
+            style="width: 60%"
             placeholder="请选择"
-            size="mini">
+            size="mini"
+          >
             <el-option
               v-for="item in cycle"
               :key="item.Cycleid"
@@ -238,11 +273,38 @@
               <span
                 style="float: right; color: #8492a6; font-size: 13px"
               >{{
-                item.Starway === 0 ? '结束日期往前' : item.Starway === 10 ? '当年' : item.Starway === 11 ? '当季' : item.Starway === 12 ? '当月' : item.Starway
-              }}{{ ' | ' + item.Cycle + ' | ' + item.Num }}</span>            </el-option>
+                  item.Starway === 0 ? '结束日期往前' : item.Starway === 10 ? '当年' : item.Starway === 11 ? '当季' : item.Starway === 12 ? '当月' : item.Starway
+               }}{{ ' | ' + item.Cycle + ' | ' + item.Num }}</span></el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item
+          v-if="nodeValue.para===1"
+          label="指标参数"
+        >
+          <el-select
+            v-model="para_id"
+            :multiple="configIndexTitle==='新增指标分配'"
+            style="width: 60%"
+            clearable
+            filterable
+            size="mini"
+          >
+            <el-option
+              v-for="item in paramData"
+              :value="item.para_id"
+              :label="item.name"
+            >
+
+            </el-option>
+          </el-select>
+          <span v-if="configIndexTitle==='新增指标分配'" style="width:40%;word-wrap: break-word;font-size: 12px;line-height: 14px;background-color: #eeeeee">--勾选多个参数可批量分配
+          </span>
+          <span v-else style="width:40%;word-wrap: break-word;font-size: 12px;line-height: 14px;background-color: #eeeeee">--修改时只能选择一个参数
+          </span>
+        </el-form-item>
+        <el-form-item
+          v-if="nodeValue.type===1"
           label="科室"
           prop="DeptIDs"
         >
@@ -255,17 +317,20 @@
             @getDefaultDeptsValue="getDefaultDeptsValue"
           />
 
-          <span style="width:40%;word-wrap: break-word;font-size: 12px;line-height: 14px;background-color: #eeeeee">--勾选多个科室即为批量分配,修改时只能勾选一个科室
+          <span v-if="configIndexTitle==='新增指标分配'" style="width:40%;word-wrap: break-word;font-size: 12px;line-height: 14px;background-color: #eeeeee">--勾选多个科室即为批量分配
+          </span>
+          <span v-else style="width:40%;word-wrap: break-word;font-size: 12px;line-height: 14px;background-color: #eeeeee">--修改时只能勾选一个科室
           </span>
         </el-form-item>
 
         <el-form-item
-          label="指标值(数字)"
-          prop="formulaObj"
+          v-if="configIndexTitle!=='新增指标分配'"
+          label="修正的指标值"
+          prop="number2"
         >
           <el-input
             v-model.number="indexAllot.Number2"
-            style="width:30%"
+            style="width: 60%"
             size="small"
             type="number"
             clearable
@@ -273,13 +338,50 @@
         </el-form-item>
 
         <el-form-item
+          label="预警上限值"
+          prop="number_max"
+        >
+          <el-input
+            v-model.number="indexAllot.number_max"
+            style="width: 60%"
+            size="small"
+            type="number"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item
+          label="预警下限值"
+          prop="number_min"
+        >
+          <el-input
+            v-model.number="indexAllot.number_min"
+            style="width: 60%"
+            size="small"
+            type="number"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item
+          label="目标期望值"
+          prop="number_target"
+        >
+          <el-input
+            v-model.number="indexAllot.number_target"
+            style="width: 60%"
+            size="small"
+            type="number"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item
           label="备注"
           prop="Remarks"
         >
           <el-input
             v-model="indexAllot.Remarks"
-            style="width:30%"
+            style="width: 60%"
             size="small"
+            type="textarea"
             clearable
           />
         </el-form-item>
@@ -302,6 +404,7 @@ import IndexNavTree from '@/views/indicator/components/IndexNavTree';
 import defaultDepts from '@/views/components/defaultDepts';
 import {
   DeleteIndexAlloc,
+  GetI_Index_Params,
   InsertBatchIndexAlloc,
   SelectIndexAlloc,
   UpdateIndexAlloc
@@ -316,6 +419,11 @@ export default {
   },
   data() {
     return {
+      tableDataLoading: false, // 表格数据加载等待条开关
+      indexAllotDataLoading: false, // 导航树数据加载等待条开关
+      searchDet: '', // 搜索部门名称
+      paramData: [], // 参数数据
+      para_id: null, // 参数选项id
       checkStrictly: false, // 为false,选择科室时勾选父级不全选子级叶子
       cellOverflow: false, // 折叠表格
       isYearOrMonth: 1, // 按照年份还是年月查找数据
@@ -347,11 +455,15 @@ export default {
       indexAllot: { // 新增的指标分配数据
         IndexAllocID: 0, // 该条数据的id
         index_id: 0, // 指标di
+        Params: '',
         DeptID: -1, // -1代表全院，代表没选科室部门
         cycle_id: null, // 周期id
         Number2: null, // 指标值
         AllocUserID: window.userInfo[0].UserID, // 分配人id
-        Remarks: '' // 备注
+        Remarks: '', // 备注
+        number_max: '', // 预警上限值
+        number_min: '', // 预警下限值
+        number_target: '' // 目标期望值
         // AllocTime: "2021-10-14T07:51:52.880Z",
         // DeptIDs: 0// 批量增加
       },
@@ -401,6 +513,10 @@ export default {
     this.SelectiCycle();
   },
   methods: {
+    // 搜索功能
+    searchContent() {
+      alert('测试搜索' + this.searchDet);
+    },
     isYearOrMonthc(x) {
       this.selectYear = '';
       this.selectMonth = '';
@@ -427,29 +543,25 @@ export default {
       this.listQuery.pageSize = page;
       this.SelectIndexAlloc();
     },
-    // // 获取年份搜索年的数据
-    // async SelectIndexYear(val) {
-    //   const { data } = await SelectIndexYear({ index_id: val });
-    //   this.allYear = data;
-    // },
+
     // 按年份搜索指标分配
     searchYear(year) {
-      // console.log(year);
-      // this.selectYear = year; // 传过来的参数赋值给当前选中的年份
-      // this.selectMonth = ''; // 清空搜索月份的选项
       this.listQuery.pageIndex = 1; // 重置页码为1
       this.SelectIndexAlloc(); // 刷新列表
     },
     // 按月份搜索指标分配
     searchMonth(Month) {
-      // console.log(Month);
-      // this.selectMonth = Month.slice(5, 8);
-      // this.selectYear = Month.slice(0, 4);
-      // // this.selectMonth = Month;
-      // // this.selectMonth = Month; // 传过来的参数赋值给当前选中的年份
-      // // this.selectYear = ''; // 清空搜索年份的选项
-      this.listQuery.pageIndex = 1; // 重置页码为1
-      this.SelectIndexAlloc(); // 刷新列表
+      if (this.selectMonth !== '' && this.selectYear === '') {
+        alert('按年月查找年份不能为空');
+        this.selectMonth = ''; // 错误之后重置已选的月份
+      } else if (this.selectMonth === '' && this.selectYear !== '') {
+        alert('按年月查找月份不能为空');
+        this.selectYear = ''; //
+      } else {
+        this.listQuery.pageIndex = 1; // 重置页码为1
+        this.SelectIndexAlloc(); // 刷新列表
+      }
+
     },
     // 获取选中的科室id数组
     getDefaultDeptsValue(value) {
@@ -458,6 +570,7 @@ export default {
     // 根据指标id查询指标分配列表
     async SelectIndexAlloc() {
       try {
+        this.tableDataLoading = true; // 表格加载条开
         const { data, code } = await SelectIndexAlloc(
           {
             index_id: this.nodeValue.index_id,
@@ -476,7 +589,9 @@ export default {
           });
           this.pagination.Total = data.Total; // 将分页的总条目获取
         }
+        this.tableDataLoading = false; // 表格加载条关
       } catch (e) {
+        this.tableDataLoading = false; // 表格加载条关
         console.log(e);
       }
     },
@@ -496,11 +611,30 @@ export default {
         this.SelectIndexAlloc();
       }
     },
+    // 获取指标参数
+    async GetI_Index_Params() {
+      try {
+        const { data, code } = await GetI_Index_Params({
+          indexId: this.nodeValue.index_id
+        });
+        if (code === 200) {
+          this.paramData = data;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
     // 点击打开指标分配框进行添加
     openAllotIndex1() {
       this.showConfig = true; // 点击打开指标分配框
       this.configIndexTitle = '新增指标分配'; //  新增指标的对话框的标题值
       this.isLotSelect = true; // 新增指标分配时，科室选择为多选
+      this.para_id = ''; // 清除已选参数
+      this.indexAllot.Params = ''; // 清除已选参数
+      this.indexAllot.cycle_id = ''; // 清除已选周期
+      this.indexAllot.DeptID = ''; // 清除已选科室
+      this.GetI_Index_Params(); // 打开指标分配对话框获取参数数据
+
     },
     // 点击打开指标分配框进行修改
     openAllotIndex2(row) {
@@ -511,6 +645,7 @@ export default {
       this.indexAllot.IndexAllocID = row.IndexAllocID; // 将当前点击的指标分配id保存
       // 将当前点击的指标分配数据
       this.nodeValue.index_id = row.index_id;
+      this.para_id = row.para_id;
       this.indexAllot.DeptID = row.DeptID;
       this.indexAllot.Year = row.Year;
       this.indexAllot.Months = row.Months;
@@ -518,13 +653,24 @@ export default {
       this.indexAllot.Remarks = row.Remarks;
       this.indexAllot.Cover = row.Cover;
       this.indexAllot.cycle_id = row.cycle_id;
+      this.GetI_Index_Params(); // 打开指标分配对话框获取参数数据
     },
     // 指标分配处理事件
     async addIndexAllot() {
       this.indexAllot.index_id = this.nodeValue.index_id;
+      this.indexAllot.Params = this.para_id.toString();
 
       if (!this.indexAllot.Number2) {
         this.indexAllot.Number2 = 0;
+      }
+      if (!this.indexAllot.number_max) {
+        this.indexAllot.number_max = 0;
+      }
+      if (!this.indexAllot.number_min) {
+        this.indexAllot.number_min = 0;
+      }
+      if (!this.indexAllot.number_target) {
+        this.indexAllot.number_target = 0;
       }
 
 
@@ -539,6 +685,7 @@ export default {
           if (code === 200) {
             await this.SelectIndexAlloc();
             this.$message.success('批量分配成功');
+            this.para_id = null; // 参数清空
             this.showConfig = false; // 关闭弹框
             this.IndexSourceLoading = false; // 关闭按钮等待
           }
@@ -558,6 +705,7 @@ export default {
             if (code === 200) {
               await this.SelectIndexAlloc();// 刷新指标列表
               this.$message.success('修改指标分配成功');
+              this.para_id =null; // 参数清空
               this.showConfig = false; // 关闭弹框
               this.IndexSourceLoading = false; // 关闭按钮等待
             }
@@ -566,6 +714,7 @@ export default {
             const { code } = await InsertBatchIndexAlloc(this.indexAllot);
             if (code === 200) {
               await this.SelectIndexAlloc(); // 刷新指标列表
+              this.para_id =null; // 参数清空
               this.$message.success('分配成功');
               this.showConfig = false; // 关闭弹框
               this.IndexSourceLoading = false; // 关闭按钮等待

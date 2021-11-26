@@ -1,300 +1,312 @@
 <template>
   <div class="evaluation_not_validated">
-    <split-pane split="horizontal">
+    <split-pane split="horizontal"  :default-percent="60">
+
       <template slot="paneL">
-        <div class="top-container">
-          <div class="top-container-head">
-            <el-form
-              size="mini"
-              label-position="left"
-              :inline="true"
-            >
-              <el-form-item>
-                <el-button
-                  type="primary"
-                  icon="el-icon-circle-plus"
-                  size="mini"
-                  @click="addCatalogs"
-                >增加
-                </el-button>
-              </el-form-item>
-              <el-form-item>
-                <el-button
-                  type="success"
-                  icon="el-icon-refresh"
-                  :disabled="disabled"
-                  size="mini"
-                  @click="refreshRoot()"
-                />
-              </el-form-item>
-            </el-form>
-          </div>
-          <el-alert
-            :title="catalogTitle || '当前栏目下不能添加资料，请选择子级栏目'"
-            type="info"
-            :closable="false"
-          />
-          <div class="top-container-body">
-            <el-table
-              ref="tableData"
-              v-loading="loading"
-              class="top-container-body-tb"
-              :data="tableData"
-              style="width: 100%"
-              row-key="CatalogID"
-              border
-              size="mini"
-              lazy
-              height="100%"
-              :row-class-name="tableRowClassName"
-              :load="addChildrenCatalog"
-              :tree-props="{ children: 'Children', hasChildren: 'hasChildren' }"
-              @row-click="cellClick"
-            >
-              <el-table-column
-                prop="CatalogCode"
-                label="编号"
-                width="160"
-                sortable
-              />
-              <el-table-column
-                prop="CatalogName"
-                label="内容"
-                min-width="300"
-              />
-              <!--              宁海妇幼保健院隐藏评审标准-->
-              <el-table-column
-                v-if="CatalogVersion !== '宁海妇幼保健院'"
-                label="评审标准"
-                width="70"
-                align="center"
+        <el-card
+          style="margin: 10px"
+        >
+          <div class="top-container">
+            <div class="top-container-head">
+              <el-form
+                size="mini"
+                label-position="left"
+                :inline="true"
               >
-                <template slot-scope="{ row }">
-                  <el-tag
-                    size="mini"
-                    effect="dark"
-                    :type="row.IsCriterion ? 'success' : 'danger'"
-                  >{{ row.IsCriterion ? '是' : '否' }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                prop="Fraction"
-                label="总分值"
-                width="70"
-                align="center"
-              />
-
-              <!-- <el-table-column prop="name" label="核心条款" width="180" /> -->
-              <el-table-column
-                label="操作"
-                width="160"
-                align="center"
-              >
-                <template slot-scope="scope">
+                <el-form-item>
                   <el-button
                     type="primary"
-                    size="mini"
                     icon="el-icon-circle-plus"
-                    @click="addCatalog(scope.row)"
-                  />
-                  <el-button
-                    type="info"
                     size="mini"
-                    icon="el-icon-edit"
-                    @click="updateCatalog(scope.row)"
-                  />
+                    @click="addCatalogs"
+                  >增加
+                  </el-button>
+                </el-form-item>
+                <el-form-item>
                   <el-button
-                    type="danger"
+                    type="success"
+                    icon="el-icon-refresh"
+                    :disabled="disabled"
                     size="mini"
-                    icon="el-icon-delete"
-                    @click="deleteCatalog(scope.row)"
+                    @click="refreshRoot()"
                   />
-                </template>
-              </el-table-column>
-            </el-table>
+                </el-form-item>
+              </el-form>
+            </div>
+            <el-alert
+              :title="catalogTitle || '当前栏目下不能添加资料，请选择子级栏目'"
+              type="info"
+              :closable="false"
+            />
+            <div class="top-container-body">
+              <el-table
+                ref="tableData"
+                v-loading="loading"
+                class="top-container-body-tb"
+                :data="tableData"
+                style="width: 100%"
+                row-key="CatalogID"
+                border
+                size="mini"
+                lazy
+                height="40vh"
+                :row-class-name="tableRowClassName"
+                :load="addChildrenCatalog"
+                :tree-props="{ children: 'Children', hasChildren: 'hasChildren' }"
+                @row-click="cellClick"
+              >
+                <el-table-column
+                  prop="CatalogCode"
+                  label="编号"
+                  width="160"
+                  sortable
+                />
+                <el-table-column
+                  prop="CatalogName"
+                  label="内容"
+                  min-width="300"
+                />
+                <!--              宁海妇幼保健院隐藏评审标准-->
+                <el-table-column
+                  v-if="CatalogVersion !== '宁海妇幼保健院'"
+                  label="评审标准"
+                  width="70"
+                  align="center"
+                >
+                  <template slot-scope="{ row }">
+                    <el-tag
+                      size="mini"
+                      effect="dark"
+                      :type="row.IsCriterion ? 'success' : 'danger'"
+                    >{{ row.IsCriterion ? '是' : '否' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+
+                <el-table-column
+                  prop="Fraction"
+                  label="总分值"
+                  width="70"
+                  align="center"
+                />
+
+                <!-- <el-table-column prop="name" label="核心条款" width="180" /> -->
+                <el-table-column
+                  label="操作"
+                  width="160"
+                  align="center"
+                >
+                  <template slot-scope="scope">
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      icon="el-icon-circle-plus"
+                      @click="addCatalog(scope.row)"
+                    />
+                    <el-button
+                      type="info"
+                      size="mini"
+                      icon="el-icon-edit"
+                      @click="updateCatalog(scope.row)"
+                    />
+                    <el-button
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-delete"
+                      @click="deleteCatalog(scope.row)"
+                    />
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </div>
-        </div>
+        </el-card>
+
       </template>
 
       <!-- <div style="display:flex;"> -->
-      <template slot="paneR">
-        <div class="bottom-container">
-          <el-tabs
-            v-model="activeName"
-            class="bottom-container"
-          >
-            <el-tab-pane
-              label="考评办法"
-              name="first"
+      <template slot="paneR"  >
+        <el-card
+          style="margin: 0px"
+        >
+
+
+          <div class="bottom-container">
+            <el-tabs
+              v-model="activeName"
+              class="bottom-container"
             >
-              <div class="bottom-container">
-                <div class="bottom-container-head">
-                  <el-form
+              <el-tab-pane
+                label="考评办法"
+                name="first"
+              >
+                <div class="bottom-container">
+                  <div class="bottom-container-head">
+                    <el-form
+                      size="mini"
+                      label-position="left"
+                      :inline="true"
+                    >
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-circle-plus"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="InsertResort"
+                        >增加考评办法
+                        </el-button>
+                      </el-form-item>
+                      <el-form-item>
+                        <div class="block">
+                          <el-pagination
+                            background
+                            :current-page.sync="pagination2.pageIndex"
+                            :page-size="pagination2.pageSize"
+                            :page-sizes="pagination2.pageSizes"
+                            :total="pagination2.total"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            @size-change="handleSizeChange2"
+                            @current-change="handleCurrentChange2"
+                          />
+                        </div>
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                  <el-table
+                    class="bottom-container-body-tb"
+                    :data="Resort"
+                    style="width: 100%"
+                    border
                     size="mini"
-                    label-position="left"
-                    :inline="true"
+                    height="20vh"
                   >
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-circle-plus"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="InsertResort"
-                      >增加考评办法
-                      </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                      <div class="block">
-                        <el-pagination
-                          background
-                          :current-page.sync="pagination2.pageIndex"
-                          :page-size="pagination2.pageSize"
-                          :page-sizes="pagination2.pageSizes"
-                          :total="pagination2.total"
-                          layout="total, sizes, prev, pager, next, jumper"
-                          @size-change="handleSizeChange2"
-                          @current-change="handleCurrentChange2"
+                    <el-table-column
+                      type="index"
+                      width="50"
+                      label="序号"
+                      align="center"
+                    />
+                    <el-table-column
+                      label="内容"
+                      min-width="300"
+                    >
+                      <template slot-scope="{row}">
+                        <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '"/>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="操作"
+                      width="150"
+                      align="center"
+                      fixed="right"
+                    >
+                      <template slot-scope="scope">
+                        <el-button
+                          type="info"
+                          size="mini"
+                          icon="el-icon-edit"
+                          @click="UpdateResort(scope.row)"
                         />
-                      </div>
-                    </el-form-item>
-                  </el-form>
+                        <el-button
+                          type="danger"
+                          size="mini"
+                          icon="el-icon-delete"
+                          @click="DeleteResort(scope.row)"
+                        />
+                      </template>
+                    </el-table-column>
+                  </el-table>
                 </div>
-                <el-table
-                  class="bottom-container-body-tb"
-                  :data="Resort"
-                  style="width: 100%"
-                  border
-                  size="mini"
-                  height="100%"
-                >
-                  <el-table-column
-                    type="index"
-                    width="50"
-                    label="序号"
-                    align="center"
-                  />
-                  <el-table-column
-                    label="内容"
-                    min-width="300"
-                  >
-                    <template slot-scope="{row}">
-                      <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="操作"
-                    width="150"
-                    align="center"
-                    fixed="right"
-                  >
-                    <template slot-scope="scope">
-                      <el-button
-                        type="info"
-                        size="mini"
-                        icon="el-icon-edit"
-                        @click="UpdateResort(scope.row)"
-                      />
-                      <el-button
-                        type="danger"
-                        size="mini"
-                        icon="el-icon-delete"
-                        @click="DeleteResort(scope.row)"
-                      />
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane
-              label="扣分原因"
-              name="second"
-            >
-              <div class="bottom-container">
-                <div class="bottom-container-head">
-                  <el-form
+              </el-tab-pane>
+              <el-tab-pane
+                label="扣分原因"
+                name="second"
+              >
+                <div class="bottom-container">
+                  <div class="bottom-container-head">
+                    <el-form
+                      size="mini"
+                      label-position="left"
+                      :inline="true"
+                    >
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-circle-plus"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="InsertPenalties"
+                        >选择扣分原因
+                        </el-button>
+                      </el-form-item>
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-edit"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="UpdatePenalties"
+                        >修改扣分原因
+                        </el-button>
+                      </el-form-item>
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-plus"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="addReorCa"
+                        >添加扣分原因
+                        </el-button>
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                  <el-table
+                    class="bottom-container-body-tb"
+                    :data="PenaltiesData"
+                    style="width: 100%"
+                    border
                     size="mini"
-                    label-position="left"
-                    :inline="true"
+                    height="600"
                   >
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-circle-plus"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="InsertPenalties"
-                      >选择扣分原因
-                      </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-edit"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="UpdatePenalties"
-                      >修改扣分原因
-                      </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-plus"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="addReorCa"
-                      >添加扣分原因
-                      </el-button>
-                    </el-form-item>
-                  </el-form>
+                    <el-table-column
+                      prop="PenaltiesContent"
+                      label="扣分内容"
+                      width="300"
+                    />
+                    <el-table-column
+                      prop="PenaltiesFraction"
+                      label="扣分分数"
+                      min-width="100"
+                    />
+                    <el-table-column
+                      label="操作"
+                      fixed="right"
+                      align="center"
+                      width="120"
+                    >
+                      <template slot-scope="scope">
+                        <el-button
+                          type="primary"
+                          size="mini"
+                          @click.native.prevent="editRows(scope.row)"
+                        >编辑
+                        </el-button>
+                        <el-button
+                          type="danger"
+                          size="mini"
+                          @click.native.prevent="deleteRows(scope.row)"
+                        >删除
+                        </el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
                 </div>
-                <el-table
-                  class="bottom-container-body-tb"
-                  :data="PenaltiesData"
-                  style="width: 100%"
-                  border
-                  size="mini"
-                  height="600"
-                >
-                  <el-table-column
-                    prop="PenaltiesContent"
-                    label="扣分内容"
-                    width="300"
-                  />
-                  <el-table-column
-                    prop="PenaltiesFraction"
-                    label="扣分分数"
-                    min-width="100"
-                  />
-                  <el-table-column
-                    label="操作"
-                    fixed="right"
-                    align="center"
-                    width="120"
-                  >
-                    <template slot-scope="scope">
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click.native.prevent="editRows(scope.row)"
-                      >编辑
-                      </el-button>
-                      <el-button
-                        type="danger"
-                        size="mini"
-                        @click.native.prevent="deleteRows(scope.row)"
-                      >删除
-                      </el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </el-card>
       </template>
     </split-pane>
     <el-dialog

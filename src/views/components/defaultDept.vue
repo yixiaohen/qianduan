@@ -32,7 +32,7 @@
         show-checkbox
         node-key="DeptID"
         check-on-click-node
-        :check-strictly="true"
+        :check-strictly="false"
         :default-checked-keys="dept_value"
         :default-expanded-keys="[1]"
         :filter-node-method="filterNode"
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-// 单选科室
+// 多选科室
 import { SelectDepts } from '@/api/user';
 
 export default {
@@ -137,7 +137,7 @@ export default {
         /* 单选 */
         this.$refs.treeDepts.setCheckedKeys([value.DeptID]);
         this.DeptName = value.DeptName;
-        this.$emit('getDefaultDeptsValue', value.DeptID.toString());
+        this.$emit('getDefaultDeptsValue', value.DeptID.toString(),this.DeptName);
 
       }
     },

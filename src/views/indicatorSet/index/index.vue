@@ -128,6 +128,7 @@
               </div>
             </div>
 
+            <transition name="el-zoom-in-center">
             <el-table
               v-if="isShowParaTab"
               :loading="listLoading"
@@ -150,9 +151,9 @@
                 align="center"
               />
               <el-table-column
-                width="350"
                 label="数据库类型"
                 align="center"
+                width="150"
               >
                 <template slot-scope="{row,$index}">
                   <!--                  已知conn_id，又知-->
@@ -195,7 +196,7 @@
 
               <!--              </el-table-column>-->
               <el-table-column
-                width="150"
+
                 label="数据库备注"
                 align="center"
               >
@@ -222,6 +223,7 @@
               <el-table-column
                 prop="para_value"
                 align="center"
+                width="100"
                 label="参数数值"
               >
                 <template slot-scope="{ row, $index }">
@@ -305,18 +307,9 @@
                 </template>
               </el-table-column>
             </el-table>
-            <!--            <el-pagination-->
-            <!--              style="margin: 6px 0 0 0"-->
-            <!--              background-->
-            <!--              :current-page.sync="pagination.pageIndex"-->
-            <!--              :page-size="pagination.pageSize"-->
-            <!--              :page-sizes="pagination.pageSizes"-->
-            <!--              :total="pagination.total"-->
-            <!--              layout="total, sizes, prev, pager, next, jumper"-->
-            <!--            />-->
-            <!--              @size-change="handleSizeChange"-->
-            <!--              @current-change="handleCurrentChange"-->
-            <div v-else>
+            </transition>
+            <transition name="el-zoom-in-center">
+            <div   v-if="!isShowParaTab">
               <div style="width: 100%;text-align: right">
                 <el-button type="success" @click="backParamList">返回</el-button>
               </div>
@@ -338,18 +331,38 @@
                       :disabled="sqlCurrentEdit!==index"
                       placeholder="请选择"
                       size="mini"
+                      style="width: 70%"
                     >
                       <el-option
                         v-for="item2 in cycle"
                         :key="item2.Cycleid"
                         :value="item2.Cycleid"
-                        :label="item2.Type+' | '+item2.Cycle +' | '+item2.Num"
+                        :label="
+                          item2.Starway === 0 ? item2.Type+' | '+'结束日期往前' +
+                            ' | '+
+                            item2.Cycle +
+                            ' | '+
+                            item2.Num : item2.Starway === 10 ?item2.Type+ ' | '+'当年' +
+                            ' | '+
+                            item2.Cycle +
+                            ' | '+
+                            item2.Num : item2.Starway === 11 ?item2.Type+ ' | '+'当季' +
+                              ' | '+
+                              item2.Cycle +
+                              ' | '+
+                              item2.Num : item2.Starway === 12 ? item2.Type+' | '+'当月' +
+                                ' | '+
+                                item2.Cycle +
+                                ' | '+
+                                item2.Num : item2.Starway
+                        "
                       >
                         <span style="float: left">{{ item2.Type }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">{{
-                          item2.Cycle + ' | ' + item2.Num
-                        }}</span>
-                      </el-option>
+                        <span
+                          style="float: right; color: #8492a6; font-size: 13px"
+                        >{{
+                          item2.Starway === 0 ? '结束日期往前' : item2.Starway === 10 ? '当年' : item2.Starway === 11 ? '当季' : item2.Starway === 12 ? '当月' : item2.Starway
+                        }}{{ ' | ' + item2.Cycle + ' | ' + item2.Num }}</span></el-option>
                     </el-select>
                     <br>
                     <span>sql语句: </span>
@@ -430,7 +443,7 @@
                 </el-form-item>
               </el-form>
             </div>
-
+            </transition>
             <el-divider content-position="left">指标描述</el-divider>
             <el-table
               v-if="GuidelinesData.length>0"
@@ -438,17 +451,7 @@
               border
               style="width: 100%;margin-bottom: 20px"
             >
-              <el-table-column
-                label="周期"
-                align="center"
-              >
-                <template slot-scope="{ row }">
-                  <span
-                    v-for="item in cycle"
-                  >{{ item.Cycleid === row.Cycle_ID ? item.Type + ' | ' + item.Cycle + ' | ' + item.Num : '' }}</span>
 
-                </template>
-              </el-table-column>
               <el-table-column
                 prop="Igroupname"
                 label="监测组别"
@@ -472,14 +475,14 @@
                 align="center"
               />
 
+              <!--              <el-table-column-->
+              <!--                prop="iattribute"-->
+              <!--                label="指标属性"-->
+              <!--                align="center"-->
+              <!--              />-->
               <el-table-column
-                prop="iattribute"
-                label="指标属性"
-                align="center"
-              />
-              <el-table-column
-                prop="idefinition"
-                label="指标定义"
+                prop="Description"
+                label="指标描述"
                 align="center"
               />
               <el-table-column
@@ -492,29 +495,7 @@
         </template>
       </split-pane>
 
-
     </div>
-    <!--    <div v-show="isShowAddIndexPage" class="addIndexPage">-->
-    <!--      <el-card>-->
-    <!--        <el-form-->
-    <!--          :inline="true"-->
-    <!--          size="mini"-->
-    <!--        >-->
-    <!--          <el-form-item>-->
-    <!--            <el-button-->
-    <!--              type="success"-->
-    <!--              plain-->
-    <!--              icon="el-icon-refresh-left"-->
-    <!--              size="mini"-->
-    <!--              style="margin: 7px auto"-->
-    <!--              @click="isShowAddIndexPage=false"-->
-    <!--            >返回-->
-    <!--            </el-button>-->
-    <!--          </el-form-item>-->
-    <!--        </el-form>-->
-    <!--      </el-card>-->
-    <!--    </div>-->
-
     <!--添加指标弹框-->
     <el-dialog :title="configIndexTitle" :visible.sync="showConfig">
       <el-form
@@ -525,52 +506,7 @@
         :close-on-click-modal="false"
       >
         <el-row>
-          <el-col :span="12">
-            <el-form-item
-              label="周期"
-            >
-              <el-select
-                v-model="dynamicValidateForm.Cycle_ID"
-                filterable
-                clearable
-                style="width:62%"
-                placeholder="请选择"
-                size="mini"
-              >
-                <el-option
-                  v-for="item in cycle"
-                  :key="item.Cycleid"
-                  :value="item.Cycleid"
-                  :label="
-                    item.Starway === 0 ? item.Type+' | '+'结束日期往前' +
-                      ' | '+
-                      item.Cycle +
-                      ' | '+
-                      item.Num : item.Starway === 10 ?item.Type+ ' | '+'当年' +
-                      ' | '+
-                      item.Cycle +
-                      ' | '+
-                      item.Num : item.Starway === 11 ?item.Type+ ' | '+'当季' +
-                        ' | '+
-                        item.Cycle +
-                        ' | '+
-                        item.Num : item.Starway === 12 ? item.Type+' | '+'当月' +
-                          ' | '+
-                          item.Cycle +
-                          ' | '+
-                          item.Num : item.Starway
-                  "
-                >
-                  <span style="float: left">{{ item.Type }}</span>
-                  <span
-                    style="float: right; color: #8492a6; font-size: 13px"
-                  >{{
-                    item.Starway === 0 ? '结束日期往前' : item.Starway === 10 ? '当年' : item.Starway === 11 ? '当季' : item.Starway === 12 ? '当月' : item.Starway
-                  }}{{ ' | ' + item.Cycle + ' | ' + item.Num }}</span>
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
+
           <el-col :span="12">
             <el-form-item
               label="监测组别"
@@ -580,7 +516,8 @@
                 v-model="dynamicValidateForm.Igroupid"
                 style="width:62%"
                 placeholder="请选择"
-                size="mini">
+                size="mini"
+              >
                 <el-option
                   v-for="item in monitor"
                   :key="item.id"
@@ -588,22 +525,6 @@
                   :label="item.Igroupname"
                 />
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item
-              label="公式编译目标码"
-              prop="formulaObj"
-            >
-              <el-input
-                v-model="dynamicValidateForm.formulaObj"
-                style="width:62%"
-                size="small"
-                clearable
-              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -622,14 +543,13 @@
         </el-row>
 
         <el-row>
-
           <el-col :span="12">
             <el-form-item
-              label="指标属性"
-              prop="iattribute"
+              label="公式编译目标码"
+              prop="formulaObj"
             >
               <el-input
-                v-model="dynamicValidateForm.iattribute"
+                v-model="dynamicValidateForm.formulaObj"
                 style="width:62%"
                 size="small"
                 clearable
@@ -651,21 +571,15 @@
           </el-col>
         </el-row>
 
+
         <el-row>
-          <el-col :span="24">
+          <el-col :span="12">
             <el-form-item
-              label="指标定义"
-              prop="idefinition"
+              label="定义精确位置"
             >
-              <el-input
-                v-model="dynamicValidateForm.idefinition"
-                style="width:30%"
-                size="small"
-                clearable
-              />
               <el-select
                 v-model="dynamicValidateForm.type"
-                style="width:28%"
+                style="width:62%"
                 size="small"
                 clearable
                 placeholder="定义精确到(默认全院)"
@@ -686,12 +600,19 @@
                   :label="item.label"
                 />
               </el-select>
+
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              label="记录参数值"
+            >
               <el-select
                 v-model="dynamicValidateForm.para"
-                style="width:30%"
+                style="width:62%"
                 size="small"
                 clearable
-                placeholder="是否记录参数值明细(默认否)"
+                placeholder="记录参数值(默认否)"
               >
                 <el-option
                   v-for="item in [
@@ -728,6 +649,22 @@
             </el-form-item>
           </el-col>
 
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item
+              label="指标描述"
+              prop="Description"
+            >
+              <el-input
+                v-model="dynamicValidateForm.Description"
+                style="width:86%"
+                size="small"
+                type="textarea"
+                clearable
+              />
+            </el-form-item>
+          </el-col>
         </el-row>
 
 
@@ -844,12 +781,12 @@ export default {
       dynamicValidateForm: { // 添加和编辑指标对话框数据
         index_id: 0, // 指标索引id
         ParentID: 0, // 父级id
-        Cycle_ID: 0, // 周期id
+        // Cycle_ID: 0, // 周期id
         name: '', // 指标名称
         formula: '', // 指标公式
         formulaObj: '', // 公式编译目标码
-        iattribute: '', // 指标属性
-        idefinition: '', // 指标定义
+        // iattribute: '', // 指标属性
+        // idefinition: '', // 指标定义
         type: 0, // 指标定义是否精确到科室，默认为0全院，1为是
         para: 0, // 是否记录参数值明细。0否，1是
         index_refvalue: '', // 指标参考值
@@ -1268,7 +1205,7 @@ export default {
     // 插入新增参数取值，sql
     async InsertParaSql(index, item) {
       const para = this.paraDynamicValidateForm[index];
-      para['index_id'] = this.nowSqlRow.index_id; // 要将指标id存上
+      // para['index_id'] = this.nowSqlRow.index_id; // 要将指标id存上
       const { code } = await InsertParaSql(para);
       if (code === 200) {
         this.$message.success('成功');
@@ -1283,7 +1220,7 @@ export default {
         await this.SelectParaSql(item); // 保存之后就重新获取当前的sql列表
       }
     },
-    // 插入新增参数取值，sql
+    // 保存新增参数取值，sql
     submitForm(index, item) {
       this.isShowInput = false;// 将input框隐藏起来
       this.sqlCurrentEdit = -1;// 将input框和保存按钮隐藏起来

@@ -1,7 +1,9 @@
 <template>
   <el-container class="committee">
-    <el-header>
-      <el-row>
+    <el-card style="margin: 10px;width: 98%">
+<!--    <el-header>-->
+<!--    </el-header>-->
+      <el-main>
         <el-col
           :span="4"
           :md="4"
@@ -10,8 +12,8 @@
           :xs="9"
         >
           <el-radio-group
-            style="margin-top: 4px"
             v-model="radio"
+            style="margin-top: 4px"
             size="small"
           >
             <el-radio-button label="委员会" />
@@ -51,10 +53,11 @@
             </el-form-item>
             <el-form-item v-if="radio == '委员会'">
               <el-input
-                style="margin-top: -2px"
                 v-model="pagination.CommitteeName"
+                style="margin-bottom:4px !important;"
                 placeholder="委员会名称"
                 clearable
+                size="small"
                 @keyup.enter.native="SelectCommittee('搜索')"
               ><i
                 slot="prefix"
@@ -63,10 +66,11 @@
             </el-form-item>
             <el-form-item v-if="radio != '委员会'">
               <el-input
-                style="margin-top: -2px"
                 v-model="MeetingTableDataVal.MeetingName"
+                style="margin-bottom: 4px!important;"
                 placeholder="会议名称"
                 clearable
+                size="small"
                 @keyup.enter.native="SelectMeeting('搜索')"
               ><i
                 slot="prefix"
@@ -89,517 +93,512 @@
             </el-form-item>
           </el-form>
         </el-col>
-      </el-row>
-    </el-header>
-    <el-main>
-      <transition name="el-zoom-in-center">
-        <el-table
-          v-if="radio == '委员会'"
-          v-loading="loading"
-          element-loading-text="拼命加载中"
-          :data="tableData"
-          style="width: 100%;margin-top: 6px"
-          height="calc(100vh - 160px)"
-          border
-          size="mini"
-          stripe
-        >
-          <el-table-column
-            prop="CommitteeName"
-            label="委员会名称"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            prop="Director"
-            label="主任"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            prop="DeputyDirector"
-            label="副主任"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            prop="Secretary"
-            label="秘书"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            prop="CreateDate"
-            label="成立时间"
-            width="150"
-            align="center"
+        <transition name="el-zoom-in-center">
+          <el-table
+            v-if="radio == '委员会'"
+            v-loading="loading"
+            :data="tableData"
+            style="width: 100%;margin-top: 6px"
+            height="calc(100vh - 260px)"
+            border
+            size="mini"
+            stripe
           >
-            <template slot-scope="{ row }">
-              {{ row.CreateDate.split('T').join(' ') }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="操作"
-            width="120"
-          >
-            <template slot-scope="{ row }">
-              <el-button
-                size="mini"
-                circle
-                icon="el-icon-view"
-                @click="seeRow(row)"
-              />
-              <el-button
-                size="mini"
-                circle
-                icon="el-icon-edit"
-                @click="editor(row)"
-              />
-              <el-button
-                size="mini"
-                circle
-                type="danger"
-                icon="el-icon-delete"
-                @click="DeleteCommittee(row)"
-              />
-            </template>
-          </el-table-column>
-        </el-table>
-      </transition>
-      <transition name="el-zoom-in-center">
-        <el-table
-          v-if="radio != '委员会'"
-          v-loading="loading"
-          element-loading-text="拼命加载中"
-          :data="MeetingTableData"
-          style="width: 100%;margin-top: 6px"
-          height="calc(100vh - 160px)"
-          border
-          size="mini"
-          stripe
-        >
-          <el-table-column
-            prop="MeetingName"
-            label="会议名称"
-            align="center"
-          />
-          <el-table-column
-            prop="MeetingSite"
-            label="会议地点"
-            align="center"
-          />
-          <el-table-column
-            prop="MeetintDate"
-            label="会议时间"
-            align="center"
-          >
-            <template slot-scope="{ row }">
-              {{ parseTimes(row.MeetintDate) }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="MeetingHost"
-            label="主持人"
-            align="center"
-          />
-          <el-table-column label="操作">
-            <template slot-scope="{ row }">
-              <el-button
-                size="mini"
-                circle
-                icon="el-icon-view"
-                @click="editorMeeting(row, '查看')"
-              />
-              <el-button
-                size="mini"
-                circle
-                icon="el-icon-edit"
-                @click="editorMeeting(row, '修改')"
-              />
-              <el-popconfirm
-                confirm-button-text="是"
-                cancel-button-text="否"
-                icon="el-icon-info"
-                icon-color="red"
-                title="确定删除吗？"
-                @confirm="DeleteMeeting(row)"
-              >
+            <el-table-column
+              prop="CommitteeName"
+              label="委员会名称"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              prop="Director"
+              label="主任"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              prop="DeputyDirector"
+              label="副主任"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              prop="Secretary"
+              label="秘书"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              prop="CreateDate"
+              label="成立时间"
+              width="150"
+              align="center"
+            >
+              <template slot-scope="{ row }">
+                {{ row.CreateDate.split('T').join(' ') }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="操作"
+              width="120"
+            >
+              <template slot-scope="{ row }">
                 <el-button
-                  slot="reference"
+                  size="mini"
+                  circle
+                  icon="el-icon-view"
+                  @click="seeRow(row)"
+                />
+                <el-button
+                  size="mini"
+                  circle
+                  icon="el-icon-edit"
+                  @click="editor(row)"
+                />
+                <el-button
                   size="mini"
                   circle
                   type="danger"
                   icon="el-icon-delete"
+                  @click="DeleteCommittee(row)"
                 />
-              </el-popconfirm>
-            </template>
-          </el-table-column>
-        </el-table>
-      </transition>
-      <!--添加修改工作职责begin -->
-      <el-dialog
-        :title="dialogTitle"
-        :visible.sync="DialogVisible"
-        :width="device === 'desktop' ? '60%' : '99%'"
-        :top="device === 'desktop' ? '3%' : '0%'"
-      >
-        <el-tabs v-model="activeName">
-          <el-tab-pane
-            label="基本资料"
-            name="first"
-            style="height: 620px; overflow-y: auto"
+              </template>
+            </el-table-column>
+          </el-table>
+        </transition>
+        <transition name="el-zoom-in-center">
+          <el-table
+            v-if="radio != '委员会'"
+            v-loading="loading"
+            :data="MeetingTableData"
+            style="width: 100%;margin-top: 6px"
+            height="calc(100vh - 260px)"
+            border
+            size="mini"
+            stripe
           >
-            <el-form
-              ref="listQuery"
-              :inline="true"
-              label-width="92px"
-              class="fromType"
-              :model="listQuery"
-              :rules="rules"
-              size="mini"
+            <el-table-column
+              prop="MeetingName"
+              label="会议名称"
+              align="center"
+            />
+            <el-table-column
+              prop="MeetingSite"
+              label="会议地点"
+              align="center"
+            />
+            <el-table-column
+              prop="MeetintDate"
+              label="会议时间"
+              align="center"
             >
-              <el-form-item
-                label="委员会名称"
-                prop="CommitteeName"
-              >
-                <el-input v-model="listQuery.CommitteeName" />
-              </el-form-item>
-              <el-form-item
-                label="任期"
-                prop="Term_of_Office"
-              >
-                <el-input v-model="listQuery.Term_of_Office" />
-              </el-form-item>
-              <el-form-item
-                label="主任"
-                prop="Director"
-              >
-                <el-input v-model="listQuery.Director" />
-              </el-form-item>
-              <el-form-item
-                label="副主任"
-                prop="DeputyDirector"
-              >
-                <el-input v-model="listQuery.DeputyDirector" />
-              </el-form-item>
-              <el-form-item
-                label="秘书"
-                prop="Secretary"
-              >
-                <el-input v-model="listQuery.Secretary" />
-              </el-form-item>
-              <el-form-item
-                label="现任委员会成立时间"
-                prop="SetUpdate"
-                label-width="138px"
-              >
-                <el-date-picker
-                  v-model="listQuery.SetUpdate"
-                  type="date"
-                  placeholder="选择日期"
-                  format="yyyy 年 MM 月 dd 日"
-                  value-format="yyyy-MM-dd"
+              <template slot-scope="{ row }">
+                {{ parseTimes(row.MeetintDate) }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="MeetingHost"
+              label="主持人"
+              align="center"
+            />
+            <el-table-column label="操作">
+              <template slot-scope="{ row }">
+                <el-button
+                  size="mini"
+                  circle
+                  icon="el-icon-view"
+                  @click="editorMeeting(row, '查看')"
                 />
-              </el-form-item>
-            </el-form>
-            <el-form
-              size="mini"
-              :model="listQuery"
-              :rules="rules"
+                <el-button
+                  size="mini"
+                  circle
+                  icon="el-icon-edit"
+                  @click="editorMeeting(row, '修改')"
+                />
+                <el-popconfirm
+                  confirm-button-text="是"
+                  cancel-button-text="否"
+                  icon="el-icon-info"
+                  icon-color="red"
+                  title="确定删除吗？"
+                  @confirm="DeleteMeeting(row)"
+                >
+                  <el-button
+                    slot="reference"
+                    size="mini"
+                    circle
+                    type="danger"
+                    icon="el-icon-delete"
+                  />
+                </el-popconfirm>
+              </template>
+            </el-table-column>
+          </el-table>
+        </transition>
+        <!--添加修改工作职责begin -->
+        <el-dialog
+          :title="dialogTitle"
+          :visible.sync="DialogVisible"
+          :width="device === 'desktop' ? '60%' : '99%'"
+          :top="device === 'desktop' ? '3%' : '0%'"
+        >
+          <el-tabs v-model="activeName">
+            <el-tab-pane
+              label="基本资料"
+              name="first"
+              style="height: 620px; overflow-y: auto"
             >
-              <el-form-item
-                label="成员"
-                prop="Member"
+              <el-form
+                ref="listQuery"
+                :inline="true"
+                label-width="92px"
+                class="fromType"
                 :model="listQuery"
                 :rules="rules"
-              >
-                <el-input
-                  v-model="listQuery.Member"
-                  type="textarea"
-                />
-              </el-form-item>
-              <el-form-item
-                v-if="Insert"
-                label="附件上传"
-                prop="Member"
-              >
-                <el-upload
-                  :multiple="true"
-                  :show-file-list="true"
-                  :on-success="handleSuccess"
-                  :before-upload="() => beforeUpload('成员')"
-                  class="editor-slide-upload"
-                  :file-list="fileList"
-                  action="/api/RC_File/UploadFile"
-                >
-                  <el-button
-                    size="mini"
-                    type="primary"
-                    :disabled="listQuery.GroupID === ''"
-                  >选择文件
-                  </el-button>
-                </el-upload>
-              </el-form-item>
-              <el-form-item label="工作制度">
-                <el-input
-                  v-model="listQuery.WorkSystem"
-                  type="textarea"
-                />
-              </el-form-item>
-              <el-form-item
-                v-if="Insert"
-                label="附件上传"
-              >
-                <el-upload
-                  :multiple="true"
-                  :show-file-list="true"
-                  :on-success="handleSuccess"
-                  :before-upload="() => beforeUpload('工作制度')"
-                  class="editor-slide-upload"
-                  :file-list="fileList"
-                  action="/api/RC_File/UploadFile"
-                >
-                  <el-button
-                    size="mini"
-                    type="primary"
-                    :disabled="listQuery.GroupID === ''"
-                  >选择文件
-                  </el-button>
-                </el-upload>
-              </el-form-item>
-              <el-form-item label="工作职责">
-                <el-input
-                  v-model="listQuery.WorkDuty"
-                  type="textarea"
-                />
-              </el-form-item>
-              <el-form-item
-                v-if="Insert"
-                label="附件上传"
-              >
-                <el-upload
-                  :multiple="true"
-                  :show-file-list="true"
-                  :on-success="handleSuccess"
-                  :before-upload="() => beforeUpload('工作职责')"
-                  class="editor-slide-upload"
-                  :file-list="fileList"
-                  action="/api/RC_File/UploadFile"
-                >
-                  <el-button
-                    size="mini"
-                    type="primary"
-                    :disabled="listQuery.GroupID === ''"
-                  >选择文件
-                  </el-button>
-                </el-upload>
-              </el-form-item>
-              <el-form-item label="工作计划">
-                <el-input
-                  v-model="listQuery.WorkPlan"
-                  type="textarea"
-                />
-              </el-form-item>
-              <el-form-item
-                v-if="Insert"
-                label="附件上传"
-              >
-                <el-upload
-                  :multiple="true"
-                  :show-file-list="true"
-                  :on-success="handleSuccess"
-                  :before-upload="() => beforeUpload('工作计划')"
-                  class="editor-slide-upload"
-                  :file-list="fileList"
-                  action="/api/RC_File/UploadFile"
-                >
-                  <el-button
-                    size="mini"
-                    type="primary"
-                    :disabled="listQuery.GroupID === ''"
-                  >选择文件
-                  </el-button>
-                </el-upload>
-              </el-form-item>
-              <el-form-item label="备注">
-                <el-input
-                  v-model="listQuery.Remake"
-                  type="textarea"
-                />
-              </el-form-item>
-            </el-form>
-            <el-table
-              :data="listQuery.Committee_File_List"
-              border
-              style="width: 100%"
-              size="mini"
-            >
-              <el-table-column
-                prop="FileName"
-                label="文件名"
-              >
-                <template slot-scope="{ row }">
-                  <el-link
-                    :href="row.OpenFileUrl"
-                    target="_blank"
-                  >{{
-                    row.FileName
-                  }}
-                  </el-link>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="Type"
-                label="文件类型"
-              />
-              <el-table-column
-                prop="FileUrl"
-                label="下载"
-                width="100px"
-                align="center"
-              >
-                <template slot-scope="{ row }">
-                  <el-link
-                    :href="row.FileUrl"
-                    target="_blank"
-                  >点击下载
-                  </el-link>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="OpenFileUrl"
-                label="查看"
-                width="50px"
-              >
-                <template slot-scope="{ row }">
-                  <el-link
-                    target="_blank"
-                    @click="PreviewFile(row.FileUrl)"
-                  >预览
-                  </el-link>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="OpenFileUrl"
-                label="删除"
-                width="50px"
-                align="center"
-              >
-                <template slot-scope="{ $index }">
-                  <span><i
-                    style="cursor: pointer"
-                    class="el-icon-delete"
-                    @click="deleteCommitteeFile($index)"
-                  /></span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-          <el-tab-pane
-            v-if="!Insert"
-            label="会议明细"
-            name="third"
-            style="height: 620px; overflow-y: auto"
-          >
-            <el-row
-              v-for="(item, index) in listQuery.Meeting_List"
-              :key="index"
-            >
-              <el-divider v-if="index != 0" />
-              <el-form
-                ref="rulesMeeting"
                 size="mini"
-                :inline="true"
-                label-width="80px"
-                :model="Meeting_List"
-                :rules="rulesMeeting"
               >
                 <el-form-item
-                  label="会议名称"
-                  prop="MeetingName"
+                  label="委员会名称"
+                  prop="CommitteeName"
                 >
-                  <el-input
-                    v-model="item.MeetingName"
-                    placeholder="会议名称"
-                  />
+                  <el-input v-model="listQuery.CommitteeName" />
                 </el-form-item>
                 <el-form-item
-                  label="委员会"
-                  prop="CommitteeID"
+                  label="任期"
+                  prop="Term_of_Office"
                 >
-                  <el-input
-                    v-model="item.CommitteeID"
-                    placeholder="委员会"
-                  />
+                  <el-input v-model="listQuery.Term_of_Office" />
                 </el-form-item>
                 <el-form-item
-                  label="科室"
-                  prop="DeptName"
+                  label="主任"
+                  prop="Director"
                 >
-                  <el-input
-                    v-model="item.DeptName"
-                    placeholder="科室"
-                  />
+                  <el-input v-model="listQuery.Director" />
                 </el-form-item>
                 <el-form-item
-                  label="会议地点"
-                  prop="MeetingSite"
+                  label="副主任"
+                  prop="DeputyDirector"
                 >
-                  <el-input
-                    v-model="item.MeetingSite"
-                    placeholder="会议地点"
-                  />
+                  <el-input v-model="listQuery.DeputyDirector" />
                 </el-form-item>
                 <el-form-item
-                  label="会议时间"
-                  prop="MeetintDate"
+                  label="秘书"
+                  prop="Secretary"
+                >
+                  <el-input v-model="listQuery.Secretary" />
+                </el-form-item>
+                <el-form-item
+                  label="现任委员会成立时间"
+                  prop="SetUpdate"
+                  label-width="138px"
                 >
                   <el-date-picker
-                    v-model="item.MeetintDate"
+                    v-model="listQuery.SetUpdate"
                     type="date"
+                    placeholder="选择日期"
                     format="yyyy 年 MM 月 dd 日"
                     value-format="yyyy-MM-dd"
-                    placeholder="选择日期"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="主持人"
-                  prop="MeetingHost"
-                >
-                  <el-input
-                    v-model="item.MeetingHost"
-                    type="textarea"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="记录人"
-                  prop="RecordUser"
-                >
-                  <el-input
-                    v-model="item.RecordUser"
-                    type="textarea"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="参会委员"
-                  prop="MeetingUser"
-                >
-                  <el-input
-                    v-model="item.MeetingUser"
-                    type="textarea"
-                    placeholder="参会委员"
-                  />
-                </el-form-item>
-                <el-form-item label="缺席者">
-                  <el-input
-                    v-model="item.AbsentUser"
-                    type="textarea"
-                    placeholder="缺席者"
                   />
                 </el-form-item>
               </el-form>
               <el-form
                 size="mini"
-                label-position="top"
-                class="demo-form-inline"
+                :model="listQuery"
+                :rules="rules"
               >
-                <!-- <el-form-item label="质量指标分析">
+                <el-form-item
+                  label="成员"
+                  prop="Member"
+                  :model="listQuery"
+                  :rules="rules"
+                >
+                  <el-input
+                    v-model="listQuery.Member"
+                    type="textarea"
+                  />
+                </el-form-item>
+                <el-form-item
+                  v-if="Insert"
+                  label="附件上传"
+                  prop="Member"
+                >
+                  <el-upload
+                    :multiple="true"
+                    :show-file-list="true"
+                    :on-success="handleSuccess"
+                    :before-upload="() => beforeUpload('成员')"
+                    class="editor-slide-upload"
+                    :file-list="fileList"
+                    action="/api/RC_File/UploadFile"
+                  >
+                    <el-button
+                      size="mini"
+                      type="primary"
+                      :disabled="listQuery.GroupID === ''"
+                    >选择文件
+                    </el-button>
+                  </el-upload>
+                </el-form-item>
+                <el-form-item label="工作制度">
+                  <el-input
+                    v-model="listQuery.WorkSystem"
+                    type="textarea"
+                  />
+                </el-form-item>
+                <el-form-item
+                  v-if="Insert"
+                  label="附件上传"
+                >
+                  <el-upload
+                    :multiple="true"
+                    :show-file-list="true"
+                    :on-success="handleSuccess"
+                    :before-upload="() => beforeUpload('工作制度')"
+                    class="editor-slide-upload"
+                    :file-list="fileList"
+                    action="/api/RC_File/UploadFile"
+                  >
+                    <el-button
+                      size="mini"
+                      type="primary"
+                      :disabled="listQuery.GroupID === ''"
+                    >选择文件
+                    </el-button>
+                  </el-upload>
+                </el-form-item>
+                <el-form-item label="工作职责">
+                  <el-input
+                    v-model="listQuery.WorkDuty"
+                    type="textarea"
+                  />
+                </el-form-item>
+                <el-form-item
+                  v-if="Insert"
+                  label="附件上传"
+                >
+                  <el-upload
+                    :multiple="true"
+                    :show-file-list="true"
+                    :on-success="handleSuccess"
+                    :before-upload="() => beforeUpload('工作职责')"
+                    class="editor-slide-upload"
+                    :file-list="fileList"
+                    action="/api/RC_File/UploadFile"
+                  >
+                    <el-button
+                      size="mini"
+                      type="primary"
+                      :disabled="listQuery.GroupID === ''"
+                    >选择文件
+                    </el-button>
+                  </el-upload>
+                </el-form-item>
+                <el-form-item label="工作计划">
+                  <el-input
+                    v-model="listQuery.WorkPlan"
+                    type="textarea"
+                  />
+                </el-form-item>
+                <el-form-item
+                  v-if="Insert"
+                  label="附件上传"
+                >
+                  <el-upload
+                    :multiple="true"
+                    :show-file-list="true"
+                    :on-success="handleSuccess"
+                    :before-upload="() => beforeUpload('工作计划')"
+                    class="editor-slide-upload"
+                    :file-list="fileList"
+                    action="/api/RC_File/UploadFile"
+                  >
+                    <el-button
+                      size="mini"
+                      type="primary"
+                      :disabled="listQuery.GroupID === ''"
+                    >选择文件
+                    </el-button>
+                  </el-upload>
+                </el-form-item>
+                <el-form-item label="备注">
+                  <el-input
+                    v-model="listQuery.Remake"
+                    type="textarea"
+                  />
+                </el-form-item>
+              </el-form>
+              <el-table
+                :data="listQuery.Committee_File_List"
+                border
+                style="width: 100%"
+                size="mini"
+              >
+                <el-table-column
+                  prop="FileName"
+                  label="文件名"
+                >
+                  <template slot-scope="{ row }">
+                    <el-link
+                      :href="row.OpenFileUrl"
+                      target="_blank"
+                    >{{
+                      row.FileName
+                    }}
+                    </el-link>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="Type"
+                  label="文件类型"
+                />
+                <el-table-column
+                  prop="FileUrl"
+                  label="下载"
+                  width="100px"
+                  align="center"
+                >
+                  <template slot-scope="{ row }">
+                    <el-link
+                      :href="row.FileUrl"
+                      target="_blank"
+                    >点击下载
+                    </el-link>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="OpenFileUrl"
+                  label="查看"
+                  width="50px"
+                >
+                  <template slot-scope="{ row }">
+                    <el-link
+                      target="_blank"
+                      @click="PreviewFile(row.FileUrl)"
+                    >预览
+                    </el-link>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="OpenFileUrl"
+                  label="删除"
+                  width="50px"
+                  align="center"
+                >
+                  <template slot-scope="{ $index }">
+                    <span><i
+                      style="cursor: pointer"
+                      class="el-icon-delete"
+                      @click="deleteCommitteeFile($index)"
+                    /></span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-tab-pane>
+            <el-tab-pane
+              v-if="!Insert"
+              label="会议明细"
+              name="third"
+              style="height: 620px; overflow-y: auto"
+            >
+              <el-row
+                v-for="(item, index) in listQuery.Meeting_List"
+                :key="index"
+              >
+                <el-divider v-if="index != 0" />
+                <el-form
+                  ref="rulesMeeting"
+                  size="mini"
+                  :inline="true"
+                  label-width="80px"
+                  :model="Meeting_List"
+                  :rules="rulesMeeting"
+                >
+                  <el-form-item
+                    label="会议名称"
+                    prop="MeetingName"
+                  >
+                    <el-input
+                      v-model="item.MeetingName"
+                      placeholder="会议名称"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="委员会"
+                    prop="CommitteeID"
+                  >
+                    <el-input
+                      v-model="item.CommitteeID"
+                      placeholder="委员会"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="科室"
+                    prop="DeptName"
+                  >
+                    <el-input
+                      v-model="item.DeptName"
+                      placeholder="科室"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="会议地点"
+                    prop="MeetingSite"
+                  >
+                    <el-input
+                      v-model="item.MeetingSite"
+                      placeholder="会议地点"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="会议时间"
+                    prop="MeetintDate"
+                  >
+                    <el-date-picker
+                      v-model="item.MeetintDate"
+                      type="date"
+                      format="yyyy 年 MM 月 dd 日"
+                      value-format="yyyy-MM-dd"
+                      placeholder="选择日期"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="主持人"
+                    prop="MeetingHost"
+                  >
+                    <el-input
+                      v-model="item.MeetingHost"
+                      type="textarea"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="记录人"
+                    prop="RecordUser"
+                  >
+                    <el-input
+                      v-model="item.RecordUser"
+                      type="textarea"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    label="参会委员"
+                    prop="MeetingUser"
+                  >
+                    <el-input
+                      v-model="item.MeetingUser"
+                      type="textarea"
+                      placeholder="参会委员"
+                    />
+                  </el-form-item>
+                  <el-form-item label="缺席者">
+                    <el-input
+                      v-model="item.AbsentUser"
+                      type="textarea"
+                      placeholder="缺席者"
+                    />
+                  </el-form-item>
+                </el-form>
+                <el-form
+                  size="mini"
+                  label-position="top"
+                  class="demo-form-inline"
+                >
+                  <!-- <el-form-item label="质量指标分析">
                   <el-input
                     type="textarea"
                     v-model="item.Analysis"
@@ -677,187 +676,187 @@
                   />
                 </el-form-item> -->
 
-                <el-form-item label="会议内容及会议表决结果">
-                  <el-input
-                    v-model="Meeting_List.MeetingContent"
-                    type="textarea"
-                    placeholder="会议内容及会议表决结果"
-                  />
-                </el-form-item>
-                <el-form-item label="已上传的图片">
-                  <span
-                    v-for="(itemImg, indexImg) in item.MeetingImg_List"
-                    :key="indexImg"
-                  >
-                    <el-image
-                      style="width: 100px; height: 100px"
-                      :src="itemImg.ImgUrl"
-                      :preview-src-list="[itemImg.ImgUrl]"
+                  <el-form-item label="会议内容及会议表决结果">
+                    <el-input
+                      v-model="Meeting_List.MeetingContent"
+                      type="textarea"
+                      placeholder="会议内容及会议表决结果"
                     />
-                    <span><i
-                      style="cursor: pointer"
-                      class="el-icon-delete"
-                      @click="deleteImg(indexImg)"
-                    /></span>
-                  </span>
-                </el-form-item>
-              </el-form>
-              <el-table
-                :data="item.Meeting_File_List"
-                border
-                style="width: 100%"
-                size="mini"
-              >
-                <el-table-column
-                  prop="FileName"
-                  label="文件名"
+                  </el-form-item>
+                  <el-form-item label="已上传的图片">
+                    <span
+                      v-for="(itemImg, indexImg) in item.MeetingImg_List"
+                      :key="indexImg"
+                    >
+                      <el-image
+                        style="width: 100px; height: 100px"
+                        :src="itemImg.ImgUrl"
+                        :preview-src-list="[itemImg.ImgUrl]"
+                      />
+                      <span><i
+                        style="cursor: pointer"
+                        class="el-icon-delete"
+                        @click="deleteImg(indexImg)"
+                      /></span>
+                    </span>
+                  </el-form-item>
+                </el-form>
+                <el-table
+                  :data="item.Meeting_File_List"
+                  border
+                  style="width: 100%"
+                  size="mini"
                 >
-                  <template slot-scope="{ row }">
-                    <el-link
-                      :href="row.OpenFileUrl"
-                      target="_blank"
-                    >{{
-                      row.FileName
-                    }}
-                    </el-link>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="Type"
-                  label="文件类型"
-                />
-                <el-table-column
-                  prop="FileUrl"
-                  label="下载"
-                  width="100px"
-                  align="center"
-                >
-                  <template slot-scope="{ row }">
-                    <el-link
-                      :href="row.FileUrl"
-                      target="_blank"
-                    >点击下载
-                    </el-link>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="OpenFileUrl"
-                  label="查看"
-                  width="50px"
-                >
-                  <template slot-scope="{ row }">
-                    <el-link
-                      target="_blank"
-                      @click="PreviewFile(row.FileUrl)"
-                    >预览
-                    </el-link>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="OpenFileUrl"
-                  label="删除"
-                  width="50px"
-                  align="center"
-                >
-                  <template slot-scope="{ $index }">
-                    <span><i
-                      style="cursor: pointer"
-                      class="el-icon-delete"
-                      @click="deleteMeetingFile($index)"
-                    /></span>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-row>
-          </el-tab-pane>
-        </el-tabs>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="small"
-            @click="DialogVisible = false"
-          >关闭</el-button>
-          <el-button
-            v-if="Insert"
-            type="primary"
-            size="small"
-            @click="
-              dialogTitle === '新增' ? InsertCommittee() : UpdateCommittee()
-            "
-          >提交</el-button>
-        </span>
-      </el-dialog>
-      <el-dialog
-        :title="dialogMeetingTitle"
-        :visible.sync="meetingDialog"
-        :width="device === 'desktop' ? '60%' : '99%'"
-        :top="device === 'desktop' ? '5%' : '0%'"
-        destroy-on-close
-      >
-        <div style="height: calc(100vh - 250px); overflow-y: auto">
-          <el-form
-            ref="rulesMeeting"
-            size="mini"
-            :inline="true"
-            label-width="80px"
-            :model="Meeting_List"
-            :rules="rulesMeeting"
+                  <el-table-column
+                    prop="FileName"
+                    label="文件名"
+                  >
+                    <template slot-scope="{ row }">
+                      <el-link
+                        :href="row.OpenFileUrl"
+                        target="_blank"
+                      >{{
+                        row.FileName
+                      }}
+                      </el-link>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="Type"
+                    label="文件类型"
+                  />
+                  <el-table-column
+                    prop="FileUrl"
+                    label="下载"
+                    width="100px"
+                    align="center"
+                  >
+                    <template slot-scope="{ row }">
+                      <el-link
+                        :href="row.FileUrl"
+                        target="_blank"
+                      >点击下载
+                      </el-link>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="OpenFileUrl"
+                    label="查看"
+                    width="50px"
+                  >
+                    <template slot-scope="{ row }">
+                      <el-link
+                        target="_blank"
+                        @click="PreviewFile(row.FileUrl)"
+                      >预览
+                      </el-link>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="OpenFileUrl"
+                    label="删除"
+                    width="50px"
+                    align="center"
+                  >
+                    <template slot-scope="{ $index }">
+                      <span><i
+                        style="cursor: pointer"
+                        class="el-icon-delete"
+                        @click="deleteMeetingFile($index)"
+                      /></span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-row>
+            </el-tab-pane>
+          </el-tabs>
+          <span
+            slot="footer"
+            class="dialog-footer"
           >
-            <el-form-item
-              label="会议名称"
-              prop="MeetingName"
+            <el-button
+              size="small"
+              @click="DialogVisible = false"
+            >关闭</el-button>
+            <el-button
+              v-if="Insert"
+              type="primary"
+              size="small"
+              @click="
+                dialogTitle === '新增' ? InsertCommittee() : UpdateCommittee()
+              "
+            >提交</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+          :title="dialogMeetingTitle"
+          :visible.sync="meetingDialog"
+          :width="device === 'desktop' ? '60%' : '99%'"
+          :top="device === 'desktop' ? '5%' : '0%'"
+          destroy-on-close
+        >
+          <div style="height: calc(100vh - 250px); overflow-y: auto">
+            <el-form
+              ref="rulesMeeting"
+              size="mini"
+              :inline="true"
+              label-width="80px"
+              :model="Meeting_List"
+              :rules="rulesMeeting"
             >
-              <el-input
-                v-model="Meeting_List.MeetingName"
-                placeholder="会议名称"
-              />
-            </el-form-item>
-            <el-form-item
-              label="委员会"
-              prop="CommitteeID"
-            >
-              <el-select
-                v-model="Meeting_List.CommitteeID"
-                clearable
-                placeholder="请选择委员会"
+              <el-form-item
+                label="会议名称"
+                prop="MeetingName"
               >
-                <el-option
-                  v-for="item in tableData"
-                  :key="item.CommitteeID"
-                  :label="item.CommitteeName"
-                  :value="item.CommitteeID"
+                <el-input
+                  v-model="Meeting_List.MeetingName"
+                  placeholder="会议名称"
                 />
-              </el-select>
-            </el-form-item>
-            <el-form-item
-              label="科室"
-              prop="DeptName"
-            >
-              <el-input
-                v-model="Meeting_List.DeptName"
-                placeholder="科室"
-              />
-            </el-form-item>
-            <el-form-item
-              label="会议地点"
-              prop="MeetingSite"
-            >
-              <el-input
-                v-model="Meeting_List.MeetingSite"
-                placeholder="会议地点"
-              />
-            </el-form-item>
-            <el-form-item
-              label="会议时间"
-              prop="MeetintDate"
-            >
-              <el-date-picker
-                v-model="Meeting_List.MeetintDate"
-                type="datetime"
-                placeholder="选择日期时间"
-              />
+              </el-form-item>
+              <el-form-item
+                label="委员会"
+                prop="CommitteeID"
+              >
+                <el-select
+                  v-model="Meeting_List.CommitteeID"
+                  clearable
+                  placeholder="请选择委员会"
+                >
+                  <el-option
+                    v-for="item in tableData"
+                    :key="item.CommitteeID"
+                    :label="item.CommitteeName"
+                    :value="item.CommitteeID"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                label="科室"
+                prop="DeptName"
+              >
+                <el-input
+                  v-model="Meeting_List.DeptName"
+                  placeholder="科室"
+                />
+              </el-form-item>
+              <el-form-item
+                label="会议地点"
+                prop="MeetingSite"
+              >
+                <el-input
+                  v-model="Meeting_List.MeetingSite"
+                  placeholder="会议地点"
+                />
+              </el-form-item>
+              <el-form-item
+                label="会议时间"
+                prop="MeetintDate"
+              >
+                <el-date-picker
+                  v-model="Meeting_List.MeetintDate"
+                  type="datetime"
+                  placeholder="选择日期时间"
+                />
               <!-- <el-date-picker
                 v-model="Meeting_List.MeetintDate"
                 type="date"
@@ -865,49 +864,49 @@
                 value-format="yyyy-MM-dd"
                 placeholder="选择日期"
               /> -->
-            </el-form-item>
-            <el-form-item
-              label="主持人"
-              prop="MeetingHost"
+              </el-form-item>
+              <el-form-item
+                label="主持人"
+                prop="MeetingHost"
+              >
+                <el-input
+                  v-model="Meeting_List.MeetingHost"
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item
+                label="记录人"
+                prop="RecordUser"
+              >
+                <el-input
+                  v-model="Meeting_List.RecordUser"
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item
+                label="参会委员"
+                prop="MeetingUser"
+              >
+                <el-input
+                  v-model="Meeting_List.MeetingUser"
+                  type="textarea"
+                  placeholder="参会委员"
+                />
+              </el-form-item>
+              <el-form-item label="缺席者">
+                <el-input
+                  v-model="Meeting_List.AbsentUser"
+                  type="textarea"
+                  placeholder="缺席者"
+                />
+              </el-form-item>
+            </el-form>
+            <el-form
+              size="mini"
+              label-position="top"
+              class="demo-form-inline"
             >
-              <el-input
-                v-model="Meeting_List.MeetingHost"
-                type="textarea"
-              />
-            </el-form-item>
-            <el-form-item
-              label="记录人"
-              prop="RecordUser"
-            >
-              <el-input
-                v-model="Meeting_List.RecordUser"
-                type="textarea"
-              />
-            </el-form-item>
-            <el-form-item
-              label="参会委员"
-              prop="MeetingUser"
-            >
-              <el-input
-                v-model="Meeting_List.MeetingUser"
-                type="textarea"
-                placeholder="参会委员"
-              />
-            </el-form-item>
-            <el-form-item label="缺席者">
-              <el-input
-                v-model="Meeting_List.AbsentUser"
-                type="textarea"
-                placeholder="缺席者"
-              />
-            </el-form-item>
-          </el-form>
-          <el-form
-            size="mini"
-            label-position="top"
-            class="demo-form-inline"
-          >
-            <!-- <el-form-item label="质量指标分析">
+              <!-- <el-form-item label="质量指标分析">
               <el-input
                 type="textarea"
                 v-model="Meeting_List.Analysis"
@@ -997,187 +996,190 @@
                 <el-button size="mini" type="primary">选择文件</el-button>
               </el-upload>
             </el-form-item> -->
-            <el-form-item label="会议内容及会议表决结果">
-              <el-input
-                v-model="Meeting_List.MeetingContent"
-                type="textarea"
-                placeholder="会议内容及会议表决结果"
-              />
-            </el-form-item>
-            <el-form-item label="附件上传">
-              <el-upload
-                :multiple="true"
-                :show-file-list="true"
-                :on-success="(response, file) => handleSuccess(response, file)"
-                :before-upload="() => beforeUpload('会议内容及会议表决结果')"
-                class="editor-slide-upload"
-                :file-list="fileList"
-                action="/api/RC_File/UploadFile"
-              >
-                <el-button
-                  size="mini"
-                  type="primary"
-                  :disabled="listQuery.GroupID === ''"
-                >选择文件
-                </el-button>
-              </el-upload>
-            </el-form-item>
-            <el-form-item label="上传照片">
-              <el-upload
-                action="/api/RC_File/UploadFile"
-                list-type="picture-card"
-                :on-success="
-                  (response, file, fileList) =>
-                    handleSuccessImg(response, file, fileList)
-                "
-                :before-remove="beforeImg"
-              >
-                <i class="el-icon-plus" />
-              </el-upload>
-            </el-form-item>
-            <el-form-item label="已上传的图片">
-              <span
-                v-for="(itemImg, indexImg) in Meeting_List.MeetingImg_List"
-                :key="indexImg"
-              >
-                <el-image
-                  style="width: 100px; height: 100px"
-                  :src="itemImg.ImgUrl"
-                  :preview-src-list="[itemImg.ImgUrl]"
+              <el-form-item label="会议内容及会议表决结果">
+                <el-input
+                  v-model="Meeting_List.MeetingContent"
+                  type="textarea"
+                  placeholder="会议内容及会议表决结果"
                 />
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteImg(indexImg)"
-                /></span>
-              </span>
-            </el-form-item>
-          </el-form>
-          <el-table
-            :data="Meeting_List.Meeting_File_List"
-            border
-            style="width: 100%"
-            size="mini"
-            stripe
+              </el-form-item>
+              <el-form-item label="附件上传">
+                <el-upload
+                  :multiple="true"
+                  :show-file-list="true"
+                  :on-success="(response, file) => handleSuccess(response, file)"
+                  :before-upload="() => beforeUpload('会议内容及会议表决结果')"
+                  class="editor-slide-upload"
+                  :file-list="fileList"
+                  action="/api/RC_File/UploadFile"
+                >
+                  <el-button
+                    size="mini"
+                    type="primary"
+                    :disabled="listQuery.GroupID === ''"
+                  >选择文件
+                  </el-button>
+                </el-upload>
+              </el-form-item>
+              <el-form-item label="上传照片">
+                <el-upload
+                  action="/api/RC_File/UploadFile"
+                  list-type="picture-card"
+                  :on-success="
+                    (response, file, fileList) =>
+                      handleSuccessImg(response, file, fileList)
+                  "
+                  :before-remove="beforeImg"
+                >
+                  <i class="el-icon-plus" />
+                </el-upload>
+              </el-form-item>
+              <el-form-item label="已上传的图片">
+                <span
+                  v-for="(itemImg, indexImg) in Meeting_List.MeetingImg_List"
+                  :key="indexImg"
+                >
+                  <el-image
+                    style="width: 100px; height: 100px"
+                    :src="itemImg.ImgUrl"
+                    :preview-src-list="[itemImg.ImgUrl]"
+                  />
+                  <span><i
+                    style="cursor: pointer"
+                    class="el-icon-delete"
+                    @click="deleteImg(indexImg)"
+                  /></span>
+                </span>
+              </el-form-item>
+            </el-form>
+            <el-table
+              :data="Meeting_List.Meeting_File_List"
+              border
+              style="width: 100%"
+              size="mini"
+              stripe
+            >
+              <el-table-column
+                prop="FileName"
+                label="文件名"
+              >
+                <template slot-scope="{ row }">
+                  <el-link
+                    :href="row.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                    row.FileName
+                  }}
+                  </el-link>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="Type"
+                label="文件类型"
+              />
+              <el-table-column
+                prop="FileUrl"
+                label="下载"
+                width="100px"
+                align="center"
+              >
+                <template slot-scope="{ row }">
+                  <el-link
+                    :href="row.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="OpenFileUrl"
+                label="查看"
+                width="50px"
+              >
+                <template slot-scope="{ row }">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(row.FileUrl,row)"
+                  >预览
+                  </el-link>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="OpenFileUrl"
+                label="删除"
+                width="50px"
+                align="center"
+              >
+                <template slot-scope="{ $index }">
+                  <span><i
+                    style="cursor: pointer"
+                    class="el-icon-delete"
+                    @click="deleteMeetingFile($index)"
+                  /></span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <span
+            slot="footer"
+            class="dialog-footer"
           >
-            <el-table-column
-              prop="FileName"
-              label="文件名"
-            >
-              <template slot-scope="{ row }">
-                <el-link
-                  :href="row.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  row.FileName
-                }}
-                </el-link>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="Type"
-              label="文件类型"
+            <el-button
+              size="small"
+              @click="meetingDialog = false"
+            >关闭</el-button>
+            <el-button
+              v-show="MeetingButtonShow"
+              type="primary"
+              size="small"
+              @click="
+                dialogMeetingTitle === '新增' ? InsertMeeting() : UpdateMeeting()
+              "
+            >提交</el-button>
+          </span>
+        </el-dialog>
+      </el-main>
+      <el-footer>
+        <el-row>
+          <el-col
+            :xs="2"
+            :sm="2"
+            :md="1"
+            :lg="1"
+            :xl="1"
+          >
+            <el-switch
+              v-model="cellOverflow"
+              style="margin: 6px 0px"
             />
-            <el-table-column
-              prop="FileUrl"
-              label="下载"
-              width="100px"
-              align="center"
-            >
-              <template slot-scope="{ row }">
-                <el-link
-                  :href="row.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="OpenFileUrl"
-              label="查看"
-              width="50px"
-            >
-              <template slot-scope="{ row }">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(row.FileUrl,row)"
-                >预览
-                </el-link>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="OpenFileUrl"
-              label="删除"
-              width="50px"
-              align="center"
-            >
-              <template slot-scope="{ $index }">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile($index)"
-                /></span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="small"
-            @click="meetingDialog = false"
-          >关闭</el-button>
-          <el-button
-            v-show="MeetingButtonShow"
-            type="primary"
-            size="small"
-            @click="
-              dialogMeetingTitle === '新增' ? InsertMeeting() : UpdateMeeting()
-            "
-          >提交</el-button>
-        </span>
-      </el-dialog>
-    </el-main>
-    <el-footer>
-      <el-row>
-        <el-col
-          :xs="2"
-          :sm="2"
-          :md="1"
-          :lg="1"
-          :xl="1"
-        >
-          <el-switch
-            v-model="cellOverflow"
-            style="margin: 6px 0px"
-          />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            v-if="radio == '委员会'"
-            :current-page="pagination.pageIndex"
-            :page-sizes="[10, 20, 30, 40, 50]"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.Total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-          <el-pagination
-            v-if="radio != '委员会'"
-            :current-page="MeetingTableDataVal.pageIndex"
-            :page-sizes="[10, 20, 30, 40, 50]"
-            :page-size="MeetingTableDataVal.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="MeetingTableDataVal.Total"
-            @size-change="handleSizeChange2"
-            @current-change="handleCurrentChange2"
-          />
-        </el-col>
-      </el-row>
-    </el-footer>
+          </el-col>
+          <el-col :span="20">
+            <el-pagination
+              v-if="radio == '委员会'"
+              background
+              :current-page="pagination.pageIndex"
+              :page-sizes="[10, 20, 30, 40, 50]"
+              :page-size="pagination.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pagination.Total"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
+            <el-pagination
+              v-if="radio != '委员会'"
+              background
+              :current-page="MeetingTableDataVal.pageIndex"
+              :page-sizes="[10, 20, 30, 40, 50]"
+              :page-size="MeetingTableDataVal.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="MeetingTableDataVal.Total"
+              @size-change="handleSizeChange2"
+              @current-change="handleCurrentChange2"
+            />
+          </el-col>
+        </el-row>
+      </el-footer>
+    </el-card>
   </el-container>
 </template>
 <script>
@@ -1634,11 +1636,11 @@ export default {
     parseTimes(val) {
       return parseTime(val, '{y}-{m}-{d} {h}:{i}:{s}');
     },
-    async PreviewFile(val,row) {
+    async PreviewFile(val, row) {
       /* 资料预览 */
       val = val.replace(/Annex\/file\/|\//g, '');
-      console.log('dd',val);
-      console.log('aa',row);
+      console.log('dd', val);
+      console.log('aa', row);
       const { data } = await PreviewFile({ Title: val });
       this.$nextTick(() => {
         const link = document.createElement('a');

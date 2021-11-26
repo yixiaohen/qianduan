@@ -1,125 +1,136 @@
 <template>
   <div class="evaluation_not_validated">
-    <split-pane split="horizontal">
+    <split-pane split="horizontal"  :default-percent="60">
+
       <template slot="paneL">
-        <div class="top-container">
-          <div class="top-container-head">
-            <el-form
-              size="mini"
-              label-position="left"
-              :inline="true"
-            >
-              <el-form-item>
-                <el-button
-                  type="primary"
-                  icon="el-icon-circle-plus"
-                  size="mini"
-                  @click="addCatalogs"
-                >增加
-                </el-button>
-              </el-form-item>
-              <el-form-item>
-                <el-button
-                  type="success"
-                  icon="el-icon-refresh"
-                  :disabled="disabled"
-                  size="mini"
-                  @click="refreshRoot()"
-                />
-              </el-form-item>
-            </el-form>
-          </div>
-          <el-alert
-            :title="catalogTitle || '当前栏目下不能添加资料，请选择子级栏目'"
-            type="info"
-            :closable="false"
-          />
-          <div class="top-container-body">
-            <el-table
-              ref="tableData"
-              v-loading="loading"
-              class="top-container-body-tb"
-              :data="tableData"
-              style="width: 100%"
-              row-key="CatalogID"
-              border
-              size="mini"
-              lazy
-              height="100%"
-              :row-class-name="tableRowClassName"
-              :load="addChildrenCatalog"
-              :tree-props="{ children: 'Children', hasChildren: 'hasChildren' }"
-              @row-click="cellClick"
-            >
-              <el-table-column
-                prop="CatalogCode"
-                label="编号"
-                width="160"
-                sortable
-              />
-              <el-table-column
-                prop="CatalogName"
-                label="内容"
-                min-width="300"
-              />
-              <!--              宁海妇幼保健院隐藏评审标准-->
-              <el-table-column
-                v-if="CatalogVersion !== '宁海妇幼保健院'"
-                label="评审标准"
-                width="70"
-                align="center"
+        <el-card
+          style="margin: 10px"
+        >
+          <div class="top-container">
+            <div class="top-container-head">
+              <el-form
+                size="mini"
+                label-position="left"
+                :inline="true"
               >
-                <template slot-scope="{ row }">
-                  <el-tag
-                    size="mini"
-                    effect="dark"
-                    :type="row.IsCriterion ? 'success' : 'danger'"
-                  >{{ row.IsCriterion ? '是' : '否' }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                prop="Fraction"
-                label="总分值"
-                width="70"
-                align="center"
-              />
-
-              <!-- <el-table-column prop="name" label="核心条款" width="180" /> -->
-              <el-table-column
-                label="操作"
-                width="160"
-                align="center"
-              >
-                <template slot-scope="scope">
+                <el-form-item>
                   <el-button
                     type="primary"
-                    size="mini"
                     icon="el-icon-circle-plus"
-                    @click="addCatalog(scope.row)"
-                  />
-                  <el-button
-                    type="info"
                     size="mini"
-                    icon="el-icon-edit"
-                    @click="updateCatalog(scope.row)"
-                  />
+                    @click="addCatalogs"
+                  >增加
+                  </el-button>
+                </el-form-item>
+                <el-form-item>
                   <el-button
-                    type="danger"
+                    type="success"
+                    icon="el-icon-refresh"
+                    :disabled="disabled"
                     size="mini"
-                    icon="el-icon-delete"
-                    @click="deleteCatalog(scope.row)"
+                    @click="refreshRoot()"
                   />
-                </template>
-              </el-table-column>
-            </el-table>
+                </el-form-item>
+              </el-form>
+            </div>
+            <el-alert
+              :title="catalogTitle || '当前栏目下不能添加资料，请选择子级栏目'"
+              type="info"
+              :closable="false"
+            />
+            <div class="top-container-body">
+              <el-table
+                ref="tableData"
+                v-loading="loading"
+                class="top-container-body-tb"
+                :data="tableData"
+                style="width: 100%"
+                row-key="CatalogID"
+                border
+                size="mini"
+                lazy
+                height="40vh"
+                :row-class-name="tableRowClassName"
+                :load="addChildrenCatalog"
+                :tree-props="{ children: 'Children', hasChildren: 'hasChildren' }"
+                @row-click="cellClick"
+              >
+                <el-table-column
+                  prop="CatalogCode"
+                  label="编号"
+                  width="160"
+                  sortable
+                />
+                <el-table-column
+                  prop="CatalogName"
+                  label="内容"
+                  min-width="300"
+                />
+                <!--              宁海妇幼保健院隐藏评审标准-->
+                <el-table-column
+                  v-if="CatalogVersion !== '宁海妇幼保健院'"
+                  label="评审标准"
+                  width="70"
+                  align="center"
+                >
+                  <template slot-scope="{ row }">
+                    <el-tag
+                      size="mini"
+                      effect="dark"
+                      :type="row.IsCriterion ? 'success' : 'danger'"
+                    >{{ row.IsCriterion ? '是' : '否' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+
+                <el-table-column
+                  prop="Fraction"
+                  label="总分值"
+                  width="70"
+                  align="center"
+                />
+
+                <!-- <el-table-column prop="name" label="核心条款" width="180" /> -->
+                <el-table-column
+                  label="操作"
+                  width="160"
+                  align="center"
+                >
+                  <template slot-scope="scope">
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      icon="el-icon-circle-plus"
+                      @click="addCatalog(scope.row)"
+                    />
+                    <el-button
+                      type="info"
+                      size="mini"
+                      icon="el-icon-edit"
+                      @click="updateCatalog(scope.row)"
+                    />
+                    <el-button
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-delete"
+                      @click="deleteCatalog(scope.row)"
+                    />
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </div>
-        </div>
+        </el-card>
+
       </template>
 
       <!-- <div style="display:flex;"> -->
-      <template slot="paneR">
+      <template slot="paneR"  >
+        <el-card
+        style="margin: 0px"
+        >
+
+
         <div class="bottom-container">
           <el-tabs
             v-model="activeName"
@@ -168,7 +179,7 @@
                   style="width: 100%"
                   border
                   size="mini"
-                  height="100%"
+                  height="20vh"
                 >
                   <el-table-column
                     type="index"
@@ -295,6 +306,7 @@
             </el-tab-pane>
           </el-tabs>
         </div>
+        </el-card>
       </template>
     </split-pane>
     <el-dialog

@@ -1,5 +1,11 @@
 <template>
+  <el-card
+    style="margin: 10px;"
+  >
   <el-container class="Period">
+
+
+
     <el-header>
       <el-form
         label-position="left"
@@ -41,7 +47,7 @@
         border
         style="width: 100%"
         size="mini"
-        height="calc(100vh - 180px)"
+        height="calc(100vh - 200px)"
       >
         <el-table-column
           type="index"
@@ -56,7 +62,7 @@
         <el-table-column
           prop="StartTime"
           label="开始时间"
-          width="160"
+
         >
           <template slot-scope="scope">
             {{ scope.row.StartTime.split("T").join(" ") }}
@@ -65,7 +71,7 @@
         <el-table-column
           prop="EndTime"
           label="结束时间"
-          width="160"
+
         >
           <template slot-scope="scope">
             {{ scope.row.EndTime.split("T").join(" ") }}
@@ -211,7 +217,9 @@
         @current-change="handleCurrentChange"
       />
     </el-footer>
+
   </el-container>
+  </el-card>
 </template>
 
 <script>

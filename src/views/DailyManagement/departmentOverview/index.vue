@@ -1,5 +1,6 @@
 <template>
   <el-container class="department_overview">
+    <el-card style="margin: 10px;width: 98%">
     <el-header>
       <el-form
         :inline="true"
@@ -12,6 +13,7 @@
           prop="DeptID"
         >
           <default-depts
+            style="margin-top: -5px"
             v-if="IsSelectOtherDept == 1"
             w="100%"
             :value="DeptID"
@@ -90,2675 +92,2685 @@
         </el-form-item>
       </el-form>
     </el-header>
-    <el-main class="main">
-      <el-form
-        v-show="!FillingIn"
-        ref="InsertVal"
-        :rules="rules"
-        :model="InsertVal"
-        label-position="top"
-      >
-        <h2>一、科室概况</h2>
-        <el-form-item
-          label="科室简介："
-          prop="Introduction"
-        >
-          <el-input
-            v-model="InsertVal.Introduction"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '科室简介'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('科室简介')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="荣誉奖励："
-          prop="HonorAward"
-        >
-          <el-input
-            v-model="InsertVal.HonorAward"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '荣誉奖励'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('荣誉奖励')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>二、党风廉政</h2>
-        <el-form-item
-          label="支部建设："
-          prop="Construction"
-        >
-          <el-input
-            v-model="InsertVal.Construction"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '支部建设'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('支部建设')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="行风管理："
-          prop="TheEnhancement"
-        >
-          <el-input
-            v-model="InsertVal.TheEnhancement"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '行风管理'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('行风管理')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>三、管理规范</h2>
-        <el-form-item
-          label="科室制度："
-          prop="DeptInst"
-        >
-          <el-input
-            v-model="InsertVal.DeptInst"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '科室制度'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('科室制度')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="科室应急预案："
-          prop="DeptPlan"
-        >
-          <el-input
-            v-model="InsertVal.DeptPlan"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '科室应急预案'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('科室应急预案')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="岗位职责："
-          prop="Responsibility"
-        >
-          <el-input
-            v-model="InsertVal.Responsibility"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '岗位职责'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('岗位职责')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>四、规范诊疗</h2>
-        <el-form-item
-          label="临床诊疗规范/指南："
-          prop="Guide"
-        >
-          <el-input
-            v-model="InsertVal.Guide"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '临床诊疗规范/指南'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('临床诊疗规范/指南')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="临床操作规范："
-          prop="CZSpecification"
-        >
-          <el-input
-            v-model="InsertVal.CZSpecification"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '临床操作规范'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('临床操作规范')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="科室诊疗规范："
-          prop="ZLSpecification"
-        >
-          <el-input
-            v-model="InsertVal.ZLSpecification"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '科室诊疗规范'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('科室诊疗规范')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>五、准入审批</h2>
-        <el-form-item
-          label="资质授予："
-          prop="QualificationAwarded"
-        >
-          <el-input
-            v-model="InsertVal.QualificationAwarded"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '资质授予'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('资质授予')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
 
-        <el-form-item
-          label="技术权限："
-          prop="TechnicalAuthority"
+      <el-main class="main">
+        <!--          :rules="rules" 暂时不需要规则，有些医院不需要这些项目必填-->
+        <el-form
+          v-show="!FillingIn"
+          ref="InsertVal"
+
+          :model="InsertVal"
+          label-position="top"
         >
-          <el-input
-            v-model="InsertVal.TechnicalAuthority"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
+          <h2>一、科室概况</h2>
+          <el-form-item
+            label="科室简介："
+            prop="Introduction"
           >
-            <div
-              v-if="item1.Type == '技术权限'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('技术权限')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="技术项目："
-          prop="TechnologyProject"
-        >
-          <el-input
-            v-model="InsertVal.TechnologyProject"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '技术项目'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('技术项目')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="重大手术审批："
-          prop="Surgery"
-        >
-          <el-input
-            v-model="InsertVal.Surgery"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '重大手术审批'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('重大手术审批')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>六、会议记录</h2>
-        <el-form-item
-          label="培训考核："
-          prop="Training"
-        >
-          <el-input
-            v-model="InsertVal.Training"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '培训考核'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('培训考核')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="业务学习："
-          prop="Business"
-        >
-          <el-input
-            v-model="InsertVal.Business"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '业务学习'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('业务学习')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>七、质量安全</h2>
-        <el-form-item
-          label="①PDCA项目："
-          prop="PDCA"
-        >
-          <el-input
-            v-model="InsertVal.PDCA"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '①PDCA项目'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('①PDCA项目')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="②不良事件及RCA分析："
-          prop="RCA"
-        >
-          <el-input
-            v-model="InsertVal.RCA"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '②不良事件及RCA分析'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('②不良事件及RCA分析')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>八、专类管理</h2>
-        <el-form-item
-          label="①医院感染："
-          prop="Infection"
-        >
-          <el-input
-            v-model="InsertVal.Infection"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '①医院感染'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('①医院感染')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="②药事管理："
-          prop="Medicine"
-        >
-          <el-input
-            v-model="InsertVal.Medicine"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '②药事管理'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('②药事管理')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="③医保管理："
-          prop="Healthcare"
-        >
-          <el-input
-            v-model="InsertVal.Healthcare"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '③医保管理'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('③医保管理')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="④器械耗材："
-          prop="Instrument"
-        >
-          <el-input
-            v-model="InsertVal.Instrument"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '④器械耗材'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('④器械耗材')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="⑤输血管理："
-          prop="BloodTransfusion"
-        >
-          <el-input
-            v-model="InsertVal.BloodTransfusion"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '⑤输血管理'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('⑤输血管理')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>九、科研教学</h2>
-        <el-form-item
-          label="①科研管理："
-          prop="ScientificResearch"
-        >
-          <el-input
-            v-model="InsertVal.ScientificResearch"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '①科研管理'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('①科研管理')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="②临床试验："
-          prop="ClinicalTrials"
-        >
-          <el-input
-            v-model="InsertVal.ClinicalTrials"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '②临床试验'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('②临床试验')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="③教学管理："
-          prop="Teaching"
-        >
-          <el-input
-            v-model="InsertVal.Teaching"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '③教学管理'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('③教学管理')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>十、患者服务</h2>
-        <el-form-item
-          label="①健康教育："
-          prop="Education"
-        >
-          <el-input
-            v-model="InsertVal.Education"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '①健康教育'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('①健康教育')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="②患者随访："
-          prop="FollowUp"
-        >
-          <el-input
-            v-model="InsertVal.FollowUp"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '②患者随访'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('②患者随访')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="③患者满意度："
-          prop="Satisfaction"
-        >
-          <el-input
-            v-model="InsertVal.Satisfaction"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '③患者满意度'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('③患者满意度')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <h2>十一、学科辐射</h2>
-        <el-form-item
-          label="①学术活动"
-          prop="Academic"
-        >
-          <el-input
-            v-model="InsertVal.Academic"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '①学术活动'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('①学术活动')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="②对外交流"
-          prop="Communication"
-        >
-          <el-input
-            v-model="InsertVal.Communication"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '②对外交流'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('②对外交流')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="③社会活动"
-          prop="Activity"
-        >
-          <el-input
-            v-model="InsertVal.Activity"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '③社会活动'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('③社会活动')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item
-          label="④媒体宣传"
-          prop="Propaganda"
-        >
-          <el-input
-            v-model="InsertVal.Propaganda"
-            type="textarea"
-          />
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="item1.Type == '④媒体宣传'"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :on-success="handleSuccess"
-            :before-upload="() => beforeUpload('④媒体宣传')"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-      </el-form>
-      <el-form
-        v-show="!FillingIn"
-        :inline="true"
-        label-position="top"
-        size="mini"
-        :rules="rules"
-      >
-        <el-form-item label="上传科室资料:">
-          <el-upload
-            :multiple="true"
-            :show-file-list="true"
-            :before-upload="() => beforeUpload('')"
-            :on-success="handleSuccess"
-            class="editor-slide-upload"
-            :file-list="fileList"
-            action="/api/RC_File/UploadFile"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-            >选择文件
-            </el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="已传文件">
-          <div
-            v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
-            :key="index1"
-          >
-            <div
-              v-if="!item1.Type"
-              class="trExpand"
-            >
-              <div class="item1">
-                <el-link
-                  :href="item1.OpenFileUrl"
-                  target="_blank"
-                >{{
-                  item1.FileName
-                }}
-                </el-link>
-              </div>
-              <div class="item2">
-                <el-link
-                  :href="item1.FileUrl"
-                  target="_blank"
-                >点击下载
-                </el-link>
-              </div>
-              <div class="item3">
-                <el-link
-                  target="_blank"
-                  @click="PreviewFile(item1.FileUrl)"
-                >查看
-                </el-link>
-              </div>
-              <div class="item4">
-                <span><i
-                  style="cursor: pointer"
-                  class="el-icon-delete"
-                  @click="deleteMeetingFile(index1)"
-                /></span>
-              </div>
-            </div>
-          </div>
-        </el-form-item>
-      </el-form>
-      <h2 v-show="!FillingIn">年度计划总结（包括年度总结、下年度计划）</h2>
-      <el-table
-        v-show="!FillingIn"
-        :data="InsertVal.DeptTemplateDetail_dto"
-        style="width: 100%"
-        border
-        height="calc(100vh - 450px)"
-        size="mini"
-        stripe
-      >
-        <el-table-column
-          prop="Year"
-          label="年度"
-          width="120"
-        >
-          <template slot-scope="{ row }">
-            <el-date-picker
-              v-model="row.Year"
-              type="year"
-              placeholder="选择年"
-              size="mini"
-              format="yyyy"
-              value-format="yyyy"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="Summary"
-          label="计划总结"
-        >
-          <template slot-scope="{ row }">
             <el-input
-              v-model="row.Summary"
+              v-model="InsertVal.Introduction"
               type="textarea"
-              size="mini"
             />
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="上传计划总结附件"
-          width="200"
-          align="center"
-        >
-          <template slot-scope="scope">
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '科室简介'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
             <el-upload
               :multiple="true"
-              :show-file-list="false"
-              :on-success="handleSuccess2"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('科室简介')"
               class="editor-slide-upload"
+              :file-list="fileList"
               action="/api/RC_File/UploadFile"
             >
               <el-button
                 size="mini"
-                circle
-                class="iconfont al-icon-tijiao1"
-                @click="handleSuccessIndex(scope)"
-              />
+                type="primary"
+              >选择文件
+              </el-button>
             </el-upload>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="附件查看"
-          prop="DeptTemplateFile_dto"
-        >
-          <template slot-scope="{ row }">
-            <el-tag
-              v-for="(item, index) in row.DeptTemplateFile_dto"
-              :key="index"
-              closable
-              :disable-transitions="false"
-              @close="handleClose1(index,row.DeptTemplateFile_dto)"
+          </el-form-item>
+          <el-form-item
+            label="荣誉奖励："
+            prop="HonorAward"
+          >
+            <el-input
+              v-model="InsertVal.HonorAward"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
             >
-              <el-link
-                target="_blank"
-                @click="PreviewFile(item.FileUrl)"
-              >{{ item.FileName }}
-              </el-link>
-            </el-tag>
+              <div
+                v-if="item1.Type == '荣誉奖励'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('荣誉奖励')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>二、党风廉政</h2>
+          <el-form-item
+            label="支部建设："
+            prop="Construction"
+          >
+            <el-input
+              v-model="InsertVal.Construction"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '支部建设'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('支部建设')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="行风管理："
+            prop="TheEnhancement"
+          >
+            <el-input
+              v-model="InsertVal.TheEnhancement"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '行风管理'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('行风管理')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>三、管理规范</h2>
+          <el-form-item
+            label="科室制度："
+            prop="DeptInst"
+          >
+            <el-input
+              v-model="InsertVal.DeptInst"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '科室制度'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('科室制度')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="科室应急预案："
+            prop="DeptPlan"
+          >
+            <el-input
+              v-model="InsertVal.DeptPlan"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '科室应急预案'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('科室应急预案')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="岗位职责："
+            prop="Responsibility"
+          >
+            <el-input
+              v-model="InsertVal.Responsibility"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '岗位职责'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('岗位职责')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>四、规范诊疗</h2>
+          <el-form-item
+            label="临床诊疗规范/指南："
+            prop="Guide"
+          >
+            <el-input
+              v-model="InsertVal.Guide"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '临床诊疗规范/指南'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('临床诊疗规范/指南')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="临床操作规范："
+            prop="CZSpecification"
+          >
+            <el-input
+              v-model="InsertVal.CZSpecification"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '临床操作规范'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('临床操作规范')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="科室诊疗规范："
+            prop="ZLSpecification"
+          >
+            <el-input
+              v-model="InsertVal.ZLSpecification"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '科室诊疗规范'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('科室诊疗规范')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>五、准入审批</h2>
+          <el-form-item
+            label="资质授予："
+            prop="QualificationAwarded"
+          >
+            <el-input
+              v-model="InsertVal.QualificationAwarded"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '资质授予'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('资质授予')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
 
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="操作"
-          width="60"
+          <el-form-item
+            label="技术权限："
+            prop="TechnicalAuthority"
+          >
+            <el-input
+              v-model="InsertVal.TechnicalAuthority"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '技术权限'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('技术权限')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="技术项目："
+            prop="TechnologyProject"
+          >
+            <el-input
+              v-model="InsertVal.TechnologyProject"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '技术项目'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('技术项目')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="重大手术审批："
+            prop="Surgery"
+          >
+            <el-input
+              v-model="InsertVal.Surgery"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '重大手术审批'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('重大手术审批')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>六、会议记录</h2>
+          <el-form-item
+            label="培训考核："
+            prop="Training"
+          >
+            <el-input
+              v-model="InsertVal.Training"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '培训考核'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('培训考核')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="业务学习："
+            prop="Business"
+          >
+            <el-input
+              v-model="InsertVal.Business"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '业务学习'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('业务学习')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>七、质量安全</h2>
+          <el-form-item
+            label="①PDCA项目："
+            prop="PDCA"
+          >
+            <el-input
+              v-model="InsertVal.PDCA"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '①PDCA项目'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('①PDCA项目')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="②不良事件及RCA分析："
+            prop="RCA"
+          >
+            <el-input
+              v-model="InsertVal.RCA"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '②不良事件及RCA分析'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('②不良事件及RCA分析')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>八、专类管理</h2>
+          <el-form-item
+            label="①医院感染："
+            prop="Infection"
+          >
+            <el-input
+              v-model="InsertVal.Infection"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '①医院感染'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('①医院感染')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="②药事管理："
+            prop="Medicine"
+          >
+            <el-input
+              v-model="InsertVal.Medicine"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '②药事管理'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('②药事管理')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="③医保管理："
+            prop="Healthcare"
+          >
+            <el-input
+              v-model="InsertVal.Healthcare"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '③医保管理'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('③医保管理')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="④器械耗材："
+            prop="Instrument"
+          >
+            <el-input
+              v-model="InsertVal.Instrument"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '④器械耗材'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('④器械耗材')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="⑤输血管理："
+            prop="BloodTransfusion"
+          >
+            <el-input
+              v-model="InsertVal.BloodTransfusion"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '⑤输血管理'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('⑤输血管理')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>九、科研教学</h2>
+          <el-form-item
+            label="①科研管理："
+            prop="ScientificResearch"
+          >
+            <el-input
+              v-model="InsertVal.ScientificResearch"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '①科研管理'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('①科研管理')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="②临床试验："
+            prop="ClinicalTrials"
+          >
+            <el-input
+              v-model="InsertVal.ClinicalTrials"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '②临床试验'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('②临床试验')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="③教学管理："
+            prop="Teaching"
+          >
+            <el-input
+              v-model="InsertVal.Teaching"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '③教学管理'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('③教学管理')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>十、患者服务</h2>
+          <el-form-item
+            label="①健康教育："
+            prop="Education"
+          >
+            <el-input
+              v-model="InsertVal.Education"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '①健康教育'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('①健康教育')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="②患者随访："
+            prop="FollowUp"
+          >
+            <el-input
+              v-model="InsertVal.FollowUp"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '②患者随访'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('②患者随访')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="③患者满意度："
+            prop="Satisfaction"
+          >
+            <el-input
+              v-model="InsertVal.Satisfaction"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '③患者满意度'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('③患者满意度')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <h2>十一、学科辐射</h2>
+          <el-form-item
+            label="①学术活动"
+            prop="Academic"
+          >
+            <el-input
+              v-model="InsertVal.Academic"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '①学术活动'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('①学术活动')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="②对外交流"
+            prop="Communication"
+          >
+            <el-input
+              v-model="InsertVal.Communication"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '②对外交流'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('②对外交流')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="③社会活动"
+            prop="Activity"
+          >
+            <el-input
+              v-model="InsertVal.Activity"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '③社会活动'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('③社会活动')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
+            label="④媒体宣传"
+            prop="Propaganda"
+          >
+            <el-input
+              v-model="InsertVal.Propaganda"
+              type="textarea"
+            />
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="item1.Type == '④媒体宣传'"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :on-success="handleSuccess"
+              :before-upload="() => beforeUpload('④媒体宣传')"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+        </el-form>
+        <el-form
+          v-show="!FillingIn"
+          :inline="true"
+          label-position="top"
+          size="mini"
+          :rules="rules"
         >
-          <template slot-scope="{ row, $index }">
+          <el-form-item label="上传科室资料:">
+            <el-upload
+              :multiple="true"
+              :show-file-list="true"
+              :before-upload="() => beforeUpload('')"
+              :on-success="handleSuccess"
+              class="editor-slide-upload"
+              :file-list="fileList"
+              action="/api/RC_File/UploadFile"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+              >选择文件
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="已传文件">
+            <div
+              v-for="(item1, index1) in InsertVal.DeptTemplateFile_dto"
+              :key="index1"
+            >
+              <div
+                v-if="!item1.Type"
+                class="trExpand"
+              >
+                <div class="item1">
+                  <el-link
+                    :href="item1.OpenFileUrl"
+                    target="_blank"
+                  >{{
+                      item1.FileName
+                   }}
+                  </el-link>
+                </div>
+                <div class="item2">
+                  <el-link
+                    :href="item1.FileUrl"
+                    target="_blank"
+                  >点击下载
+                  </el-link>
+                </div>
+                <div class="item3">
+                  <el-link
+                    target="_blank"
+                    @click="PreviewFile(item1.FileUrl)"
+                  >查看
+                  </el-link>
+                </div>
+                <div class="item4">
+                <span><i
+                  style="cursor: pointer"
+                  class="el-icon-delete"
+                  @click="deleteMeetingFile(index1)"
+                /></span>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
+        </el-form>
+        <h2 v-show="!FillingIn">年度计划总结（包括年度总结、下年度计划）</h2>
+        <el-table
+          v-show="!FillingIn"
+          :data="InsertVal.DeptTemplateDetail_dto"
+          style="width: 100%"
+          border
+          height="calc(100vh - 450px)"
+          size="mini"
+          stripe
+        >
+          <el-table-column
+            prop="Year"
+            label="年度"
+            width="120"
+          >
+            <template slot-scope="{ row }">
+              <el-date-picker
+                v-model="row.Year"
+                type="year"
+                placeholder="选择年"
+                size="mini"
+                format="yyyy"
+                value-format="yyyy"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="Summary"
+            label="计划总结"
+          >
+            <template slot-scope="{ row }">
+              <el-input
+                v-model="row.Summary"
+                type="textarea"
+                size="mini"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="上传计划总结附件"
+            width="200"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <el-upload
+                :multiple="true"
+                :show-file-list="false"
+                :on-success="handleSuccess2"
+                class="editor-slide-upload"
+                action="/api/RC_File/UploadFile"
+              >
+                <el-button
+                  size="mini"
+                  circle
+                  class="iconfont al-icon-tijiao1"
+                  @click="handleSuccessIndex(scope)"
+                />
+              </el-upload>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="附件查看"
+            prop="DeptTemplateFile_dto"
+          >
+            <template slot-scope="{ row }">
+              <el-tag
+                v-for="(item, index) in row.DeptTemplateFile_dto"
+                :key="index"
+                style="margin: 5px"
+                closable
+                :disable-transitions="false"
+                @close="handleClose1(index,row.DeptTemplateFile_dto)"
+              >
+                <el-link
+                  target="_blank"
+                  @click="PreviewFile(item.FileUrl)"
+                >{{ item.FileName }}
+                </el-link>
+
+              </el-tag>
+
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="操作"
+            width="60"
+          >
+            <template slot-scope="{ row, $index }">
             <span
               class="CatalogName"
               @click="deletes(row, $index)"
             >移除</span>
-          </template>
-        </el-table-column>
-      </el-table>
+            </template>
+          </el-table-column>
+        </el-table>
 
-      <transition name="el-zoom-in-center">
-        <el-table
-          v-show="FillingIn"
-          v-loading="tableloading"
-          :data="SelectDeptTableData"
-          border
-          style="width: 100%"
-          size="mini"
-          stripe
-        >
-          <el-table-column
-            prop="DeptName"
-            label="科室部门"
+        <transition name="el-zoom-in-center">
+          <el-table
+            v-show="FillingIn"
+            v-loading="tableloading"
+            :data="SelectDeptTableData"
+            border
+            style="width: 100%"
+            size="mini"
+            stripe
           >
-            <template slot-scope="{ row }">
+            <el-table-column
+              prop="DeptName"
+              label="科室部门"
+            >
+              <template slot-scope="{ row }">
               <span
                 style="cursor: pointer !important; color: #3e84e9"
                 @click="selectDept(row)"
               >{{ row.DeptName }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="WriteState"
-            width="100"
-            label="填写状态"
-            align="center"
-          />
-        </el-table>
-      </transition>
-    </el-main>
-    <el-footer>
-      <el-row
-        v-show="!FillingIn"
-        type="flex"
-        justify="space-between"
-      >
-        <el-col>
-          <el-button
-            v-show="activeName == 'second' ? false : true"
-            size="small"
-            icon="el-icon-plus"
-            @click="Insert"
-          ><span class="CatalogName">新增一条</span></el-button>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="WriteState"
+              width="100"
+              label="填写状态"
+              align="center"
+            />
+          </el-table>
+
+        </transition>
+       <div style="border-bottom: 1px solid #3e84e9"><el-button
+          v-show="activeName == 'second' ? false : true"
+          size="small"
+          icon="el-icon-plus"
+          @click="Insert"
+        ><span class="CatalogName">新增一条</span></el-button>
           <span
             v-show="activeName == 'second' ? false : true"
             class="CatalogName"
-          >（最多添加50条）</span>
-        </el-col>
-        <el-col :span="6">
-          <el-button
-            type="primary"
-            size="small"
-            @click="InsertDeptTemplate('InsertVal')"
-          >提交
-          </el-button>
-        </el-col>
-      </el-row>
-      <el-row v-show="FillingIn">
-        <el-col :span="3">
-          <el-switch
-            v-model="cellOverflow"
-            style="margin: 6px 0px"
-            active-text="收起"
-            inactive-text="展开"
-          />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            :current-page="SelectDeptTemplateVal.pageIndex"
-            :page-sizes="[10, 15, 20, 30, 50, 100]"
-            :page-size="SelectDeptTemplateVal.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="SelectDeptTemplateVal.Total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-col>
-      </el-row>
-      <el-drawer
-        :visible.sync="drawer"
-        direction="btt"
-        size="75%"
-        :with-header="false"
-      >
-        <el-table
-          v-loading="DeptCatalogLoading"
-          :data="CatalogData"
-          border
-          style="width: 100%"
-          height="calc(100vh - 280px)"
-          :row-key="getRowKeys"
-          :expand-row-keys="expands"
-          size="mini"
-          stripe
-          @expand-change="expandChange"
+          >（最多添加50条）</span></div>
+
+      </el-main>
+      <el-footer>
+        <el-row
+          v-show="!FillingIn"
+          type="flex"
+          justify="space-between"
         >
-          <el-table-column type="expand">
-            <template>
-              <el-table
-                :data="articleTable"
-                style="width: 100%"
-                border
-                size="mini"
-                height="calc(100vh - 280px)"
-                stripe
-              >
-                <el-table-column
-                  type="index"
-                  label="序号"
-                  width="50"
-                  align="center"
-                />
-                <el-table-column
-                  label="状态"
-                  width="50"
-                  align="center"
+          <el-col>
+
+          </el-col>
+          <el-col :span="6">
+            <el-button
+              type="primary"
+              size="medium"
+              @click="InsertDeptTemplate('InsertVal')"
+            >提交
+            </el-button>
+          </el-col>
+        </el-row>
+        <el-row v-show="FillingIn">
+          <el-col :span="3">
+            <el-switch
+              v-model="cellOverflow"
+              style="margin: 6px 0px"
+              active-text="收起"
+              inactive-text="展开"
+            />
+          </el-col>
+          <el-col :span="20">
+            <el-pagination
+              :current-page="SelectDeptTemplateVal.pageIndex"
+              :page-sizes="[10, 15, 20, 30, 50, 100]"
+              :page-size="SelectDeptTemplateVal.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="SelectDeptTemplateVal.Total"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
+          </el-col>
+        </el-row>
+        <el-drawer
+          :visible.sync="drawer"
+          direction="btt"
+          size="75%"
+          :with-header="false"
+        >
+          <el-table
+            v-loading="DeptCatalogLoading"
+            :data="CatalogData"
+            border
+            style="width: 100%"
+            height="calc(100vh - 280px)"
+            :row-key="getRowKeys"
+            :expand-row-keys="expands"
+            size="mini"
+            stripe
+            @expand-change="expandChange"
+          >
+            <el-table-column type="expand">
+              <template>
+                <el-table
+                  :data="articleTable"
+                  style="width: 100%"
+                  border
+                  size="mini"
+                  height="calc(100vh - 280px)"
+                  stripe
                 >
-                  <template slot-scope="scope">
-                    <el-button
-                      circle
-                      size="mini"
-                      round
-                      :type="
+                  <el-table-column
+                    type="index"
+                    label="序号"
+                    width="50"
+                    align="center"
+                  />
+                  <el-table-column
+                    label="状态"
+                    width="50"
+                    align="center"
+                  >
+                    <template slot-scope="scope">
+                      <el-button
+                        circle
+                        size="mini"
+                        round
+                        :type="
                         scope.row.AuditStatus === 0
                           ? 'info'
                           : scope.row.AuditStatus === 1
                             ? 'success'
                             : 'danger'
                       "
-                      @click="statusView(scope.row)"
-                    />
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="Title"
-                  label="标题"
-                  show-overflow-tooltip
-                >
-                  <template slot-scope="scope">
-                    <div
-                      style="cursor: pointer !important; color: #3e84e9"
-                      @click="seeRow(scope.row)"
-                    >
-                      {{ scope.row.Title }}
-                    </div>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="CatalogCode"
-                  label="条款"
-                  show-overflow-tooltip
-                />
-                <el-table-column
-                  prop="CatalogName"
-                  label="条款内容"
-                  show-overflow-tooltip
-                />
-                <el-table-column
-                  prop="VersionNumber"
-                  label="版本号"
-                  show-overflow-tooltip
-                />
-                <el-table-column
-                  prop="GroupName"
-                  label="资料类别"
-                  align="center"
-                  show-overflow-tooltip
-                />
-                <el-table-column
-                  prop="AuthorName"
-                  label="录入用户"
-                  align="center"
-                  show-overflow-tooltip
-                />
-                <el-table-column
-                  label="录入时间"
-                  align="center"
-                  show-overflow-tooltip
-                >
-                  <template slot-scope="scope">{{
-                    scope.row.CreatDate.split('T').join(' ')
-                  }}
-                  </template>
-                </el-table-column>
-              </el-table>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="CatalogCode"
-            label="评审标准"
-          />
-          <el-table-column
-            prop="TypeName"
-            label="章节"
-          />
-          <el-table-column
-            prop="IsPoint"
-            label="核心条款"
-            width="80"
-            align="center"
+                        @click="statusView(scope.row)"
+                      />
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="Title"
+                    label="标题"
+                    show-overflow-tooltip
+                  >
+                    <template slot-scope="scope">
+                      <div
+                        style="cursor: pointer !important; color: #3e84e9"
+                        @click="seeRow(scope.row)"
+                      >
+                        {{ scope.row.Title }}
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="CatalogCode"
+                    label="条款"
+                    show-overflow-tooltip
+                  />
+                  <el-table-column
+                    prop="CatalogName"
+                    label="条款内容"
+                    show-overflow-tooltip
+                  />
+                  <el-table-column
+                    prop="VersionNumber"
+                    label="版本号"
+                    show-overflow-tooltip
+                  />
+                  <el-table-column
+                    prop="GroupName"
+                    label="资料类别"
+                    align="center"
+                    show-overflow-tooltip
+                  />
+                  <el-table-column
+                    prop="AuthorName"
+                    label="录入用户"
+                    align="center"
+                    show-overflow-tooltip
+                  />
+                  <el-table-column
+                    label="录入时间"
+                    align="center"
+                    show-overflow-tooltip
+                  >
+                    <template slot-scope="scope">{{
+                        scope.row.CreatDate.split('T').join(' ')
+                                                 }}
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="CatalogCode"
+              label="评审标准"
+            />
+            <el-table-column
+              prop="TypeName"
+              label="章节"
+            />
+            <el-table-column
+              prop="IsPoint"
+              label="核心条款"
+              width="80"
+              align="center"
+            >
+              <template slot-scope="{ row }">
+                <el-tag
+                  size="mini"
+                  :type="row.IsPoint === 0 ? 'danger' : 'success'"
+                >{{ row.IsPoint === 0 ? '否' : '是' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="CatalogName"
+              label="标准内容"
+            />
+            <el-table-column
+              v-if="menu_one != undefined"
+              prop="ReviewName"
+              :label="menu_one"
+            />
+            <el-table-column
+              v-if="menu_two != undefined"
+              prop="ManageName"
+              :label="menu_two"
+            />
+            <el-table-column
+              v-if="menu_three != undefined"
+              prop="VisitName"
+              :label="menu_three"
+            />
+          </el-table>
+          <el-row
+            type="flex"
+            justify="end"
           >
-            <template slot-scope="{ row }">
-              <el-tag
-                size="mini"
-                :type="row.IsPoint === 0 ? 'danger' : 'success'"
-              >{{ row.IsPoint === 0 ? '否' : '是' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="CatalogName"
-            label="标准内容"
-          />
-          <el-table-column
-            v-if="menu_one != undefined"
-            prop="ReviewName"
-            :label="menu_one"
-          />
-          <el-table-column
-            v-if="menu_two != undefined"
-            prop="ManageName"
-            :label="menu_two"
-          />
-          <el-table-column
-            v-if="menu_three != undefined"
-            prop="VisitName"
-            :label="menu_three"
-          />
-        </el-table>
-        <el-row
-          type="flex"
-          justify="end"
-        >
-          <el-button
-            size="small"
-            @click="drawer = false"
-          >关闭
-          </el-button>
-        </el-row>
-      </el-drawer>
-    </el-footer>
+            <el-button
+              size="small"
+              @click="drawer = false"
+            >关闭
+            </el-button>
+          </el-row>
+        </el-drawer>
+      </el-footer>
+    </el-card>
+
+
   </el-container>
 </template>
 <script>
@@ -3150,8 +3162,15 @@ export default {
 
   .el-main {
     padding: 0 0px;
-    height: calc(100vh - 180px);
+    height: calc(100vh - 280px);
     overflow-y: auto;
+    h2{
+      color: #3e84e9;
+      font-weight: bolder;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #3e84e9;
+    }
   }
 
   .el-footer {

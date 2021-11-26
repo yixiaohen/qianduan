@@ -111,6 +111,7 @@
           </div>
           <el-table
             :data="forecastData"
+            v-loading="forecastDataLoading"
             style="width: 100%"
             border
             size="medium"
@@ -123,30 +124,34 @@
               width="180"
               align="center"
             />
-
             <el-table-column
-              prop="Number1"
-              label="指标预警值1"
+              prop="number"
+              label="指标值"
               align="center"
             />
             <el-table-column
-              prop="Number2"
-              label="指标预警值2"
+              prop="number_max"
+              label="指标上限值"
               align="center"
             />
             <el-table-column
-              prop="state"
-              label="状态"
+              prop="number_min"
+              label="指标下限值"
               align="center"
-            >
-              <template slot-scope="{ row }">
-                <el-tag type="danger">
-                  {{ row.state }}
-                </el-tag>
-              </template>
+            />
+<!--            <el-table-column-->
+<!--              prop="state"-->
+<!--              label="状态"-->
+<!--              align="center"-->
+<!--            >-->
+<!--              <template slot-scope="{ row }">-->
+<!--                <el-tag type="danger">-->
+<!--                  {{ row.state }}-->
+<!--                </el-tag>-->
+<!--              </template>-->
 
 
-            </el-table-column>
+<!--            </el-table-column>-->
 
           </el-table>
           <div class="block">
@@ -180,10 +185,11 @@ export default {
   },
   data() {
     return {
+      forecastDataLoading: false, // 表格加载等待条
       /* 搜索 */
       isYearOrMonth: 2, // 按照年份还是年月查找数据，这里默认展示按年月
-      selectYear: '', // 选中的年份
-      selectMonth: '', // 选中的月份
+      selectYear: null, // 选中的年份
+      selectMonth: null, // 选中的月份
       /* 图表 */
       ChartWarShow: [], // 图表预警信息率
       overproof: 0, // 超标率
@@ -218,6 +224,7 @@ export default {
   },
   created() {
     this.AnticStateRadio();
+    this.SelectAnticState();
 
 
   },
@@ -227,8 +234,13 @@ export default {
     isYearOrMonthc() {
       const times = new Date();
       this.selectYear = times.getFullYear() + ''; // 初始获取年份
-      this.selectMonth = times.getMonth() + ''; // 初始获取年份
-      // this.selectMonth = ''; // 搜索月份框置为空
+      if (this.isYearOrMonth===1){
+        this.selectMonth = ''; // 如果选择年份，就把月置为空
+      }
+      else{
+        this.selectMonth = times.getMonth() + ''; // 否则获取上个月
+      }
+
     },
     SelectYearClick() {
       console.log('点击了1');
@@ -241,6 +253,7 @@ export default {
       }
       this.$nextTick(() => {
         this.SelectAnticState();
+        this.AnticStateRadio();
       });
 
     },
@@ -255,36 +268,44 @@ export default {
       }
       this.$nextTick(() => {
         this.SelectAnticState();
+        this.AnticStateRadio();
       });
     },
     /* 图表开始 */
     // 查询图表数据
     async AnticStateRadio() {
       try {
-        const { data, code } = await AnticStateRadio();
+        if (this.selectYear === null || this.selectMonth === null) {
+          const times = new Date();
+          this.selectYear = times.getFullYear() + ''; // 初始获取年份
+          this.selectMonth = times.getMonth() + ''; // 初始获取年份
+        }
+        const { data, code } = await AnticStateRadio({
+          year: this.selectYear,
+          month: this.selectMonth
+        });
 
         if (code === 200) {
           this.ChartWarShow = data;
-          console.log(this.ChartWarShow[0]);
           this.ChartWarShow = this.ChartWarShow[0]; // 图表预警信息率
 
-          this.overproof = this.ChartWarShow['已超标率'] * 100;
+          this.overproof = this.ChartWarShow.A * 100;
           this.overproof = this.overproof.toFixed(2) * 1; // 取两位小数点
 
-          this.qualified = this.ChartWarShow['不合格率'] * 100;
+          this.qualified = this.ChartWarShow.B * 100;
           this.qualified = this.qualified.toFixed(2) * 1;
 
-          this.overdue = this.ChartWarShow['已逾期率'] * 100;
+          this.overdue = this.ChartWarShow.C * 100;
           this.overdue = this.overdue.toFixed(2) * 1;
-          this.$nextTick(() => {
-            /* 加载数据时就初始化年月*/
-            const times = new Date();
-            /* 一定要注意，日期组件不能用数值，一定要转为字符串！！ */
-            this.selectYear = times.getFullYear() + ''; // 初始获取年份
-            this.selectMonth = times.getMonth() + ''; // 默认展示上个月的数据所以不需要加1
-
-            this.SelectAnticState();
-          });
+          // this.$nextTick(() => {
+          //   /* 加载数据时就初始化年月*/
+          //   const times = new Date();
+          //   /* 一定要注意，日期组件不能用数值，一定要转为字符串！！ */
+          //   this.selectYear = times.getFullYear() + ''; // 初始获取年份
+          //   this.selectMonth = times.getMonth() + ''; // 默认展示上个月的数据所以不需要加1
+          //
+          //   this.SelectAnticState();
+          // });
         }
       } catch (e) {
         console.log(e);
@@ -295,6 +316,12 @@ export default {
     // 获取不同列表数据
     async SelectAnticState() {
       try {
+        if (this.selectYear === null || this.selectMonth === null) {
+          const times = new Date();
+          this.selectYear = times.getFullYear() + ''; // 初始获取年份
+          this.selectMonth = times.getMonth() + ''; // 初始获取年份
+        }
+        this.forecastDataLoading = true; // 打开表格加载等待条
         const { data, code } = await SelectAnticState(
           {
             AnticState: this.radio,
@@ -308,8 +335,10 @@ export default {
         if (code === 200) {
           this.forecastData = data.DataList;
           this.pagination.Total = data.Total; // 获取总条数
+          this.forecastDataLoading = false; // 关闭表格加载等待条
         }
       } catch (e) {
+        this.forecastDataLoading = false; // 关闭表格加载等待条
         console.log(e);
       }
     },
@@ -337,6 +366,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// 导入等待条样式
+@import "src/styles/loading.scss";
 //分页栏距离表格
 .block {
   margin-top: 10px;

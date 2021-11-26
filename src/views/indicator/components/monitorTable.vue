@@ -90,6 +90,7 @@
           <!--                        分页-->
           <div class="block">
             <el-pagination
+              style="margin: 6px 0 0 0"
               :page-sizes="pagination2.pageSizes"
               :page-size="pagination2.pageSize"
               layout="total, sizes, prev, pager, next, jumper"
@@ -179,7 +180,7 @@ export default {
       this.groupRecord.tableLoading = true; // 打开表格数据加载条
       try {
         const { data, code } = await GetDataDetail({
-          indexId: row.Index_ID,
+          i_data_Id: row.IndexAllocID,
           para: row.para || 0,
           type: row.type || 0,
           pageIndex: this.listQuery2.pageIndex,
@@ -313,7 +314,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 // 导出等待条样式
 @import "src/styles/loading.scss";
 .el-header {

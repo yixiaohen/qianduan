@@ -294,7 +294,7 @@ import defaultDept from '@/views/components/defaultDept';
 import { mapGetters } from 'vuex';
 
 export default {
-  name: 'Desktop',
+  name: 'DailyStatistics',
   components: { defaultDepts, defaultDept },
   data() {
     return {

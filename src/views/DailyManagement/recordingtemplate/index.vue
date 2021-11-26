@@ -5,25 +5,34 @@
         <el-form :inline="true" size="mini">
           <el-form-item>
             <el-button
-              style="margin-top: 6px"
+              style="margin-top: 7px"
               type="primary"
               icon="el-icon-circle-plus"
               size="mini"
               @click="addRow"
-            >表单制作</el-button>
+            >表单制作
+            </el-button>
           </el-form-item>
           <el-form-item>
             <el-button
-              style="margin-top: 6px"
+              style="margin-top: 7px"
               type="primary"
               size="mini"
               @click="categoryAdmin"
-            >类别管理</el-button>
+            >类别管理
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-select v-model="listQuery.StateType" placeholder="表单状态">
+              <el-option label="全部" :value="-1"/>
+              <el-option label="已启用" :value="0"/>
+              <el-option label="已禁用" :value="1"/>
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-input
               v-model="listQuery.RC_TemplateName"
-              placeholder="表单名称"
+              placeholder="表单名称或内容"
               style="width: 180px"
               size="mini"
               clearable
@@ -33,18 +42,19 @@
           <el-form-item>
             <el-select
               v-model="listQuery.RC_TemplateType"
+              filterable
               clearable
               placeholder="表单类型"
             >
-              <el-option label="通用表单" value="通用表单" />
-              <el-option label="科室表单" value="科室表单" />
+              <el-option label="通用表单" value="通用表单"/>
+              <el-option label="科室表单" value="科室表单"/>
             </el-select>
           </el-form-item>
           <el-form-item>
             <el-select
               v-model="listQuery.TemplateTypeName"
-              clearable
               filterable
+              clearable
               placeholder="表单类别"
             >
               <el-option
@@ -55,45 +65,42 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <el-select v-model="listQuery.StateType" placeholder="表单状态">
-              <el-option label="全部" :value="-1" />
-              <el-option label="已启用" :value="0" />
-              <el-option label="已禁用" :value="1" />
-            </el-select>
-          </el-form-item>
+
           <el-form-item>
             <el-select
               v-model="listQuery.TemplateSource"
+              filterable
+              clearable
               placeholder="表单来源"
             >
-              <el-option label="全部" value="全部" />
-              <el-option label="系统表单" value="系统表单" />
-              <el-option label="自建表单" value="自建表单" />
+              <el-option label="全部" value="全部"/>
+              <el-option label="系统表单" value="系统表单"/>
+              <el-option label="自建表单" value="自建表单"/>
             </el-select>
           </el-form-item>
 
           <el-form-item>
             <el-button
-              style="margin-top: 6px"
+              style="margin-top: 7px"
               :loading="listLoading"
               type="primary"
               icon="el-icon-search"
               size="mini"
               @click="clickSelectTemplate()"
-            >搜索</el-button>
+            >搜索
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
       <div class="content">
         <el-table
           v-loading="listLoading"
-
           :data="tableData"
           style="width: 100%"
           border
+          highlight-current-row
           size="mini"
-          height="calc(100vh - 180px)"
+          height="calc(100vh - 220px)"
           stripe
         >
           <el-table-column
@@ -105,14 +112,27 @@
           <el-table-column
             prop="RC_TemplateName"
             label="表单名称"
+            align="center"
             width="300"
             :show-overflow-tooltip="cellOverflow"
-          />
+          >
+            <template slot-scope="{ row }">
+              <span>{{ row.RC_TemplateName }}</span>
+              &#12288;&#12288;
+              <el-tag v-if="row.RC_CreatUser===UserID" type="success" size="mini">自建</el-tag>
+            </template>
+
+          </el-table-column>
           <el-table-column
             prop="TemplateTypeName"
+            align="center"
             label="表单类别"
             :show-overflow-tooltip="cellOverflow"
-          />
+          >
+            <template slot-scope="{ row }">
+              {{ row.TemplateTypeName }}
+            </template>
+          </el-table-column>
           <el-table-column
             prop="RC_TemplateType"
             label="表单类型"
@@ -146,10 +166,40 @@
               </el-tag>
             </template>
           </el-table-column>
+
+          <el-table-column
+            label="周期"
+            width="60"
+            align="center"
+            prop="Cycle"
+          />
+          <el-table-column label="必填表单" width="120" align="center">
+            <template slot-scope="{ row }">{{
+                row.IsRequired === 0 ? '否' : '是'
+                                           }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="num"
+            label="使用次数"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            prop="RC_CreateTime"
+            label="创建时间"
+            align="center"
+            width="140"
+          >
+            <template slot-scope="{ row }">
+              {{ row.RC_CreateTime.split('T').join(' ') }}
+            </template>
+          </el-table-column>
           <el-table-column
             prop="RC_StateType"
             label="表单分配"
             width="80"
+            fixed="right"
             align="center"
           >
             <template slot-scope="{ row }">
@@ -163,72 +213,82 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="周期"
-            width="60"
-            align="center"
-            prop="Cycle"
-          />
-          <el-table-column label="必填表单" width="120" align="center">
-            <template slot-scope="{ row }">{{
-              row.IsRequired === 0 ? '否' : '是'
-            }}</template>
-          </el-table-column>
-          <el-table-column
-            prop="num"
-            label="使用次数"
-            width="80"
-            align="center"
-          />
-          <el-table-column
-            prop="RC_CreateTime"
-            label="创建时间"
-            align="center"
-            width="140"
-          ><template slot-scope="{ row }">
-            {{ row.RC_CreateTime.split('T').join(' ') }}
-          </template>
-          </el-table-column>
-          <el-table-column
             label="操作"
             prop="RC_TemplateName"
             align="center"
             fixed="right"
-            width="200"
+            width="250"
           >
             <template slot-scope="scope">
               <el-button
+                v-if="scope.row.RC_CreatUser===UserID"
+                type="success"
+                size="mini"
+                :disabled="scope.row.RC_StateType === 1"
+                @click="UpdateRow(scope.row)"
+              >修改
+              </el-button>
+              <el-button
+                v-if="scope.row.RC_CreatUser!==UserID"
                 type="info"
                 size="mini"
                 :disabled="scope.row.RC_StateType === 1"
                 @click="UpdateRow(scope.row)"
-              >修改</el-button>
+              >查看
+              </el-button>
+              <el-popconfirm
+                v-if="scope.row.RC_CreatUser!==UserID"
+                icon-color="green"
+                :title="'确定另存为新的表单？'"
+                @confirm="CopyTemplate(scope.row)"
+              >
+                <el-button
+                  slot="reference"
+                  type="primary"
+                  size="mini"
+                  :disabled="scope.row.RC_StateType === 1"
+                >另存为
+                </el-button>
+              </el-popconfirm>
+              <!--              <el-button-->
+              <!--                v-if="scope.row.RC_CreatUser!==UserID"-->
+              <!--                type="primary"-->
+              <!--                size="mini"-->
+              <!--                :disabled="scope.row.RC_StateType === 1"-->
+              <!--                @click="CopyTemplate(scope.row)"-->
+              <!--              >另存为</el-button>-->
               <el-button
                 v-if="scope.row.RC_StateType === 1"
                 type="success"
                 size="mini"
                 @click="UpdateTemplateStatus(scope.row, 0, '启用')"
-              >启用</el-button>
+              >启用
+              </el-button>
               <el-button
                 v-else
                 type="danger"
                 size="mini"
                 @click="UpdateTemplateStatus(scope.row, 1, '禁用')"
-              >禁用</el-button>
+              >禁用
+              </el-button>
               <el-button
+                :disabled="scope.row.RC_CreatUser!==UserID&&RoleCode!=='R0001'"
                 size="mini"
                 type="danger"
                 @click="Delete(scope.row)"
-              >删除</el-button>
+              >删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
         <el-row>
           <el-col :span="1">
-            <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
+            <el-switch v-model="cellOverflow" style="margin: 6px 0px"/>
           </el-col>
           <el-col :span="20">
             <el-pagination
               background
+              style="margin: 6px 0 0 0"
               :current-page.sync="pagination.pageIndex"
               :page-size="pagination.pageSize"
               :page-sizes="pagination.pageSizes"
@@ -258,19 +318,18 @@
           size="mini"
           type="primary"
           @click="getErrorSelection()"
-        >确 定</el-button>
+        >确 定
+        </el-button>
       </div>
     </el-dialog>
     <el-dialog
-      :width="device === 'desktop' ? '50%' : '90%'"
+      :width="device === 'desktop' ? '60%' : '90%'"
       fullscreen
       :title="dialogTitle"
       :close-on-click-modal="false"
       :visible.sync="dialogFormVisible"
       :destroy-on-close="true"
       top="1vh"
-      v-loading= "listLoading"
-      element-loading-text="拼命加载中"
       @close="cancel()"
     >
       <el-form
@@ -280,15 +339,16 @@
         :model="formData"
         :inline="true"
       >
+
         <el-form-item
           label="表单名称"
           label-width="80px"
           prop="RC_TemplateName"
         >
-          <el-input v-model="formData.RC_TemplateName" clearable />
+          <el-input v-model="formData.RC_TemplateName" style="margin-top: -5px" clearable/>
         </el-form-item>
         <el-form-item label="表单类别" label-width="80px" prop="TemplateTypeID">
-          <el-select v-model="formData.TemplateTypeID" placeholder="请选择">
+          <el-select v-model="formData.TemplateTypeID" placeholder="请选择" style="margin-top:-5px">
             <el-option
               v-for="item in tableTypeData"
               :key="item.TemplateTypeID"
@@ -305,13 +365,15 @@
               border
               :label="1"
               size="mini"
-            >是</el-radio>
+            >是
+            </el-radio>
             <el-radio
               v-model="formData.CaseJudgment"
               :label="0"
               border
               size="mini"
-            >否</el-radio>
+            >否
+            </el-radio>
           </el-form-item>
           <el-form-item label="是否必填" :required="true">
             <el-radio
@@ -319,13 +381,15 @@
               border
               :label="1"
               size="mini"
-            >是</el-radio>
+            >是
+            </el-radio>
             <el-radio
               v-model="formData.IsRequired"
               border
               :label="0"
               size="mini"
-            >否</el-radio>
+            >否
+            </el-radio>
           </el-form-item>
           <el-form-item label="表单类型" :required="true">
             <el-radio
@@ -333,13 +397,15 @@
               border
               label="通用表单"
               size="mini"
-            >通用表单</el-radio>
+            >通用表单
+            </el-radio>
             <el-radio
               v-model="formData.RC_TemplateType"
               border
               label="科室表单"
               size="mini"
-            >科室表单</el-radio>
+            >科室表单
+            </el-radio>
           </el-form-item>
           <el-form-item
             v-show="formData.IsRequired == 1"
@@ -349,6 +415,7 @@
           >
             <el-input
               v-model="formData.Cycle"
+              style="margin-top: -5px"
               type="Number"
               clearable
               placeholder="请输入天数(正整数)"
@@ -359,28 +426,37 @@
       </el-form>
       <el-form :inline="true" size="mini">
         <el-form-item label="注意事项" label-width="77px">
-          <el-input v-model="formData.Precautions" clearable />
+          <el-input v-model="formData.Precautions" clearable style="margin-top: -5px"/>
         </el-form-item>
       </el-form>
       <el-table
         ref="multipleTable"
         :data="ContentData"
+        v-loading="ContentDataLoading"
         border
         size="mini"
+        :header-cell-style="{'text-align':'center'}"
+        :cell-style="{'text-align':'center'}"
         height="calc(100vh - 220px)"
       >
+        <el-table-column
+          type="index"
+          label="序号"
+          label-width="80px"
+        />
         <el-table-column
           label="类别"
           prop="Category"
           min-width="100px"
-        ><template slot-scope="scope">
-          <el-input
-            v-model="scope.row.Category"
-            size="mini"
-            placeholder="必填"
-            type="textarea"
-          />
-        </template>
+        >
+          <template slot-scope="scope">
+            <el-input
+              v-model="scope.row.Category"
+              size="mini"
+              placeholder="类别"
+              type="textarea"
+            />
+          </template>
         </el-table-column>
         <el-table-column
           label="检查项目"
@@ -391,7 +467,7 @@
             <el-input
               v-model="scope.row.ProjectContent"
               size="mini"
-              placeholder="必填"
+              placeholder="检查项目"
               type="textarea"
             />
           </template>
@@ -401,16 +477,12 @@
             <el-input
               v-model="scope.row.Content"
               size="mini"
-              placeholder="必填"
+              placeholder="检查内容"
               type="textarea"
             />
           </template>
         </el-table-column>
-        <el-table-column prop="ErrorContent" label="扣分原因" min-width="100px">
-          <template slot-scope="{ row }">
-            <div v-html="row.ErrorContent" />
-          </template>
-        </el-table-column>
+
         <el-table-column
           prop="ScoreCriteria"
           label="分数"
@@ -439,29 +511,42 @@
             />
           </template>
         </el-table-column>
+        <el-table-column prop="ErrorContent" label="扣分原因" min-width="100px">
+          <template slot-scope="{ row }">
+            <div v-html="row.ErrorContent">
+              {{ row.ErrorContent }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" width="200px">
           <template slot-scope="scope">
             <el-button
               size="mini"
               @click="SelectContent(scope.row, scope)"
-            >选择扣分原因</el-button>
+            >选择扣分原因
+            </el-button>
             <el-button
               type="danger"
               size="mini"
               @click="deleteContent(scope.row.id)"
-            >移除</el-button>
+            >移除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="addNormdialog">指标库</el-button>
-        <el-button size="small" @click="addContent()">添加检查内容</el-button>
+        <el-button v-if="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')" size="small" @click="addNormdialog">指标库
+        </el-button>
+        <el-button v-if="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')" size="small" @click="addContent()">添加检查内容
+        </el-button>
         <el-button size="small" @click="cancel()">取 消</el-button>
         <el-button
+          v-if="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')"
           size="small"
           type="primary"
           @click="submitTemplate"
-        >确 定</el-button>
+        >确 定
+        </el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -491,13 +576,15 @@
                     />
                   </el-form-item>
                   <el-form-item label="自查科室" prop="RC_InspectionDepartment">
-                    <default-depts
+                    <default-dept
+                      ref="allSelect"
                       w="100%"
                       :multiple="true"
                       :value="addFormData.RC_InspectionDepartment"
                       @getDefaultDeptsValue="getDefaultDeptValues"
                     />
                   </el-form-item>
+
                   <el-form-item
                     v-if="radioShow"
                     label="跳过主管审核"
@@ -507,11 +594,14 @@
                     <el-radio
                       v-model="addFormData.IsJump"
                       :label="1"
-                    >是</el-radio>
+                    >是
+                    </el-radio>
                     <el-radio
                       v-model="addFormData.IsJump"
+                      style="margin-left: 10px"
                       :label="0"
-                    >否</el-radio>
+                    >否
+                    </el-radio>
                   </el-form-item>
                   <el-form-item
                     v-if="addFormData.IsJump == 0"
@@ -534,7 +624,7 @@
                     </el-select>
                   </el-form-item>
                   <el-form-item label="表单名称" prop="RC_TemplateName">
-                    <el-input v-model="addFormData.RC_TemplateName" disabled />
+                    <el-input v-model="addFormData.RC_TemplateName" disabled/>
                   </el-form-item>
                 </el-form>
               </div>
@@ -562,7 +652,7 @@
                     prop="ProjectContent"
                     min-width="100px"
                   />
-                  <el-table-column label="检查内容" prop="Content" />
+                  <el-table-column label="检查内容" prop="Content"/>
                   <el-table-column
                     label="满分"
                     width="80"
@@ -630,13 +720,13 @@
     >
       <el-form :inline="true" size="mini" class="demo-form-inline">
         <el-form-item>
-          <el-input v-model="form.Category" placeholder="类别" />
+          <el-input v-model="form.Category" placeholder="类别"/>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.ProjectContent" placeholder="检查项目" />
+          <el-input v-model="form.ProjectContent" placeholder="检查项目"/>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.Content" placeholder="检查内容" />
+          <el-input v-model="form.Content" placeholder="检查内容"/>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="SelectNorm">搜索</el-button>
@@ -656,12 +746,12 @@
           :reserve-selection="true"
           align="center"
         />
-        <el-table-column prop="Category" label="类别" width="180" />
-        <el-table-column prop="ProjectContent" label="项目" width="180" />
-        <el-table-column prop="Content" label="检查内容" />
+        <el-table-column prop="Category" label="类别" width="180"/>
+        <el-table-column prop="ProjectContent" label="项目" width="180"/>
+        <el-table-column prop="Content" label="检查内容"/>
         <el-table-column prop="ErrorContent" label="扣分原因">
           <template slot-scope="{ row }">
-            <div v-html="row.ErrorContent" />
+            <div v-html="row.ErrorContent"/>
           </template>
         </el-table-column>
       </el-table>
@@ -686,7 +776,7 @@
           label="序号"
           width="60"
           align="center"
-
+          fixed="left"
         />
         <el-table-column
           v-for="(itemType, indexType) in tableTypeTitle"
@@ -714,18 +804,21 @@
               type="text"
               size="mini"
               @click="finished(scope)"
-            >完成</el-button>
+            >完成
+            </el-button>
             <el-button
               v-else
               type="text"
               size="mini"
               @click="TypeEdit(scope)"
-            >修改</el-button>
+            >修改
+            </el-button>
             <el-button
               type="text"
               size="mini"
-              @click="DeleteType(scope.row)"
-            >删除</el-button>
+              @click="DeleteType(scope)"
+            >删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -735,12 +828,14 @@
           type="success"
           icon="el-icon-circle-plus"
           @click="insetTypeData"
-        >新 增</el-button>
+        >新 增
+        </el-button>
         <el-button
           size="small"
           type="primary"
           @click="typeDialog = false"
-        >关闭</el-button>
+        >关闭
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -753,7 +848,8 @@ import tableHeight from '@/views/mixin/tableHeight';
 import treeFilter from '@/views/components/treeFilter';
 import { mapGetters } from 'vuex';
 import {
-  DeleteTemplate, DeleteTemplateType,
+  CopyTemplate,
+  DeleteTemplate,
   InsertDistribution,
   InsertTemplate,
   InsertTemplateType,
@@ -767,14 +863,19 @@ import {
 import { SelectDeptorUser } from '@/api/institution';
 import { SelectZGUser } from '@/api/user';
 import reasonfordeduction from '@/views/components/reasonfordeduction';
-import Import from '@/views/ExampleTrain/example/import';
 
 export default {
   name: 'RecordingTemplate',
-  components: { Import, defaultDept, treeFilter, defaultDepts, reasonfordeduction },
+  components: { defaultDept, treeFilter, defaultDepts, reasonfordeduction },
   mixins: [tableHeight],
   data() {
     return {
+      RoleCode: window.userInfo[0].RoleCode, // 管理员
+      ContentDataLoading: false, // 表单内容加载等待
+      // useTNum: 1, // 可复用表单次数
+      // isMoreUse: '否', // 分配到科室的表单是否可以复用，默认否不可复用
+      RC_CreatUser: '', // 创建人id
+      UserID: window.userInfo[0].UserID.toString(),
       listLoading: true,
       dialogFormVisible: false,
       dialogError: false,
@@ -846,7 +947,8 @@ export default {
         TemplateTypeID: '',
         CaseJudgment: 0,
         IsRequired: 0,
-        Cycle: ''
+        Cycle: '',
+        Precautions: ''
       },
       RC_TemplateTypeData: [
         {
@@ -895,7 +997,6 @@ export default {
         RC_Remarks: '',
         Rc_checkcontent: [],
         DistributionUserID: '',
-        RC_TemplateID: '',
         RC_AllAuditOpinion: '',
         CheckUserID: 0,
         IsJump: 0,
@@ -977,6 +1078,23 @@ export default {
     ...mapGetters(['device', 'permission_routes'])
   },
   methods: {
+    // 表单另存为功能
+    async CopyTemplate(row) {
+      try {
+        const { code } = await CopyTemplate(
+          {
+            templateId: row.TemplateID,
+            userId: window.userInfo[0].UserID
+          }
+        );
+        if (code === 200) {
+          this.$message.success('保存成功');
+          await this.SelectTemplate(); // 刷新表单
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
     async UpdateTemplateStatus(row, type, text) {
       this.$confirm(
         `此操作将${text} ${row.RC_TemplateName} , 是否继续?`,
@@ -1017,6 +1135,8 @@ export default {
       }
     },
     async UpdateRow(row) {
+      this.ContentDataLoading = true; // 打开内容等待加载条
+      this.RC_CreatUser = row.RC_CreatUser; // 用来比较当前所选的条目是否是本账号创建
       this.SelectTemplateType();
       this.SelectRC_ErrorData.num = row.num;
       row = JSON.parse(JSON.stringify(row));
@@ -1031,7 +1151,6 @@ export default {
       this.formData.Cycle = row.Cycle;
       this.formData.RC_TemplateType = row.RC_TemplateType;
       this.formData.Precautions = row.Precautions;
-      this.listLoading= true;
       try {
         const { data } = await SelectTemplateByID({
           TemplateID: row.TemplateID
@@ -1051,11 +1170,10 @@ export default {
           item.ProjectContentRemark = item.ProjectContentRemark;
           item.Category = item.Category;
         });
+        this.ContentDataLoading = false; // 关闭打开内容等待加载条
       } catch (error) {
+        this.ContentDataLoading = false; // 关闭打开内容等待加载条
         console.log(error);
-      }
-      finally{
-        this.listLoading= false;
       }
     },
     dataFiltter2(arr) {
@@ -1092,13 +1210,6 @@ export default {
       this.formData.Cycle = this.formData.Cycle == '' ? 0 : this.formData.Cycle;
       this.$refs.formData.validate(async v => {
         if (v) {
-          const formData = this.formData;
-          const ContentData = this.ContentData;
-          ContentData.forEach(e => {
-            delete e.ErrorContent;
-            delete e.id;
-          });
-          formData.Rc_checkcontent = this.ContentData;
           let Error = false;
           this.ContentData.map((item, index) => {
             if (item.RC_ErrorID == '') {
@@ -1108,24 +1219,33 @@ export default {
           if (Error) {
             this.$message.error('请选择扣分原因！');
             return;
+          } else {
+            const formData = this.formData;
+            const ContentData = this.ContentData;
+            ContentData.forEach(e => {
+              delete e.ErrorContent;
+              delete e.id;
+            });
+            formData.Rc_checkcontent = this.ContentData;
+            try {
+              const { code, msg } =
+                this.dialogTitle === '添加表单'
+                  ? await InsertTemplate(formData)
+                  : await UpdateTemplate(formData);
+              code === 200
+                ? this.$message({
+                  type: 'success',
+                  message: msg
+                })
+                : this.$message({
+                  type: 'error',
+                  message: msg
+                });
+              this.cancel();
+              this.SelectTemplate();
+            } catch (error) {
+            }
           }
-          try {
-            const { code, msg } =
-              this.dialogTitle === '添加表单'
-                ? await InsertTemplate(formData)
-                : await UpdateTemplate(formData);
-            code === 200
-              ? this.$message({
-                type: 'success',
-                message: msg
-              })
-              : this.$message({
-                type: 'error',
-                message: msg
-              });
-            this.cancel();
-            this.SelectTemplate();
-          } catch (error) {}
         }
       });
     },
@@ -1153,7 +1273,7 @@ export default {
         });
         this.ContentData[this.ContentDataIndex].ErrorContent = this.ContentData[
           this.ContentDataIndex
-        ].ErrorContent.join('<br />');
+          ].ErrorContent.join('<br />');
       });
     },
     handleSelectionChangeRow(selection, row) {
@@ -1299,6 +1419,7 @@ export default {
         this.form.total = data.Total;
         this.$nextTick(() => {
           this.$refs.normRef.clearSelection();
+          console.log('oo', this.$refs.normRef);
           this.ContentData.map((item, index) => {
             this.tableDataNorm.map((item2, index2) => {
               if (item.NormID == item2.NormID) {
@@ -1307,9 +1428,11 @@ export default {
             });
           });
         });
-      } catch (error) {}
+      } catch (error) {
+      }
     },
     addRow() {
+      // this.RC_CreatUser = ''; // 只要点击的表单制作按钮就把判断是否是本账号创建的标识去掉
       this.SelectTemplateType();
       this.dialogTitle = '添加表单';
       this.dialogFormVisible = true;
@@ -1356,13 +1479,16 @@ export default {
               this.SelectTemplate();
             });
           })
-          .catch(() => {});
+          .catch(() => {
+          });
       } else {
         this.$message.error('您不是管理员,没有权限删除');
       }
     },
 
     async clickInsertDistri(row) {
+      console.log(this.$refs.allSelect);
+      console.log('this.$refs.allSelect');
       this.permission_routes.map((item, index) => {
         /* 判断是否拥着regulatoryrectification菜单 */
         if (item.path == '/dailymanagement') {
@@ -1379,16 +1505,12 @@ export default {
       this.addFormData.RC_TemplateID = row.TemplateID;
       this.addFormData.RC_TemplateName = row.RC_TemplateName;
       this.addFormData.DistributionName = row.RC_TemplateName;
-
-      this.listLoading= true;
       try {
         const { data } = await SelectTemplateByID({
           TemplateID: row.TemplateID
         });
         this.TemplateTableData = this.dataFiltter(data.DataList);
-      } catch (error) {}
-      finally{
-        this.listLoading= false;
+      } catch (error) {
       }
     },
     dataFiltter(arr) {
@@ -1481,7 +1603,8 @@ export default {
           this.$message.success('分配成功');
           this.dialogAllot = false;
         }
-      } catch (error) {}
+      } catch (error) {
+      }
     },
     getDefaultDeptValues(v) {
       this.addFormData.RC_InspectionDepartment = v.join();
@@ -1493,7 +1616,8 @@ export default {
       try {
         const data = await SelectDeptorUser({});
         this.TreeFilterData.treeData = data.data;
-      } catch (error) {}
+      } catch (error) {
+      }
     },
     getSelect(val) {
       this.addFormData.DistributionUserID = val;
@@ -1542,32 +1666,14 @@ export default {
           TemplateTypeName: ''
         });
         this.tableTypeData = data;
-      } catch (error) {}
+      } catch (error) {
+      }
       this.TypeDataLoading = false;
     },
     TypeEdit(scope) {
       this.typeEdit = scope.$index;
     },
-    DeleteType(row) {
-      this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'error'
-      }).then(async() => {
-        const { code } = await DeleteTemplateType({ TemplateTypeID: row.TemplateTypeID });
-        if (code === 200) {
-          this.SelectTemplateType(); // 刷新列表
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-        }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
+    DeleteType() {
     },
     insetTypeData() {
       this.tableTypeData.unshift({
@@ -1598,7 +1704,8 @@ export default {
           this.typeEdit = -1;
         }
         this.SelectTemplateType();
-      } catch (error) {}
+      } catch (error) {
+      }
     },
     changeInput() {
       var pattern = /^[1-9][0-9]*$/; // 正整数的正则表达式
@@ -1614,26 +1721,33 @@ export default {
 <style lang="scss">
 // 导出等待条样式
 @import "src/styles/loading.scss";
+
 .RecordingTemplate {
   margin: 4px;
+
   .el-radio,
   .el-radio--mini {
     margin-right: 0px !important;
   }
+
   .el-card__body {
     padding: 6px;
   }
+
   .display {
     display: flex;
   }
+
   .flexBox {
     display: flex;
     justify-content: flex-end;
   }
+
   .Content {
     width: 100%;
     height: calc(100vh - 380px);
     overflow-y: scroll;
+
     .Content_item {
       display: flex;
       align-items: center;
@@ -1661,6 +1775,7 @@ export default {
     padding: 2px;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+
     .el-form-item {
       margin: 0;
       margin-left: 3px;

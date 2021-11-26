@@ -89,6 +89,8 @@
         v-loading="tableloading"
         :data="tableData"
         border
+        stripe
+        tooltip-effect="light"
         style="width: 100%"
         size="mini"
         height="calc(100vh - 150px)"

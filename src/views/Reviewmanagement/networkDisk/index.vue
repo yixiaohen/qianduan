@@ -56,6 +56,7 @@
         clearable
         size="small"
         style="width: 30%"
+        @keyup.enter.native="SearchFiles"
         placeholder="请输入搜索内容"
       />
       <el-button type="primary" size="small" style="margin-bottom: 10px;margin-top: 10px" @click="SearchFiles">搜索
@@ -108,7 +109,7 @@
           @click="fileEnter(nowMeanID, nowFileName,nowFileUrl)"
         >
           <i class="el-icon-download"/>
-          下载（预览）
+          下载
         </el-button>
 
 
@@ -885,6 +886,7 @@ export default {
         link.style.display = 'none';
         link.href = data;
         link.target = '_blank';
+        link.download = FileName;
         document.body.appendChild(link);
         link.click();
       });

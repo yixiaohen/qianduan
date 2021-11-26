@@ -152,6 +152,7 @@
         size="mini"
         style="width: 98%;margin-top: 10px;margin-left: 10px;margin-right: 10px"
         border
+        tooltip-effect="light"
         select-on-indeterminate
         row-key="CatalogID"
         height="calc(100vh - 160px)"
@@ -253,7 +254,15 @@
           prop="UserName"
           label="资料录入人员"
           :show-overflow-tooltip="cellOverflow"
-        />
+        >
+          <template slot-scope="{ row }">
+            <el-popover placement="top-start" title="资料录入人员" width="90%" trigger="hover">
+              <div>{{ row.UserName }}</div>
+              <span slot="reference">{{ row.UserName }}</span>
+            </el-popover>
+          </template>
+
+        </el-table-column>
         <!--        授权-->
         <el-table-column
           prop="CatalogName"

@@ -16,6 +16,15 @@ export function InsertiCycle(data) {
     data
   });
 }
+// 更新周期
+export function UpdateiCycle(data) {
+  return request({
+    url: '/I_Cycle/UpdateiCycle',
+    method: 'post',
+    data
+  });
+}
+
 // 删除周期
 export function DeleteiCycle(data) {
   return request({

@@ -76,17 +76,47 @@
               >导出当前试题
               </el-button>
             </el-form-item>
-
+            <el-form-item>
+              <el-button
+                type="danger"
+                @click="moreDel"
+              >批量删除
+              </el-button>
+            </el-form-item>
+            <!--            <el-form-item>-->
+            <!--              <el-button-->
+            <!--                v-if="isShowMoreDel"-->
+            <!--                type="danger"-->
+            <!--                @click="moreDel"-->
+            <!--              >确定删除-->
+            <!--              </el-button>-->
+            <!--            </el-form-item>-->
+            <!--            <el-form-item>-->
+            <!--              <el-button-->
+            <!--                v-if="isShowMoreDel"-->
+            <!--                type="info"-->
+            <!--                @click="isShowMoreDel=false"-->
+            <!--              >取消-->
+            <!--              </el-button>-->
+            <!--            </el-form-item>-->
           </el-form>
         </div>
       </div>
       <el-table
+        ref="multipleTable"
         v-loading="listLoading"
         :data="tableData"
         height="calc(100vh - 216px)"
         border
+        highlight-current-row
         size="mini"
+        @selection-change="handleSelectionChange"
+        @row-click="handleRowClick"
       >
+        <el-table-column
+          type="selection"
+          width="55"
+        />
         <el-table-column
           type="index"
           fixed="left"
@@ -642,6 +672,8 @@ export default {
   name: 'ExampleQuestionBank',
   data() {
     return {
+      nowTopicID: [], // 现在所选择的批量删除试题id数据集
+      // isShowMoreDel: false, // 默认不显示批量删除勾选框
       testClassifyDialogVisible: false, // 是否显示修改分类对话框
       addTestClassifyDialogVisible: false, // 是否显示新增分类对话框
       addTestClassifyInput: '', // 新增的分类名
@@ -792,8 +824,49 @@ export default {
     this.SelectTopic();
   },
   methods: {
+    // 获取选中的试题id
+    handleSelectionChange(val) {
+      this.nowTopicID = [];
+      val.map((item) => {
+        this.nowTopicID.push(item.topicID);
+      });
+      this.nowTopicID = this.nowTopicID.toString();
+    },
+    // 点击行触发，选中或不选中复选框
+    handleRowClick(row, column, event) {
+      this.$refs.multipleTable.toggleRowSelection(row);
+    },
+
+    // 确定批量删除
+    moreDel() {
+      this.$confirm('确定批量删除所选试题, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(async() => {
+        if (this.nowTopicID.length === 0) {
+          this.$message.warning('请至少勾选一个试题');
+        } else {
+          const { code, msg } = await DeleteTopic({ topicId: this.nowTopicID });
+          if (code === 200) {
+            this.$message({
+              type: 'success',
+              message: msg
+            });
+            this.isShowMoreDel = false; // 取消勾选框，隐藏确定删除、取消按钮
+            this.listLoading = false; // 关闭表格加载条
+            await this.clickSelectTopic(); // 刷新列表
+          }
+        }
+      }).catch(() => {
+        this.isShowMoreDel = false; // 取消勾选框，隐藏确定删除、取消按钮
+        this.listLoading = false; // 关闭表格加载条
+      });
+    },
+    // 单个删除
     async DeleteTopic(row) {
-      const { topicID } = row;
+      let { topicID } = row;
+      // topicID = topicID.toString();
       this.$confirm(`此操作将永久删除 ${row.topicTitle} , 是否继续?`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -801,15 +874,16 @@ export default {
       })
         .then(async() => {
           try {
-            const { msg } = await DeleteTopic({ topicID });
+            const { msg } = await DeleteTopic({ topicId: topicID });
             this.$message({
               type: 'success',
               message: msg
             });
-            this.clickSelectTopic();
+            await this.clickSelectTopic();
           } catch {
+            this.listLoading = false;
           } finally {
-            this.listLoading = true;
+            this.listLoading = false;
           }
         })
         .catch((e) => e);

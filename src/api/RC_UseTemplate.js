@@ -48,3 +48,12 @@ export function DeleteUseTemplate(data) {
     data
   });
 }
+
+// 表单复用按钮接口
+export function ReuseTemplate(data) {
+  return request({
+    url: '/RC_UseTemplate/ReuseTemplate',
+    method: 'get',
+    params: data
+  });
+}

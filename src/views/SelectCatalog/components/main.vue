@@ -33,13 +33,14 @@ export default {
 
   methods: {
 
-    async GetcatalogSecond(val) {
+    async GetcatalogSecond(val,Content) {
       this.$emit('changeShow', true);
       try {
         // this.x = val;
         const { data } = await GetcatalogSecond({
           CatalogID: val,
-          UserID: window.userInfo[0].UserID
+          UserID: window.userInfo[0].UserID,
+          CatalogName: Content
         });
 
         this.tableData = data;

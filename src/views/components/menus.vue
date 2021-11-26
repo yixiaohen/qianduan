@@ -49,9 +49,10 @@ export default {
     },
     async getMenus() {
       try {
-        const { data } = await SelectMenu();
+        const { data } = await SelectMenu({ titleContent: '' });
         this.tableData = data.Menus;
-      } catch {}
+      } catch {
+      }
     }
   }
 };

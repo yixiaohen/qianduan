@@ -53,13 +53,13 @@
       <el-table
         v-loading="listLoading"
         :data="tableData"
-        height="calc(100vh - 216px)"
+        height="calc(100vh - 230px)"
         border
+        tooltip-effect="light"
         size="mini"
       >
         <el-table-column
           type="index"
-          fixed="left"
           width="50"
           label="序号"
           align="center"
@@ -91,7 +91,16 @@
         <el-table-column
           prop="UserName"
           label="培训对象"
-        />
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="scope">
+            <el-popover placement="top-start" title="培训对象" width="90%" trigger="hover">
+              <div>{{ scope.row.UserName }}</div>
+              <span slot="reference">{{ scope.row.UserName }}</span>
+            </el-popover>
+          </template>
+
+        </el-table-column>
         <!-- <el-table-column prop="trainDate" label="培训时间" width="100" align="center" /> -->
         <!-- <el-table-column
           prop="applyState"
@@ -116,7 +125,6 @@
         <el-table-column
           label="操作"
           align="center"
-          fixed="right"
           width="150"
         >
           <template slot-scope="{ row }">
@@ -298,10 +306,23 @@
           <el-col :span="12">
             <el-card
               shadow="never"
-              :style="{ height: '300px' }"
+              :style="{ height: '300px', overflow: 'auto' }"
             >
               <div slot="header">培训人员列表</div>
+              <div style="padding-left: 10px">
+                <el-row>
+                  <el-col :span="12"><span>选择全院人员</span></el-col>
+                  <el-col :span="12">
+                    <el-radio-group v-model="isAllNum" size="small" @change="changNum">
+                      <el-radio label="是"/>
+                      <el-radio label="否"/>
+                    </el-radio-group>
+                  </el-col>
+                </el-row>
+
+              </div>
               <select-deptor-user
+                v-show="isAllNum==='否'"
                 ref="usersTree"
                 :height="290"
                 @getSelectDeptorUser="getSelectDeptorUser"
@@ -355,6 +376,7 @@
         >取消
         </el-button>
         <el-button
+          :loading="InsertPlanLoading"
           size="mini"
           type="primary"
           style="margin-right: 5px"
@@ -378,14 +400,14 @@
           <p>
             <el-tag>培训报名二维码</el-tag>
           </p>
-          <qrCode :text="publishText1" />
+          <qrCode :text="publishText1"/>
           <p>可以右键保存二维码图片，转发该图片到公司群供报名人员扫码报名</p>
         </el-col>
         <el-col :span="12">
           <p>
             <el-tag>培训出勤签到二维码</el-tag>
           </p>
-          <qrCode :text="publishText2" />
+          <qrCode :text="publishText2"/>
           <p>可以右键保存二维码图片并打印该二维码，供参加培训人员现场签到</p>
         </el-col>
       </el-row>
@@ -417,6 +439,8 @@ export default {
   components: { SelectDeptorUser, qrCode },
   data() {
     return {
+      isAllNum: '否', // 是否选择全院的人，默认否，自己选
+      InsertPlanLoading: false, // 提交按钮的等待圈开关
       publishShow: false,
       publishTitle: '',
       publishText1: '',
@@ -458,7 +482,7 @@ export default {
       planFormData: {
         planId: 0,
         coursewareId: '',
-        CatalogID: 0,
+        CatalogID: null,
         planName: '',
         planContent: '',
         trainDate: '',
@@ -511,13 +535,32 @@ export default {
     }
   },
   methods: {
+    // 切换是否选择全院人员按钮
+    changNum(x) {
+      if (this.isAllNum === '是') {
+        this.names = '全院人员';
+      } else {
+        this.names = null;
+        // this.$nextTick(() => {
+        //   this.getSelectDeptorUser();
+        //
+        // });
+      }
+      console.log(x);
+    },
     downloadFileList(row) {
       window.open(`/Annex/file/${row.Title}`);
     },
     getSelectDeptorUser(value, NodesItem) {
+      console.log(value);
+      console.log(NodesItem);
       this.usersTree = value;
-      this.names =
-        (NodesItem || []).map((item) => item.Name).join(',') || this.names;
+      if (this.usersTree.length === 0) {
+        this.names = null;
+      } else {
+        this.names =
+          (NodesItem || []).map((item) => item.Name).join(',') || this.names;
+      }
     },
     DeleteTopic(row) {
       const { planId, planName } = row;
@@ -544,19 +587,33 @@ export default {
       try {
         const { data } = await SelectPlanDetailByPlanID({ planId });
         this.planFormData = data;
+        // 点击编辑按钮，如果不是选了全院（Uids=-1），就展示选择人员组件
+        if (this.planFormData.Uids !== '-1') {
+          this.isAllNum = '否';
+          this.modalShow = true;
+        } else {
+          this.isAllNum = '是';
+          this.modalShow = true;
+        }
+        console.log('this.planFormData', this.planFormData);
         this.planFormData.coursewareId = this.planFormData.coursewareId
           .split(',')
           .map((item) => parseInt(item));
         this.names = UserName;
         this.planFormData.trainDate = data.trainDate.replace('T', ' ');
         this.modalTitle = '编辑：' + planName;
-        this.modalShow = true;
+
         this.$nextTick(() => {
+
           const userids = [
             ...new Set(data.Uids.split(',').map((item) => parseInt(item)))
           ];
           this.$refs.usersTree.setDeptorUser(userids);
           this.usersTree = userids;
+          // 如果选择全院人员，就传参-1
+          if (this.isAllNum === '是') {
+            this.usersTree = '-1';
+          }
         });
       } catch (error) {
         console.log(error);
@@ -565,8 +622,15 @@ export default {
     InsertPlan() {
       this.$refs['planFormData'].validate(async(v) => {
         if (v) {
+          this.InsertPlanLoading = true; // 开启等待圈
           const form = this.planFormData;
-          form.Uids = this.usersTree.join(',');
+          // 如果选择全院人员，就传参-1
+          if (this.isAllNum === '是') {
+            form.Uids = '-1';
+          } else {
+            this.$refs.usersTree.setDeptorUser(this.usersTree);
+            form.Uids = this.usersTree.join(',');
+          }
           form.coursewareId = form.coursewareId.join(',');
           try {
             const { msg } =
@@ -577,13 +641,18 @@ export default {
               type: 'success',
               message: msg
             });
+
             this.SelectPlan();
+            this.InsertPlanLoading = false; // 关闭等待圈
           } catch (error) {
+            this.InsertPlanLoading = false; // 关闭等待圈
             console.log(error);
           } finally {
+            this.InsertPlanLoading = false; // 关闭等待圈
             this.modalShow = false;
           }
         } else {
+          this.InsertPlanLoading = false; // 关闭等待圈
           this.$message({
             type: 'error',
             message: '你有必填项没填写'
@@ -606,7 +675,7 @@ export default {
       this.planFormData = {
         planId: 0,
         coursewareId: '',
-        CatalogID: 0,
+        CatalogID: null,
         planName: '',
         planContent: '',
         trainDate: '',
@@ -727,8 +796,9 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 @import '../ExampleTrainStyles/index.scss';
+
 
 .box-card-view {
   ::v-deep {

@@ -41,7 +41,6 @@
     <el-main>
       <el-table
         v-loading="listLoading"
-        element-loading-text="拼命加载中"
         :data="tableData"
         border
         size="mini"

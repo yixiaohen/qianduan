@@ -201,6 +201,8 @@
                       :data="tableData"
                       style="width: 100%"
                       border
+                      stripe
+                      tooltip-effect="light"
                       size="mini"
                       highlight-current-row
                     >
@@ -292,76 +294,47 @@
                         width="200"
                       >
                         <template slot-scope="scope">
-                          <el-tooltip
-                            class="item"
-                            effect="dark"
-                            content="查看详情"
-                            placement="top"
-                          >
-                            <el-button
-                              size="mini"
-                              circle
-                              type="primary"
-                              icon="el-icon-view"
-                              @click="seeRow(scope.row)"
-                            />
-                          </el-tooltip>
-                          <el-tooltip
-                            class="item"
-                            effect="dark"
-                            content="修改"
-                            placement="top"
-                          >
-                            <el-button
-                              size="mini"
-                              circle
-                              type="info"
-                              icon="el-icon-edit"
-                              @click="editRow(scope.row)"
-                            />
-                          </el-tooltip>
-                          <el-tooltip
-                            class="item"
-                            effect="dark"
-                            content="删除"
-                            placement="top"
-                          >
-                            <el-button
-                              size="mini"
-                              circle
-                              type="danger"
-                              icon="el-icon-delete"
-                              @click="deleteRow(scope.row)"
-                            />
-                          </el-tooltip>
-                          <el-tooltip
-                            class="item"
-                            effect="dark"
-                            content="上移"
-                            placement="top"
-                          >
-                            <el-button
-                              size="mini"
-                              circle
-                              type="warning"
-                              icon="el-icon-top"
-                              @click="upRow(scope.row, '1')"
-                            />
-                          </el-tooltip>
-                          <el-tooltip
-                            class="item"
-                            effect="dark"
-                            content="下移"
-                            placement="top"
-                          >
-                            <el-button
-                              size="mini"
-                              circle
-                              type="warning"
-                              icon="el-icon-bottom"
-                              @click="downRow(scope.row, '2')"
-                            />
-                          </el-tooltip>
+
+                          <el-button
+                            size="mini"
+                            circle
+                            type="primary"
+                            icon="el-icon-view"
+                            @click="seeRow(scope.row)"
+                          />
+
+                          <el-button
+                            size="mini"
+                            circle
+                            type="info"
+                            icon="el-icon-edit"
+                            @click="editRow(scope.row)"
+                          />
+
+                          <el-button
+                            size="mini"
+                            circle
+                            type="danger"
+                            icon="el-icon-delete"
+                            @click="deleteRow(scope.row)"
+                          />
+
+                          <el-button
+                            size="mini"
+                            circle
+                            type="warning"
+                            icon="el-icon-top"
+                            @click="upRow(scope.row, '1')"
+                          />
+
+                          <el-button
+                            size="mini"
+                            circle
+                            type="warning"
+                            icon="el-icon-bottom"
+                            @click="downRow(scope.row, '2')"
+                          />
+
                         </template>
                       </el-table-column>
                     </el-table>
@@ -429,7 +402,7 @@
                     label="版本号"
                     prop="VersionNumber"
                   >
-                    <el-input v-model="listQuery.VersionNumber"/>
+                    <el-input v-model="listQuery.VersionNumber" />
                   </el-form-item>
                 </div>
                 <el-form-item label="附件上传">
@@ -490,7 +463,7 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <tinymce ref="tinymceRef"/>
+              <tinymce ref="tinymceRef" />
             </el-tab-pane>
             <el-tab-pane
               label="指定可见人"
@@ -554,7 +527,7 @@
               />
             </el-form-item>
           </el-form>
-          <filePreview2 :preview-data="previewData"/>
+          <filePreview2 :preview-data="previewData" />
           <div
             class="htmlPane"
             v-html="listQuery.Content"
@@ -590,7 +563,7 @@
               </el-input>
             </el-form-item>
             <el-form-item label="资料标题">
-              <el-input v-model="listQuery.Title"/>
+              <el-input v-model="listQuery.Title" />
             </el-form-item>
             <div
               style="
@@ -600,13 +573,13 @@
               "
             >
               <el-form-item label="上传日期">
-                <el-input v-model="seeStatusViewForm.AuditDate"/>
+                <el-input v-model="seeStatusViewForm.AuditDate" />
               </el-form-item>
               <el-form-item label="上传人">
-                <el-input v-model="seeStatusViewForm.AuditUserName"/>
+                <el-input v-model="seeStatusViewForm.AuditUserName" />
               </el-form-item>
               <el-form-item label="审核结果">
-                <el-input v-model="AuditStatus"/>
+                <el-input v-model="AuditStatus" />
               </el-form-item>
             </div>
             <el-form-item label="意见">
@@ -835,7 +808,9 @@
                             style="width: 100%"
                             height="100%"
                             border
+                            stripe
                             size="mini"
+                            tooltip-effect="light"
                             highlight-current-row
                           >
                             <el-table-column
@@ -932,76 +907,46 @@
                                 slot-scope="scope"
                                 class="handle"
                               >
-                                <el-tooltip
-                                  class="item"
-                                  effect="dark"
-                                  content="查看详情"
-                                  placement="top"
-                                >
-                                  <el-button
-                                    size="mini"
-                                    circle
-                                    type="primary"
-                                    icon="el-icon-view"
-                                    @click="seeRow(scope.row)"
-                                  />
-                                </el-tooltip>
-                                <el-tooltip
-                                  class="item"
-                                  effect="dark"
-                                  content="修改"
-                                  placement="top"
-                                >
-                                  <el-button
-                                    size="mini"
-                                    circle
-                                    type="info"
-                                    icon="el-icon-edit"
-                                    @click="editRow(scope.row)"
-                                  />
-                                </el-tooltip>
-                                <el-tooltip
-                                  class="item"
-                                  effect="dark"
-                                  content="删除"
-                                  placement="top"
-                                >
-                                  <el-button
-                                    size="mini"
-                                    circle
-                                    type="danger"
-                                    icon="el-icon-delete"
-                                    @click="deleteRow(scope.row)"
-                                  />
-                                </el-tooltip>
-                                <el-tooltip
-                                  class="item"
-                                  effect="dark"
-                                  content="上移"
-                                  placement="top"
-                                >
-                                  <el-button
-                                    size="mini"
-                                    circle
-                                    type="warning"
-                                    icon="el-icon-top"
-                                    @click="upRow(scope.row, '1')"
-                                  />
-                                </el-tooltip>
-                                <el-tooltip
-                                  class="item"
-                                  effect="dark"
-                                  content="下移"
-                                  placement="top"
-                                >
-                                  <el-button
-                                    size="mini"
-                                    circle
-                                    type="warning"
-                                    icon="el-icon-bottom"
-                                    @click="downRow(scope.row, '2')"
-                                  />
-                                </el-tooltip>
+
+                                <el-button
+                                  size="mini"
+                                  circle
+                                  type="primary"
+                                  icon="el-icon-view"
+                                  @click="seeRow(scope.row)"
+                                />
+
+                                <el-button
+                                  size="mini"
+                                  circle
+                                  type="info"
+                                  icon="el-icon-edit"
+                                  @click="editRow(scope.row)"
+                                />
+
+                                <el-button
+                                  size="mini"
+                                  circle
+                                  type="danger"
+                                  icon="el-icon-delete"
+                                  @click="deleteRow(scope.row)"
+                                />
+
+                                <el-button
+                                  size="mini"
+                                  circle
+                                  type="warning"
+                                  icon="el-icon-top"
+                                  @click="upRow(scope.row, '1')"
+                                />
+
+                                <el-button
+                                  size="mini"
+                                  circle
+                                  type="warning"
+                                  icon="el-icon-bottom"
+                                  @click="downRow(scope.row, '2')"
+                                />
                               </template>
                             </el-table-column>
                           </el-table>
@@ -1088,7 +1033,7 @@
                     label="版本号"
                     prop="VersionNumber"
                   >
-                    <el-input v-model="listQuery.VersionNumber"/>
+                    <el-input v-model="listQuery.VersionNumber" />
                   </el-form-item>
                 </div>
                 <el-form-item label="附件上传">
@@ -1186,7 +1131,7 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <tinymce ref="tinymceRef"/>
+              <tinymce ref="tinymceRef" />
             </el-tab-pane>
             <el-tab-pane
               label="指定可见人"
@@ -1250,7 +1195,7 @@
               />
             </el-form-item>
           </el-form>
-          <filePreview2 :preview-data="previewData"/>
+          <filePreview2 :preview-data="previewData" />
           <div
             class="htmlPane"
             v-html="listQuery.Content"
@@ -1286,7 +1231,7 @@
               </el-input>
             </el-form-item>
             <el-form-item label="资料标题">
-              <el-input v-model="listQuery.Title"/>
+              <el-input v-model="listQuery.Title" />
             </el-form-item>
             <div
               style="
@@ -1296,13 +1241,13 @@
               "
             >
               <el-form-item label="上传日期">
-                <el-input v-model="seeStatusViewForm.AuditDate"/>
+                <el-input v-model="seeStatusViewForm.AuditDate" />
               </el-form-item>
               <el-form-item label="上传人">
-                <el-input v-model="seeStatusViewForm.AuditUserName"/>
+                <el-input v-model="seeStatusViewForm.AuditUserName" />
               </el-form-item>
               <el-form-item label="审核结果">
-                <el-input v-model="AuditStatus"/>
+                <el-input v-model="AuditStatus" />
               </el-form-item>
             </div>
             <el-form-item label="意见">
@@ -1351,6 +1296,7 @@ import tinymce from '@/components/tinymce';
 import { SelectPenaltiesByCatalogID } from '@/api/Penalties';
 import { mapGetters } from 'vuex';
 import filePreview3 from '@/views/components/file/filePreview3'; // 导入没有修改删除功能的附件列表组件
+
 export default {
   name: 'Article',
   components: {
@@ -1363,6 +1309,7 @@ export default {
     filePreview2,
     filePreview3
   },
+
   data() {
     return {
       kaoPinBanFa: false, // 考评办法对话框默认关闭
@@ -1766,8 +1713,9 @@ export default {
       try {
         this.formCatalog.UploadState = this.UploadState || '0';
         const { data } = await SelectArticle(this.formCatalog);
+
         this.tableData = data.DataList;
-        // this.formCatalog.Sort = 'asc';
+        console.log(this.tableData);
         this.pagination.total = data.Total;
         this.materialDataTh = data.th;
         this.formCatalog.pageIndex = 1;

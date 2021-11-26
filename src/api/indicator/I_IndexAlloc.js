@@ -61,3 +61,11 @@ export function SelectIndexYear(data) {
     params: data
   });
 }
+// 获取指标参数
+export function GetI_Index_Params(data) {
+  return request({
+    url: '/I_IndexAlloc/GetI_Index_Params',
+    method: 'get',
+    params: data
+  });
+}
