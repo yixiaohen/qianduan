@@ -1,135 +1,201 @@
 <template>
-  <el-container class="desktop">
-    <el-container>
-      <el-header>
-        <el-row type="flex" justify="space-between">
-          <el-col :span="9">
-            <el-radio-group
-              v-model="activeName"
-              size="small"
-              @change="radioGroup"
-            >
-              <el-radio-button label="first">任务统计</el-radio-button>
-              <el-radio-button label="second">分数统计</el-radio-button>
-            </el-radio-group>
-          </el-col>
-          <el-col class="clearfix_from" :span="15">
-            <el-form
-              v-show="task"
-              size="small"
-              :inline="true"
-              class="demo-form-inline"
-            >
-              <el-form-item>
-                <el-select
-                  v-model="UseSituationVal.TemplateID"
-                  filterable
-                  clearable
-                  placeholder="请选择模板"
-                  @change="screenSelect"
-                >
-                  <el-option
-                    v-for="item in TemplateData"
-                    :key="item.TemplateID"
-                    :label="item.RC_TemplateName"
-                    :value="item.TemplateID"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <defaultDept @getDefaultDeptsValue="getDefaultDeptValues" />
-              </el-form-item>
-              <el-form-item>
-                <el-date-picker
-                  v-model="date_picker1"
-                  type="daterange"
-                  align="right"
-                  unlink-panels
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  :picker-options="pickerOptions"
-                  format="yyyy 年 MM 月 dd 日"
-                  value-format="yyyy-MM-dd"
-                  @change="datePicker1"
-                />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="SelectButton">查询</el-button>
-              </el-form-item>
-            </el-form>
-            <el-form
-              v-show="task2"
-              size="small"
-              :inline="true"
-              class="demo-form-inline"
-            >
-              <el-form-item>
-                <el-select
-                  ref="el_select"
-                  v-model="UseSituationVal.TemplateID"
-                  filterable
-                  clearable
-                  placeholder="请选择模板"
-                  @change="screenSelect2"
-                >
-                  <el-option
-                    v-for="item in TemplateData2"
-                    :key="item.TemplateID"
-                    :label="item.RC_TemplateName"
-                    :value="item.TemplateID"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <defaultDepts
-                  :value="SelectScoreVal.RC_InspectionDepartment"
-                  @getDefaultDeptsValue="getDefaultDeptValues2"
-                />
-              </el-form-item>
-              <el-form-item>
-                <el-date-picker
-                  v-model="date_picker2"
-                  type="daterange"
-                  align="right"
-                  unlink-panels
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  :picker-options="pickerOptions"
-                  format="yyyy 年 MM 月 dd 日"
-                  value-format="yyyy-MM-dd"
-                  @change="datePicker2"
-                />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="SelectButton">查询</el-button>
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row>
-      </el-header>
-      <el-main>
-        <el-container>
-          <el-container>
-            <el-main>
-              <transition name="el-zoom-in-center">
-                <el-table
+  <el-card style="margin: 10px;width: 98%;height: 87vh;">
+
+    <el-container class="desktop">
+
+      <el-container>
+
+        <el-header>
+
+              <el-radio-group
+                v-model="activeName"
+                size="small"
+                @change="radioGroup"
+              >
+                <el-radio-button label="first">任务统计</el-radio-button>
+                <el-radio-button label="second">分数统计</el-radio-button>
+              </el-radio-group>
+
+          <div
+            style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+          >
+                <el-form
                   v-show="task"
+                  size="small"
+                  :inline="true"
+                  class="demo-form-inline"
+                >
+                  <el-form-item>
+                    <el-select
+                      v-model="UseSituationVal.TemplateID"
+                      filterable
+                      clearable
+                      placeholder="请选择模板"
+                      @change="screenSelect"
+                    >
+                      <el-option
+                        v-for="item in TemplateData"
+                        :key="item.TemplateID"
+                        :label="item.RC_TemplateName"
+                        :value="item.TemplateID"
+                      />
+                    </el-select>
+                  </el-form-item>
+                  <el-divider direction="vertical" />
+                  <el-form-item>
+                    <defaultDept @getDefaultDeptsValue="getDefaultDeptValues" />
+                  </el-form-item>
+                  <el-divider direction="vertical" />
+                  <el-form-item>
+                    <el-date-picker
+                      v-model="date_picker1"
+                      type="daterange"
+                      align="right"
+                      unlink-panels
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      :picker-options="pickerOptions"
+                      format="yyyy 年 MM 月 dd 日"
+                      value-format="yyyy-MM-dd"
+                      @change="datePicker1"
+                    />
+                  </el-form-item>
+                  <el-divider direction="vertical" />
+                  <el-form-item>
+                    <el-button type="primary" @click="SelectButton">查询</el-button>
+                  </el-form-item>
+                </el-form>
+                <el-form
+                  v-show="task2"
+                  size="small"
+                  :inline="true"
+                  class="demo-form-inline"
+                >
+                  <el-form-item>
+                    <el-select
+                      ref="el_select"
+                      v-model="UseSituationVal.TemplateID"
+                      filterable
+                      clearable
+                      placeholder="请选择模板"
+                      @change="screenSelect2"
+                    >
+                      <el-option
+                        v-for="item in TemplateData2"
+                        :key="item.TemplateID"
+                        :label="item.RC_TemplateName"
+                        :value="item.TemplateID"
+                      />
+                    </el-select>
+                  </el-form-item>
+                  <el-divider direction="vertical" />
+                  <el-form-item>
+                    <defaultDepts
+                      :value="SelectScoreVal.RC_InspectionDepartment"
+                      @getDefaultDeptsValue="getDefaultDeptValues2"
+                    />
+                  </el-form-item>
+                  <el-divider direction="vertical" />
+                  <el-form-item>
+                    <el-date-picker
+                      v-model="date_picker2"
+                      type="daterange"
+                      align="right"
+                      unlink-panels
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      :picker-options="pickerOptions"
+                      format="yyyy 年 MM 月 dd 日"
+                      value-format="yyyy-MM-dd"
+                      @change="datePicker2"
+                    />
+                  </el-form-item>
+                  <el-divider direction="vertical" />
+                  <el-form-item>
+                    <el-button type="primary" @click="SelectButton">查询</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+
+        </el-header>
+        <el-main style="margin-top: 30px">
+          <el-container>
+            <el-container>
+              <el-main>
+                <transition name="el-zoom-in-center">
+                  <el-table
+                    v-show="task"
+                    v-loading="tableDataLoading"
+                    size="mini"
+                    :data="tableData"
+                    height="calc(100vh - 260px)"
+                    border
+                    :header-cell-style="{'text-align':'center'}"
+                    :cell-style="{'text-align':'center'}"
+                    style="width: 100%"
+                    stripe
+                  >
+                    <el-table-column type="index" width="35" />
+                    <el-table-column
+                      prop="RC_ProjectName"
+                      label="项目名称"
+                      :show-overflow-tooltip="cellOverflow"
+                    />
+                    <el-table-column
+                      prop="RC_TemplateName"
+                      label="模板名称"
+                      :show-overflow-tooltip="cellOverflow"
+                    />
+                    <el-table-column
+                      prop="RC_InspectionDepartmentName"
+                      label="科室"
+                      :show-overflow-tooltip="cellOverflow"
+                    />
+                    <el-table-column prop="StatusName" label="状态" />
+                    <el-table-column
+                      prop="RC_InspectionTimeStat"
+                      label="填写时间"
+                      :show-overflow-tooltip="cellOverflow"
+                    >
+                      <template slot-scope="{ row }">
+                        {{
+                          row.RC_InspectionTimeStat
+                            ? row.RC_InspectionTimeStat.split('T').join(' ')
+                            : ''
+                        }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="导出" width="80">
+                      <template slot-scope="{ row }">
+                        <el-button
+                          type="success"
+                          class="el-icon-download"
+                          size="mini"
+                          @click="SelectUseTempList(row)"
+                        />
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </transition>
+                <el-table
+                  v-show="task2"
                   v-loading="tableDataLoading"
                   size="mini"
-                  :data="tableData"
-                  height="calc(100vh - 180px)"
+                  :header-cell-style="{'text-align':'center'}"
+                  :cell-style="{'text-align':'center'}"
+                  :data="tableData2"
+                  height="calc(100vh - 260px)"
                   border
                   style="width: 100%"
                   stripe
                 >
                   <el-table-column type="index" width="35" />
-                  <el-table-column
-                    prop="RC_ProjectName"
-                    label="项目名称"
-                    :show-overflow-tooltip="cellOverflow"
-                  />
                   <el-table-column
                     prop="RC_TemplateName"
                     label="模板名称"
@@ -140,144 +206,104 @@
                     label="科室"
                     :show-overflow-tooltip="cellOverflow"
                   />
-                  <el-table-column prop="StatusName" label="状态" />
-                  <el-table-column
-                    prop="RC_InspectionTimeStat"
-                    label="填写时间"
-                    :show-overflow-tooltip="cellOverflow"
-                  >
-                    <template slot-scope="{ row }">
-                      {{
-                        row.RC_InspectionTimeStat
-                          ? row.RC_InspectionTimeStat.split('T').join(' ')
-                          : ''
-                      }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="导出" width="50">
+                  <el-table-column prop="Score" label="平均分" />
+                  <el-table-column label="查看统计" align="center" width="100">
                     <template slot-scope="{ row }">
                       <el-button
-                        class="el-icon-download"
+                        icon="el-icon-search"
+                        circle
                         size="mini"
-                        @click="SelectUseTempList(row)"
+                        @click="score('查看统计', row)"
                       />
                     </template>
                   </el-table-column>
                 </el-table>
-              </transition>
-              <el-table
-                v-show="task2"
-                v-loading="tableDataLoading"
-                size="mini"
-                :data="tableData2"
-                height="calc(100vh - 180px)"
-                border
-                style="width: 100%"
-                stripe
-              >
-                <el-table-column type="index" width="35" />
-                <el-table-column
-                  prop="RC_TemplateName"
-                  label="模板名称"
-                  :show-overflow-tooltip="cellOverflow"
-                />
-                <el-table-column
-                  prop="RC_InspectionDepartmentName"
-                  label="科室"
-                  :show-overflow-tooltip="cellOverflow"
-                />
-                <el-table-column prop="Score" label="平均分" />
-                <el-table-column label="查看统计" align="center" width="100">
-                  <template slot-scope="{ row }">
-                    <el-button
-                      icon="el-icon-search"
-                      circle
-                      size="mini"
-                      @click="score('查看统计', row)"
+                <el-row>
+                  <el-col :span="2">
+                    <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
+                  </el-col>
+                  <el-col :span="20">
+                    <el-pagination
+                      v-show="task"
+                      background
+                      style="margin-top: 10px"
+                      :current-page.sync="UseSituationVal.pageIndex"
+                      :page-size="20"
+                      layout="total, prev, pager, next,jumper"
+                      :total="UseSituationVal.total"
+                      @current-change="handleCurrentChange"
                     />
-                  </template>
-                </el-table-column>
-              </el-table>
-              <el-row>
-                <el-col :span="2">
-                  <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
-                </el-col>
-                <el-col :span="20">
-                  <el-pagination
-                    v-show="task"
-                    :current-page.sync="UseSituationVal.pageIndex"
-                    :page-size="50"
-                    layout="total, prev, pager, next"
-                    :total="UseSituationVal.total"
-                    @current-change="handleCurrentChange"
-                  />
-                  <el-pagination
-                    v-show="task2"
-                    :current-page.sync="SelectScoreVal.pageIndex"
-                    :page-size="50"
-                    layout="total, prev, pager, next"
-                    :total="SelectScoreVal.total"
-                    @current-change="handleCurrentChange2"
-                  />
-                </el-col>
-              </el-row>
-              <el-dialog
-                title="导出"
-                :visible.sync="UseTempListDialog"
-                :width="device === 'desktop' ? '50%' : '90%'"
-              >
-                <el-form
-                  :inline="true"
-                  :model="UseTempListVal"
-                  class="demo-form-inline"
-                  size="mini"
+                    <el-pagination
+                      v-show="task2"
+                      background
+                      style="margin-top: 10px"
+                      :current-page.sync="SelectScoreVal.pageIndex"
+                      :page-size="20"
+                      layout="total, prev, pager, next,jumper"
+                      :total="SelectScoreVal.total"
+                      @current-change="handleCurrentChange2"
+                    />
+                  </el-col>
+                </el-row>
+                <el-dialog
+                  title="导出"
+                  :visible.sync="UseTempListDialog"
+                  :width="device === 'desktop' ? '50%' : '90%'"
                 >
-                  <el-form-item>
-                    <el-select
-                      v-model="UseTempListVal.RC_ProjectName1"
-                      placeholder="请选择项目名称"
-                    >
-                      <el-option
-                        v-for="item1 in UseTempListData"
-                        :key="item1.ID"
-                        :label="item1.RC_ProjectName"
-                        :value="item1.RC_ProjectName"
-                      />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-select
-                      v-model="UseTempListVal.RC_ProjectName2"
-                      placeholder="请选择项目名称"
-                    >
-                      <el-option
-                        v-for="item2 in UseTempListData"
-                        :key="item2.ID"
-                        :label="item2.RC_ProjectName"
-                        :value="item2.RC_ProjectName"
-                      />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button
-                      type="primary"
-                      @click="ExportUseTemp"
-                    >导出</el-button>
-                  </el-form-item>
-                </el-form>
-              </el-dialog>
-            </el-main>
+                  <el-form
+                    :inline="true"
+                    :model="UseTempListVal"
+                    class="demo-form-inline"
+                    size="mini"
+                  >
+                    <el-form-item>
+                      <el-select
+                        v-model="UseTempListVal.RC_ProjectName1"
+                        placeholder="请选择项目名称"
+                      >
+                        <el-option
+                          v-for="item1 in UseTempListData"
+                          :key="item1.ID"
+                          :label="item1.RC_ProjectName"
+                          :value="item1.RC_ProjectName"
+                        />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-select
+                        v-model="UseTempListVal.RC_ProjectName2"
+                        placeholder="请选择项目名称"
+                      >
+                        <el-option
+                          v-for="item2 in UseTempListData"
+                          :key="item2.ID"
+                          :label="item2.RC_ProjectName"
+                          :value="item2.RC_ProjectName"
+                        />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button
+                        type="primary"
+                        @click="ExportUseTemp"
+                      >导出</el-button>
+                    </el-form-item>
+                  </el-form>
+                </el-dialog>
+              </el-main>
+            </el-container>
+            <el-aside width="55%" style="height: calc(100vh -250px)">
+              <transition name="el-zoom-in-center">
+                <div v-show="task" ref="main_" class="main1_" />
+              </transition>
+              <div v-show="task3" ref="main2_" class="main_" />
+            </el-aside>
           </el-container>
-          <el-aside width="55%" style="height: calc(100vh -250px)">
-            <transition name="el-zoom-in-center">
-              <div v-show="task" ref="main_" class="main1_" />
-            </transition>
-            <div v-show="task3" ref="main2_" class="main_" />
-          </el-aside>
-        </el-container>
-      </el-main>
+        </el-main>
+      </el-container>
+
     </el-container>
-  </el-container>
+  </el-card>
 </template>
 <script>
 import echarts from 'echarts';
@@ -318,7 +344,7 @@ export default {
         EndDate: ''
       },
       ScoreVal: {
-        pageSize: 50,
+        pageSize: 20,
         pageIndex: 1,
         total: 0,
         TemplateID: 0,
@@ -327,7 +353,7 @@ export default {
         EndDate: ''
       },
       SelectScoreVal: {
-        pageSize: 50,
+        pageSize: 20,
         pageIndex: 1,
         total: 0,
         TemplateID: 0,
@@ -508,8 +534,8 @@ export default {
           itemGap: 5
         },
         grid: {
-          top: '12%',
-          left: '1%',
+          top: '5%',
+          left: '5%',
           right: '10%',
           containLabel: true
         },
@@ -570,7 +596,7 @@ export default {
         },
         legend: {
           orient: 'vertical',
-          left: 10,
+          right: 10,
           data: [
             '未执行',
             '待提交',
@@ -720,7 +746,7 @@ export default {
 <style lang="scss">
 .desktop {
   .main_ {
-    height: calc(100vh - 180px);
+    height: calc(100vh - 240px);
   }
   .main1_ {
     height: calc(100vh - 180px);
@@ -760,17 +786,17 @@ export default {
     0% {
       background-color: rgba(247, 111, 73, 1);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     25% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     75% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 1);
+      80px 0px 0px 0px rgba(247, 111, 73, 1);
     }
   }
 
@@ -778,34 +804,34 @@ export default {
     0% {
       background-color: rgba(247, 111, 73, 1);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     25% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     75% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 1);
+      80px 0px 0px 0px rgba(247, 111, 73, 1);
     }
   }
   @keyframes typing {
     0% {
       background-color: rgba(247, 111, 73, 1);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     25% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     75% {
       background-color: rgba(0, 184, 220, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(249, 54, 0, 0.2),
-        80px 0px 0px 0px rgb(2, 243, 130);
+      80px 0px 0px 0px rgb(2, 243, 130);
     }
   }
   .el-loading-spinner .circular {

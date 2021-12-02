@@ -1,7 +1,14 @@
 <template>
   <el-container class="department_overview">
-    <el-card style="margin: 10px;width: 98%">
+    <el-card style="margin: 10px;width: 98%;height: 87vh">
     <el-header>
+      <div
+        style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+      >
       <el-form
         :inline="true"
         class="demo-form-inline"
@@ -21,6 +28,7 @@
           />
           <span v-else>{{ DeptName }}</span>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item v-show="!FillingIn">
           <el-button
             size="small"
@@ -41,6 +49,7 @@
           >返回
           </el-button>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item v-if="IsSelectOtherDept == 1">
           <el-button
             size="small"
@@ -91,6 +100,7 @@
           </el-button>
         </el-form-item>
       </el-form>
+      </div>
     </el-header>
 
       <el-main class="main">

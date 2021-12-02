@@ -1,332 +1,346 @@
 <template>
-  <el-container class="quarterTable">
-    <el-card style="margin: 10px;width: 98%">
-      <el-header>
-        <el-form
-          v-show="!isSubForm"
-          :inline="true"
-          :model="formInline"
+
+  <el-card style="margin: 10px;width: 98%;height: 87vh;overflow: auto">
+
+    <div
+      style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+    >
+
+      <el-form
+        v-show="!isSubForm"
+        :inline="true"
+        :model="formInline"
+        size="mini"
+      >
+        <el-form-item>
+          <el-button
+            icon="el-icon-plus"
+            type="primary"
+            @click="addFormData"
+          >新增季度表单
+          </el-button>
+        </el-form-item>
+        <el-divider direction="vertical" />
+        <el-form-item>
+          <el-date-picker
+            v-model="formInline.Year"
+            type="year"
+            placeholder="选择年"
+            size="mini"
+            format="yyyy 年"
+            value-format="yyyy"
+            @change="onClickDate"
+          />
+        </el-form-item>
+        <el-divider direction="vertical" />
+        <el-form-item>
+          <el-select
+            v-model.trim="formInline.Quarterly"
+            placeholder="请选择季度"
+            size="mini"
+            clearable
+            @change="selectChange"
+          >
+            <el-option label="第一季度" value="第一季度" />
+            <el-option label="第二季度" value="第二季度" />
+            <el-option label="第三季度" value="第三季度" />
+            <el-option label="第四季度" value="第四季度" />
+          </el-select>
+        </el-form-item>
+        <el-divider direction="vertical" />
+        <el-form-item v-if="RoleCode === 'R0001'">
+          <defaultDept @getDefaultDeptsValue="getDefaultDeptsValueFormInline" />
+        </el-form-item>
+        <el-divider direction="vertical" />
+        <el-form-item>
+          <el-select
+            v-model.trim="formInline.IsSubmit"
+            placeholder="提交状态"
+            size="mini"
+            @change="selectChangeIsSubmit"
+          >
+            <el-option label="已提交" :value="1" />
+            <el-option label="待提交" :value="0" />
+            <el-option label="全部" :value="-1" />
+          </el-select>
+        </el-form-item>
+        <el-divider direction="vertical" />
+        <el-form-item>
+          <el-button
+            icon="el-icon-search"
+            type="primary"
+            @click="SelectQuarterlyForm('搜索')"
+          >搜索
+          </el-button>
+        </el-form-item>
+
+      </el-form>
+    </div>
+    <el-row
+      v-show="isSubForm"
+      type="flex"
+      class="row-bg"
+      justify="space-between"
+    >
+      <el-col :span="3">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-refresh-left"
           size="mini"
-        >
-          <el-form-item>
+          style="margin: 7px auto"
+          @click="isSubForm = false"
+        >返回
+        </el-button>
+      </el-col>
+      <el-col :span="7">
+        <h3 style="font-weight: bold">
+          科室：{{ subFormData.header.DeptName }}
+        </h3>
+      </el-col>
+      <el-col :span="6">
+        <h3 style="font-weight: bold">年度：{{ subFormData.header.Year }}</h3>
+      </el-col>
+      <el-col :span="6">
+        <h3 style="font-weight: bold">
+          季度：{{ subFormData.header.Quarterly }}
+        </h3>
+      </el-col>
+      <el-col :span="3">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-user"
+          size="mini"
+          style="margin: 7px auto"
+          @click="SelectDeptorUser(subFormData.header.QuarterlyFormID)"
+        >审核分配（科主任）
+        </el-button>
+      </el-col>
+    </el-row>
+
+
+    <transition name="el-zoom-in-center">
+      <el-table
+        v-show="!isSubForm"
+        v-loading="listLoading"
+        :data="tableData"
+        border
+        stripe
+        highlight-current-row
+        style="width: 100%;margin-top: 10px"
+        size="mini"
+        height="calc(100vh - 240px)"
+      >
+        <el-table-column label="科室" align="center">
+          <template slot-scope="{ row, $index }">
+            <div v-if="currentEdit == $index && RoleCode == 'R0001'">
+              <default-dept
+                :value="row.DeptID"
+                @getDefaultDeptsValue="getDefaultDeptValues"
+              />
+            </div>
+            <span v-else>{{ row.DeptName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="年度" align="center">
+          <template slot-scope="{ row, $index }">
             <el-date-picker
-              v-model="formInline.Year"
+              v-show="currentEdit == $index"
+              v-model="row.Year"
               type="year"
               placeholder="选择年"
               size="mini"
               format="yyyy 年"
               value-format="yyyy"
-              @change="onClickDate"
             />
-          </el-form-item>
-          <el-form-item>
+            <span v-show="currentEdit != $index">{{ row.Year }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="季度" align="center">
+          <template slot-scope="{ row, $index }">
             <el-select
-              v-model.trim="formInline.Quarterly"
-              placeholder="请选择季度"
+              v-show="currentEdit == $index"
+              v-model.trim="row.Quarterly"
+              placeholder="请选择"
               size="mini"
-              clearable
-              @change="selectChange"
             >
               <el-option label="第一季度" value="第一季度" />
               <el-option label="第二季度" value="第二季度" />
               <el-option label="第三季度" value="第三季度" />
               <el-option label="第四季度" value="第四季度" />
             </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model.trim="formInline.IsSubmit"
-              placeholder="提交状态"
+            <span v-show="currentEdit != $index">{{ row.Quarterly }}</span>
+          </template>
+        </el-table-column>
+        <!-- 1已提交，0未提交 -->
+        <el-table-column label="提交状态" align="center">
+          <template slot-scope="{ row }">
+            <span
+              :style="{ color: row.IsSubmit === 0 ? 'black' : 'green' }"
+            >{{
+              row.IsSubmit === 0
+                ? '待提交'
+                : row.IsSubmit === 1
+                  ? '已提交'
+                  : ''
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="提交表单" width="170" align="center">
+          <template slot-scope="{ row }">
+            <el-button
+              v-show="row.IsSubmit == 1"
+              type="success"
+              round
+              plain
+              icon="el-icon-check"
+              circle
               size="mini"
-              @change="selectChangeIsSubmit"
+            />
+            <el-popconfirm
+              confirm-button-text="是的"
+              cancel-button-text="取消"
+              icon="el-icon-info"
+              icon-color="red"
+              title="确定提交吗？"
+              @confirm="SubmitForm(row)"
             >
-              <el-option label="已提交" :value="1" />
-              <el-option label="待提交" :value="0" />
-              <el-option label="全部" :value="-1" />
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="RoleCode === 'R0001'">
-            <defaultDept @getDefaultDeptsValue="getDefaultDeptsValueFormInline" />
-          </el-form-item>
-          <el-form-item>
+              <el-button
+                v-show="row.IsSubmit == 0"
+                slot="reference"
+                type="info"
+                round
+                plain
+                icon="el-icon-upload2"
+                circle
+                size="mini"
+              />
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+        <el-table-column label="填写表单" width="170" align="center">
+          <template slot-scope="{ row }">
             <el-button
-              icon="el-icon-search"
-              type="info"
-              @click="SelectQuarterlyForm('搜索')"
-            >搜索
-            </el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              icon="el-icon-plus"
+              v-show="row.QuarterlyFormID !== -1"
+              size="mini"
               type="primary"
-              @click="addFormData"
-            >新增季度表单
-            </el-button>
-          </el-form-item>
-        </el-form>
-        <el-row
-          v-show="isSubForm"
-          type="flex"
-          class="row-bg"
-          justify="space-between"
-        >
-          <el-col :span="3">
+              icon="el-icon-edit"
+              circle
+              @click="onSubmit(row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" align="center">
+          <template slot-scope="{ row, $index }">
             <el-button
-              type="success"
-              plain
-              icon="el-icon-refresh-left"
-              size="mini"
-              style="margin: 7px auto"
-              @click="isSubForm = false"
-            >返回
+              v-show="currentEdit != $index"
+              type="text"
+              size="small"
+              @click="edit(row, $index)"
+            >修改
             </el-button>
-          </el-col>
-          <el-col :span="7">
-            <h3 style="font-weight: bold">
-              科室：{{ subFormData.header.DeptName }}
-            </h3>
-          </el-col>
-          <el-col :span="6">
-            <h3 style="font-weight: bold">年度：{{ subFormData.header.Year }}</h3>
-          </el-col>
-          <el-col :span="6">
-            <h3 style="font-weight: bold">
-              季度：{{ subFormData.header.Quarterly }}
-            </h3>
-          </el-col>
-          <el-col :span="3">
             <el-button
-              type="success"
-              plain
-              icon="el-icon-user"
-              size="mini"
-              style="margin: 7px auto"
-              @click="SelectDeptorUser(subFormData.header.QuarterlyFormID)"
-            >审核分配（科主任）
+              v-show="currentEdit == $index"
+              type="text"
+              size="small"
+              @click="submit(row)"
+            >完成
             </el-button>
-          </el-col>
-        </el-row>
-      </el-header>
-      <el-main>
-        <transition name="el-zoom-in-center">
-          <el-table
-            v-show="!isSubForm"
-            v-loading="listLoading"
-            :data="tableData"
-            border
-            stripe
-            highlight-current-row
-            style="width: 100%"
-            size="mini"
-            height="calc(100vh - 260px)"
-          >
-            <el-table-column label="科室" align="center">
-              <template slot-scope="{ row, $index }">
-                <div v-if="currentEdit == $index && RoleCode == 'R0001'">
-                  <default-dept
-                    :value="row.DeptID"
-                    @getDefaultDeptsValue="getDefaultDeptValues"
-                  />
-                </div>
-                <span v-else>{{ row.DeptName }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="年度" align="center">
-              <template slot-scope="{ row, $index }">
-                <el-date-picker
-                  v-show="currentEdit == $index"
-                  v-model="row.Year"
-                  type="year"
-                  placeholder="选择年"
-                  size="mini"
-                  format="yyyy 年"
-                  value-format="yyyy"
-                />
-                <span v-show="currentEdit != $index">{{ row.Year }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="季度" align="center">
-              <template slot-scope="{ row, $index }">
-                <el-select
-                  v-show="currentEdit == $index"
-                  v-model.trim="row.Quarterly"
-                  placeholder="请选择"
-                  size="mini"
-                >
-                  <el-option label="第一季度" value="第一季度" />
-                  <el-option label="第二季度" value="第二季度" />
-                  <el-option label="第三季度" value="第三季度" />
-                  <el-option label="第四季度" value="第四季度" />
-                </el-select>
-                <span v-show="currentEdit != $index">{{ row.Quarterly }}</span>
-              </template>
-            </el-table-column>
-            <!-- 1已提交，0未提交 -->
-            <el-table-column label="提交状态" align="center">
-              <template slot-scope="{ row }">
-                <span
-                  :style="{ color: row.IsSubmit === 0 ? 'black' : 'green' }"
-                >{{
-                  row.IsSubmit === 0
-                    ? '待提交'
-                    : row.IsSubmit === 1
-                      ? '已提交'
-                      : ''
-                }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="提交表单" width="170" align="center">
-              <template slot-scope="{ row }">
-                <el-button
-                  v-show="row.IsSubmit == 1"
-                  type="success"
-                  round
-                  plain
-                  icon="el-icon-check"
-                  circle
-                  size="mini"
-                />
-                <el-popconfirm
-                  confirm-button-text="是的"
-                  cancel-button-text="取消"
-                  icon="el-icon-info"
-                  icon-color="red"
-                  title="确定提交吗？"
-                  @confirm="SubmitForm(row)"
-                >
-                  <el-button
-                    v-show="row.IsSubmit == 0"
-                    slot="reference"
-                    type="info"
-                    round
-                    plain
-                    icon="el-icon-upload2"
-                    circle
-                    size="mini"
-                  />
-                </el-popconfirm>
-              </template>
-            </el-table-column>
-            <el-table-column label="填写表单" width="170" align="center">
-              <template slot-scope="{ row }">
-                <el-button
-                  v-show="row.QuarterlyFormID !== -1"
-                  size="mini"
-                  type="primary"
-                  icon="el-icon-edit"
-                  circle
-                  @click="onSubmit(row)"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="200" align="center">
-              <template slot-scope="{ row, $index }">
-                <el-button
-                  v-show="currentEdit != $index"
-                  type="text"
-                  size="small"
-                  @click="edit(row, $index)"
-                >修改
-                </el-button>
-                <el-button
-                  v-show="currentEdit == $index"
-                  type="text"
-                  size="small"
-                  @click="submit(row)"
-                >完成
-                </el-button>
-                <el-button
-                  v-show="currentEdit == $index"
-                  type="text"
-                  size="small"
-                  @click="giveUp(row, $index)"
-                >放弃
-                </el-button>
-                <el-popconfirm
-                  v-show="currentEdit != $index"
-                  v-if="row.IsSubmit === 0"
-                  confirm-button-text="好的"
-                  cancel-button-text="不用了"
-                  icon="el-icon-info"
-                  icon-color="red"
-                  title="这是一段内容确定删除吗？"
-                  style="margin-left: 5px"
-                  @confirm="DeleteQuarterlyForm(row, $index)"
-                >
-                  <el-button
-                    slot="reference"
-                    type="text"
-                    size="small"
-                  >删除
-                  </el-button>
-                </el-popconfirm>
-              </template>
-            </el-table-column>
-          </el-table>
-        </transition>
-        <div v-if="isSubForm">
-          <subForm
-            ref="subForm"
-            :header="subFormData.header"
-            :table-datas="subFormData.tables"
-            @handleSelectionChange="handleSelectionChange"
-          />
-        </div>
-        <el-pagination
-          v-show="!isSubForm"
-          style="margin-top: 10px"
-          :current-page.sync="formInline.pageIndex"
-          :page-size="20"
-          layout="total, prev, pager, next,jumper"
-          :total="formInline.Total"
-          background
-          @current-change="handleCurrentChange"
-        />
-      </el-main>
+            <el-button
+              v-show="currentEdit == $index"
+              type="text"
+              size="small"
+              @click="giveUp(row, $index)"
+            >放弃
+            </el-button>
+            <el-popconfirm
+              v-show="currentEdit != $index"
+              v-if="row.IsSubmit === 0"
+              confirm-button-text="好的"
+              cancel-button-text="不用了"
+              icon="el-icon-info"
+              icon-color="red"
+              title="这是一段内容确定删除吗？"
+              style="margin-left: 5px"
+              @confirm="DeleteQuarterlyForm(row, $index)"
+            >
+              <el-button
+                slot="reference"
+                type="text"
+                size="small"
+              >删除
+              </el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+    </transition>
+    <div v-if="isSubForm">
+      <subForm
+        ref="subForm"
+        :header="subFormData.header"
+        :table-datas="subFormData.tables"
+        @handleSelectionChange="handleSelectionChange"
+      />
+    </div>
+    <el-pagination
+      v-show="!isSubForm"
+      style="margin-top: 10px"
+      :current-page.sync="formInline.pageIndex"
+      :page-size="20"
+      layout="total, prev, pager, next,jumper"
+      :total="formInline.Total"
+      background
+      @current-change="handleCurrentChange"
+    />
+
+    <el-button
+      v-show="isSubForm"
+      type="success"
+      size="small"
+      @click="InsertQuarterlyFormDetail"
+    >确认提交
+    </el-button>
+
+
+    <el-dialog
+      :width="device === 'desktop' ? '40%' : '99%'"
+      title="审核分配（选择审核人）"
+      :close-on-click-modal="false"
+      :visible.sync="QuarterlyFormIDdialog"
+    >
+      <el-tree
+        ref="Trees"
+        :data="treeData"
+        show-checkbox
+        node-key="ID"
+        :default-expanded-keys="[treeData[0].ID] || 0"
+        :props="{ children: 'children', label: 'Name' }"
+        style="height: 50vh; overflow: auto"
+        @check-change="handleCheckChange"
+      />
       <el-footer>
         <el-button
-          v-show="isSubForm"
-          type="success"
+          type="primary"
           size="small"
-          @click="InsertQuarterlyFormDetail"
+          @click="InsertQuarterlyFormAllocation"
         >确认提交
         </el-button>
-
+        <el-button
+          type="info"
+          size="small"
+          @click="QuarterlyFormIDdialog = false"
+        >关闭
+        </el-button>
       </el-footer>
-      <el-dialog
-        :width="device === 'desktop' ? '40%' : '99%'"
-        title="审核分配（选择审核人）"
-        :close-on-click-modal="false"
-        :visible.sync="QuarterlyFormIDdialog"
-      >
-        <el-tree
-          ref="Trees"
-          :data="treeData"
-          show-checkbox
-          node-key="ID"
-          :default-expanded-keys="[treeData[0].ID] || 0"
-          :props="{ children: 'children', label: 'Name' }"
-          style="height: 50vh; overflow: auto"
-          @check-change="handleCheckChange"
-        />
-        <el-footer>
-          <el-button
-            type="primary"
-            size="small"
-            @click="InsertQuarterlyFormAllocation"
-          >确认提交
-          </el-button>
-          <el-button
-            type="info"
-            size="small"
-            @click="QuarterlyFormIDdialog = false"
-          >关闭
-          </el-button>
-        </el-footer>
-      </el-dialog>
-    </el-card>
-  </el-container>
+    </el-dialog>
+  </el-card>
+
 </template>
 <script>
 import { mapGetters } from 'vuex';
@@ -682,18 +696,6 @@ export default {
 };
 </script>
 <style lang="scss" >
-.quarterTable {
-  .el-header,
-  .el-footer {
-    padding: 3px 0px;
-    height: 40px !important;
-  }
-
-  .el-main {
-    padding: 0px 0px;
-    height: calc(100vh - 180px) !important;
-  }
-}
 
 .el-loading-spinner {
   width: 30px;

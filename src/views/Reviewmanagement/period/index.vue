@@ -3,39 +3,40 @@
     style="margin: 10px;"
   >
     <el-container class="Period">
-
       <el-header>
         <el-form
           label-position="left"
           :inline="true"
           size="mini"
         >
-          <el-form-item>
-            <el-button
-              type="primary"
-              icon="el-icon-circle-plus"
-              size="mini"
-              @click="addCurrent"
-            >添加批次</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              v-model="listQuery.condition"
-              placeholder="批次名"
-              style="width: 200px"
-              size="mini"
-              clearable
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="info"
-              icon="el-icon-search"
-              :loading="listLoading"
-              size="mini"
-              @click="clickSelectPeriod()"
-            >搜索</el-button>
-          </el-form-item>
+          <el-tag type="info" style="width: 100%">
+            <el-form-item>
+              <el-button
+                type="primary"
+                icon="el-icon-circle-plus"
+                size="mini"
+                @click="addCurrent"
+              >添加批次</el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-input
+                v-model="listQuery.condition"
+                placeholder="批次名"
+                style="width: 200px"
+                size="mini"
+                clearable
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                :loading="listLoading"
+                size="mini"
+                @click="clickSelectPeriod()"
+              >搜索</el-button>
+            </el-form-item>
+          </el-tag>
         </el-form>
       </el-header>
       <el-main>
@@ -60,7 +61,6 @@
           <el-table-column
             prop="StartTime"
             label="开始时间"
-
           >
             <template slot-scope="scope">
               {{ scope.row.StartTime.split("T").join(" ") }}
@@ -69,7 +69,6 @@
           <el-table-column
             prop="EndTime"
             label="结束时间"
-
           >
             <template slot-scope="scope">
               {{ scope.row.EndTime.split("T").join(" ") }}
@@ -85,12 +84,12 @@
               <el-tag
                 size="mini"
                 :type="
-                scope.row.Status === 0
-                  ? 'warning'
-                  : scope.row.Status === 1
-                    ? 'success'
-                    : 'danger'
-              "
+                  scope.row.Status === 0
+                    ? 'warning'
+                    : scope.row.Status === 1
+                      ? 'success'
+                      : 'danger'
+                "
               >
                 {{
                   scope.row.Status === 0
@@ -190,16 +189,16 @@
             slot="footer"
             class="dialog-footer"
           >
-          <el-button
-            size="mini"
-            @click="dialogVisible = false"
-          >取 消</el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            @click="title === '添加批次' ? InsertPeriod() : UpdatePeriod()"
-          >确 定</el-button>
-        </span>
+            <el-button
+              size="mini"
+              @click="dialogVisible = false"
+            >取 消</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="title === '添加批次' ? InsertPeriod() : UpdatePeriod()"
+            >确 定</el-button>
+          </span>
         </el-dialog>
       </el-main>
       <el-footer>

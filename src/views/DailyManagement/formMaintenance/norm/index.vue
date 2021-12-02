@@ -1,6 +1,12 @@
 <template>
-  <el-container class="norm">
-    <el-header>
+  <el-card style="margin: 10px;width: 98%;height: 87vh;overflow: auto">
+    <div
+      style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+    >
       <el-form :inline="true" size="mini" class="demo-form-inline">
         <el-form-item>
           <el-button
@@ -9,6 +15,7 @@
             @click="add"
           >新增</el-button>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="form.Category"
@@ -16,6 +23,7 @@
             @keyup.enter.native="SelectNorm('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="form.ProjectContent"
@@ -23,6 +31,7 @@
             @keyup.enter.native="SelectNorm('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="form.Content"
@@ -30,6 +39,7 @@
             @keyup.enter.native="SelectNorm('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-button
             icon="el-icon-search"
@@ -38,107 +48,114 @@
           >搜索</el-button>
         </el-form-item>
       </el-form>
-    </el-header>
-    <el-main>
-      <el-table
-        ref="errorMultipleTable"
-        v-loading="Loading"
-        class="main"
-        :data="tableData"
-        style="width: 100%"
-        border
-        size="mini"
-        height="450"
-        stripe
+    </div>
+    <el-table
+      ref="errorMultipleTable"
+      v-loading="Loading"
+      class="main"
+      :data="tableData"
+      style="width: 100%;margin-top: 10px"
+      border
+      highlight-current-row
+      :header-cell-style="{'text-align':'center'}"
+      :cell-style="{'text-align':'center'}"
+      height="calc(100vh - 240px)"
+      size="small"
+      stripe
+    >
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        align="center"
+        fixed="left"
+      />
+      <el-table-column
+        v-for="(itemType, indexType) in tableTitle"
+        :key="indexType"
+        :prop="itemType.prop"
+        :label="itemType.title"
+        align="left"
+        class="tableType"
+        :show-overflow-tooltip="cellOverflow"
       >
-        <el-table-column
-          type="index"
-          label="序号"
-          width="60"
-          align="center"
-          fixed="left"
-        />
-        <el-table-column
-          v-for="(itemType, indexType) in tableTitle"
-          :key="indexType"
-          :prop="itemType.prop"
-          :label="itemType.title"
-          align="left"
-          class="tableType"
-          :show-overflow-tooltip="cellOverflow"
-        >
-          <template slot-scope="{ row, $index }">
-            <el-input
-              v-if="currentEdit === $index"
-              v-model="row[itemType.prop]"
-              :disabled="itemType.disabled"
-              :type="itemType.types"
-              @keyup.enter.native="InsertRC_Error(row)"
-            />
-            <span v-else>{{ row[itemType.prop] }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="扣分原因"
-          prop="ErrorContent"
-          width="200"
-          :show-overflow-tooltip="cellOverflow"
-        >
-          <template slot-scope="{ row }">
-            <div v-html="row.ErrorContent" />
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="250">
-          <template slot-scope="scope">
-            <el-button
-              v-if="currentEdit === scope.$index"
-              type="text"
-              size="small"
-              @click="InsertNorm(scope.row)"
-            >完成</el-button>
-            <el-button
-              v-if="currentEdit === scope.$index"
-              type="text"
-              size="small"
-              @click="currentEdit = -1"
-            >放弃</el-button>
-
-            <el-button
-              v-else
-              type="text"
-              size="small"
-              @click="EditClick(scope)"
-            >修改</el-button>
-            <el-button
-              type="text"
-              size="small"
-              @click="SelectContent(scope)"
-            >选择扣分原因</el-button>
-            <el-button
-              type="text"
-              size="small"
-              @click="DeleteNorm(scope.row)"
-            >删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-row>
-        <el-col :span="1">
-          <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            :current-page="form.pageIndex"
-            :page-sizes="[15, 20, 30, 40, 50, 100]"
-            :page-size="form.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="form.total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+        <template slot-scope="{ row, $index }">
+          <el-input
+            v-if="currentEdit === $index"
+            v-model="row[itemType.prop]"
+            :disabled="itemType.disabled"
+            :type="itemType.types"
+            @keyup.enter.native="InsertRC_Error(row)"
           />
-        </el-col>
-      </el-row>
-    </el-main>
+          <span v-else>{{ row[itemType.prop] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="扣分原因"
+        prop="ErrorContent"
+        width="200"
+        :show-overflow-tooltip="cellOverflow"
+      >
+        <template slot-scope="{ row }">
+          <div v-html="row.ErrorContent" />
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="250">
+        <template slot-scope="scope">
+          <el-button
+            v-if="currentEdit === scope.$index"
+            type="success"
+            size="mini"
+            @click="InsertNorm(scope.row)"
+          >完成</el-button>
+          <el-button
+            v-if="currentEdit === scope.$index"
+            type="warning"
+            size="mini"
+            @click="currentEdit = -1"
+          >放弃</el-button>
+
+          <el-button
+            v-else
+            type="info"
+            size="mini"
+            class="el-icon-edit"
+            @click="EditClick(scope)"
+          ></el-button>
+          <el-button
+            type="success"
+            size="mini"
+            class="el-icon-thumb"
+            @click="SelectContent(scope)"
+          ></el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            class="el-icon-delete"
+            @click="DeleteNorm(scope.row)"
+          ></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-row>
+      <el-col :span="1">
+        <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          background
+          style="margin-top: 10px"
+          :current-page="form.pageIndex"
+          :page-sizes="[15, 20, 30, 40, 50, 100]"
+          :page-size="form.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="form.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+
     <!-- 扣分原因 -->
     <el-dialog
       :width="device === 'desktop' ? '60%' : '99%'"
@@ -160,7 +177,7 @@
         >确 定</el-button>
       </span>
     </el-dialog>
-  </el-container>
+  </el-card>
 </template>
 <script>
 import { DeleteNorm, InsertNorm, SelectNorm, UpdateNorm } from '@/api/norm';

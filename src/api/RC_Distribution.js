@@ -23,3 +23,11 @@ export function DeleteDistribution(data) {
     data
   });
 }
+// 表单管理中表单再次分配
+export function CopyDistribution(data) {
+  return request({
+    url: '/RC_Distribution/CopyDistribution',
+    method: 'get',
+    params: data
+  });
+}

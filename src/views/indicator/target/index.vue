@@ -26,7 +26,6 @@
               </div>
               <IndexNavTree
                 ref="standardCatalog"
-                :key="key"
                 @nodeClickCatalog="nodeClickCatalog"
               />
             </div>
@@ -45,13 +44,8 @@
                 <div class="TMContainer">
 
                   <div style="font-weight: bolder;margin-left: 20px;width: 80%">
-                    <span class="demonstration">查找:</span>
-                    <el-radio-group v-model="isYearOrMonth" size="mini" @change="isYearOrMonthc">
-                      <el-radio-button :label="1">按年份</el-radio-button>
-                      <el-radio-button :label="2">按年月</el-radio-button>
-                    </el-radio-group>
+
                     <el-date-picker
-                      v-if="isYearOrMonth===1"
                       v-model="selectYear"
                       type="year"
                       size="mini"
@@ -60,217 +54,24 @@
                       value-format="yyyy"
                       format="yyyy"
                     />
-                    <span v-if="isYearOrMonth===1" class="demonstration">年</span>
-                    <el-button v-if="isYearOrMonth===1" type="primary" size="mini" @click="SelectYearClick">搜索</el-button>
-                    <el-date-picker
-                      v-if="isYearOrMonth===2"
-                      v-model="selectYear"
-                      type="year"
-                      size="mini"
-                      style="width: 120px"
-                      placeholder="选择年"
-                      value-format="yyyy"
-                      format="yyyy"
-                    />
-                    <span v-if="isYearOrMonth===2" class="demonstration">年</span>
-                    <el-date-picker
-                      v-if="isYearOrMonth===2"
-                      v-model="selectMonth"
-                      type="month"
-                      size="mini"
-                      format="MM"
-                      style="width: 120px"
-                      value-format="MM"
-                      placeholder="选择月"
-                    />
-                    <span v-if="isYearOrMonth===2" class="demonstration">月</span>
-                    <el-button v-if="isYearOrMonth===2" type="primary" size="mini" @click="SelectMonthClick()">搜索</el-button>
+                    <span class="demonstration">年</span>
+                    <el-button type="primary" size="mini" @click="SelectYearClick">查找
+                    </el-button>
+
                   </div>
                   <el-card
-                    style="width: 98%;margin: 20px"
+                    style="width: 98%;margin: 10px"
                   >
-
-                    <el-table
-                      v-loading="targetDataLoading"
-                      :data="targetData"
-                      border
-                      size="mini"
-                      height="calc(100vh - 600px)"
-                      highlight-current-row
-                    >
-                      <el-table-column
-                        type="index"
-                        label="序号"
-                        align="center"
-                        :show-overflow-tooltip="cellOverflow"
-                      />
-                      <el-table-column
-                        prop="DeptName"
-                        label="科室"
-                        width="180"
-                        align="center"
-                      />
-                      <el-table-column
-                        prop="name"
-                        label="参数名称"
-                        width="180"
-                        align="center"
-                      />
-                      <el-table-column
-                        prop="number"
-                        label="指标值"
-
-                        align="center"
-                      />
-                      <el-table-column
-                        prop="number_target"
-                        label="目标期望值"
-
-                        align="center"
-                      />
-                    </el-table>
+                    <div><span>图表展示</span></div>
+                    <div ref="echatsRef" style="height:calc(100vh - 260px);overflow: auto"/>
                   </el-card>
 
-
-
-                  <el-row>
-                    <el-col :span="8">
-                      <td><span>图标展示</span></td>
-                    </el-col>
-                    <el-col :span="16">
-                      <td><span>统计类别：</span></td>
-                      <td>
-                        <el-select
-                          v-model="dateType"
-                          placeholder="请选择"
-                          style="width:150px"
-                          size="mini"
-                          @change="chaneType"
-                        >
-                          <el-option
-                            v-for="item in [{ value: '月度' }, { value: '季度' }]"
-                            :key="item.value"
-                            :label="item.value"
-                            :value="item.value"
-                          />
-                        </el-select>
-                      </td>
-                    </el-col>
-                    <!--                    <el-col :span="8">-->
-                    <!--                      <td><span>数值:</span></td>-->
-                    <!--                      <td>-->
-                    <!--                        <el-select v-model="downloadValue" size="mini" @change="changeTNum">-->
-                    <!--                          <el-option-->
-                    <!--                            label="数值1"-->
-                    <!--                            value="1"-->
-                    <!--                          />-->
-                    <!--                          <el-option-->
-                    <!--                            label="数值2"-->
-                    <!--                            value="2"-->
-                    <!--                          />-->
-                    <!--                          <el-option-->
-                    <!--                            label="数值3"-->
-                    <!--                            value="3"-->
-                    <!--                          />-->
-
-                    <!--                        </el-select>-->
-                    <!--                      </td>-->
-                    <!--                    </el-col>-->
-                  </el-row>
-                  <el-row>
-                    <el-col :span="24">
-                      <el-card>
-                        <div ref="zhuXingTu" class="zhuXingTu" />
-                      </el-card>
-                    </el-col>
-                  </el-row>
                 </div>
               </div>
             </div>
           </template>
         </split-pane>
 
-        <el-dialog
-          :title="targetTitle"
-          :visible.sync="isShowTargetDia"
-          width="30%"
-        >
-          <el-form ref="targetRef" :model="settingTarget" label-width="120px" status-icon>
-            <el-form-item
-              label="数值1目标值"
-              prop="Number1"
-              :rules="[
-                { type: 'number', message: '必须为数字值'}
-              ]"
-            >
-              <el-input
-                v-model.number="settingTarget.Number1"
-                style="width:30%"
-                size="small"
-                autosize
-                clearable
-              />
-            </el-form-item>
-
-
-            <el-form-item
-              label="数值2目标值"
-              prop="Number2"
-              :rules="[
-                { type: 'number', message: '必须为数字值'}
-              ]"
-            >
-              <el-input
-                v-model.number="settingTarget.Number2"
-                style="width:30%"
-                size="small"
-                autosize
-                clearable
-              />
-            </el-form-item>
-            <el-form-item
-              label="数值3目标值"
-              prop="Number3"
-              :rules="[
-                { type: 'number', message: '必须为数字值'}
-              ]"
-            >
-              <el-input
-                v-model.number="settingTarget.Number3"
-                style="width:30%"
-                size="small"
-                autosize
-                clearable
-              />
-            </el-form-item>
-          </el-form>
-          <!--      添加目标值确认按钮-->
-          <div v-if="targetTitle==='添加目标值'" slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="isShowTargetDia = false">取 消</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              :loading="settingTargetLoading"
-              @click="addTarget"
-            >新增
-            </el-button>
-          </div>
-          <!--                更新设置目标值确认按钮-->
-          <div v-else slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="isShowTargetDia = false">取 消</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              :loading="settingTargetLoading"
-              @click="updateTarget"
-            >更新
-            </el-button>
-          </div>
-          <!--          <span slot="footer" class="dialog-footer">-->
-          <!--            <el-button size="mini" @click="isShowTargetDia = false">取 消</el-button>-->
-          <!--            <el-button type="primary" size="mini" @click="addTarget">确 定</el-button>-->
-          <!--          </span>-->
-        </el-dialog>
 
       </div>
     </div>
@@ -281,8 +82,7 @@ import splitPane from 'vue-splitpane';
 import { mapGetters } from 'vuex';
 import echarts from 'echarts';
 import IndexNavTree from '@/views/indicator/components/IndexNavTree';
-import { Get_i_data_ListByCycle, SelectBIVaule1, SelectIValue1 } from '@/api/indicator/I_TargetValue';
-import { InsertObjValue, SelectObjValue, UpdateObjValue } from '@/api/indicator/I_ObjValue';
+import { Get_i_data_ListByCycle } from '@/api/indicator/I_ObjValue';
 
 export default {
   components: {
@@ -293,30 +93,11 @@ export default {
     return {
       targetDataLoading: false, // 表格加载等待
       isYearOrMonth: 2, // 按照年份还是年月查找数据，这里默认展示按年月
-      selectYear:null, // 选中的年份
-      selectMonth: null, // 选中的月份
-      chartData: [], // 图表数据
-      dateType: '月度', // 改变统计视图的值
-      targetNum: 0, // 要对比的目标值数
-      targetTitle: '添加目标值', // 添加目标值对话框标题
-      isShowTargetDia: false, // 是否显示添加或修改目标值对话框，默认隐藏
-      settingTarget: { // 添加或者更新目标值提交的数据
-        index_id: 0,
-        Number1: 0,
-        Number2: 0,
-        Number3: 0,
-        Userid: window.userInfo[0].Userid
-      },
-      settingTargetLoading: false, // 设置目标值管理确认后按钮提交等待圈关闭
-      T1: true, // 默认展示数值1
-      T2: false,
-      T3: false,
-      targetDataMon: [], // 表月份或季度
-      Number1: [],
-      Number2: [],
-      Number3: [],
-      number: 'Number1',
-      isShowTH: false, // 是否显示表头
+      selectYear: null, // 选中的年份
+      echartData: [], // 图表数据
+      echartXNameData: [], // X轴名称数据
+      echartYNumData: [], // Y轴Number数据
+      echartYTargetData: [], // Y轴Number_Target数据
       treeLoading: false, // 指标导航树等待圈
       treeData: [], // 指标导航树数据
       defaultProps: {
@@ -330,344 +111,94 @@ export default {
       GuidelinesData: [], // 指标描述数据
       parameterData: [], // 指标中的参数数据
       targetData: [], // 对应指标的目标值数据
-      indexNum: [{ // 指标数值
-        name: '实际床位',
-        number: '1',
-        fourthQuarter: '44',
-        thirdQuarter: '33',
-        secondQuarter: '22',
-        firstQuarter: '11',
-        December: '12',
-        November: '11',
-        October: '10',
-        September: '9',
-        August: '8',
-        July: '7',
-        June: '6',
-        May: '5',
-        April: '4',
-        March: '3',
-        February: '2',
-        January: '1'
-      }],
-      downloadValue: 1,
+
       indexYear: '2021', // 指标年份
-      kaoPinBanFa: false, // 考评办法对话框默认关闭
-      middlePercent: 20,
+
       nodeValue: {
         name: ''
-      },
-      dialogTitle: '',
-      dialogFormVisible: false,
-      CatalogCode: '',
-      dialogFormVisibleView: false,
-      dialogFormVisibleStatusView: false,
-      isClear: false,
-      ResortName: [],
-      fileList: [],
-      tableData: [],
-      PenaltiesData: [],
-      formCatalog: {
-        CatalogID: 0,
-        CatalogCode: '',
-        CatalogName: '',
-        Count: null,
-        IsCriterion: 0,
-        pageIndex: 1,
-        pageSize: 50,
-        UserID: window.userInfo[0].UserID,
-        DeptID: '',
-        UploadState: '0',
-        AuditStatus:
-          this.$route.params.Type || '' /* 获取首页跳过来的时的参数 */,
-        SortField: '' // 如果要设置默认字段,加上id名就可以了 如CatalogCode
-      },
-      midLoading: false,
-      midpagination: {
-        pageIndex: 1,
-        total: 0,
-        pageSize: 50,
-        pageSizes: [15, 20, 50, 100, 150, 200]
-      },
-      UploadState: this.$route.params.value || '',
-      FileStatus: [
-        {
-          label: '全部',
-          value: ''
-        },
-        {
-          label: '已上传资料',
-          value: '1'
-        },
-        {
-          label: '未上传资料',
-          value: '2'
-        }
-      ],
-      listLoading: false,
-      pagination: {
-        pageIndex: 1,
-        total: 0,
-        pageSize: 50,
-        pageSizes: [15, 20, 50, 100, 150, 200]
-      },
-      listQuery: {
-        Title: '',
-        GroupID: 0,
-        CatalogID: '',
-        Content: '1',
-        VersionNumber: '',
-        AuthorID: window.userInfo[0].UserID,
-        AllowUserID: [],
-        File_list: []
-      },
-      previewData: [],
-      seeStatusViewForm: {
-        AuditID: 0,
-        ArticleID: 0,
-        AuditUserId: 0,
-        AuditDate: '',
-        AuditStatus: 0,
-        AuditContent: '',
-        AuditRemark: '',
-        AuditMaterial: '',
-        AuditCondition: 0,
-        AuditUserName: ''
-      },
-      ArticleGroupValue: null,
-      uploadEnd: false,
-      key: 0,
-      rules: {
-        Title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-        GroupID: [{ required: true, message: '请选择资料', trigger: 'blur' }]
-      },
-      activeName: 'first',
-      materialDataTh: [],
-      addPreviewData: [],
-      currentEdit: -1 // 判断是否显示input框
+      }
     };
   },
   created() {
     let h = window.innerHeight;
     if (h < 750) h = 750;
     this.middlePercent = ((h - 629) / (h - 183)) * 100;
-    // this.SelectArticle();
-    // this.SelectIndex();
-    // this.zhuXingTu(); // 初始化柱形图
-  },
-  mounted() {
-    // this.zhuXingTu(); // 初始化柱形图
   },
   computed: {
     ...mapGetters(['device'])
   },
   methods: {
-    // 切换查找条件，年份还是月份切换之后的处理事件
-    isYearOrMonthc() {
-      const times = new Date();
-      this.selectYear = times.getFullYear() + ''; // 初始获取年份
-      if (this.isYearOrMonth === 1) { // 如果是选中年份的，不传月份selectMonth
-        this.selectMonth = '';
-      } else {
-        this.selectMonth = times.getMonth() + ''; // 默认展示上个月的数据所以不需要加1
-      }
-    },
-    SelectYearClick() {
-      if (this.selectYear === null || this.selectMonth === null) {
+    // 搜索年
+    async SelectYearClick() {
+
+      if (this.selectYear === null) {
         const times = new Date();
         this.selectYear = times.getFullYear() + ''; // 初始获取年份
-        this.selectMonth = null;
       }
-      this.$nextTick(() => {
-        this.SelectIValue();
-      });
+
+      await this.Get_i_data_ListByCycle(); // 获取图表数据
+      console.log('数据', this.echartData);
+
+      this.createEcharts();
 
     },
-    SelectMonthClick() {
-      if (this.selectYear === null || this.selectMonth === null) {
-        const times = new Date();
-        this.selectYear = times.getFullYear() + ''; // 初始获取年份
-        this.selectMonth = times.getMonth() + ''; // 初始获取年份
+
+    // 获取图表数据
+    async Get_i_data_ListByCycle() {
+      try {
+        this.echartData = []; // 清空数据
+        this.echartXNameData = []; // 清空数据
+        this.echartYNumData = []; // 清空数据
+        this.echartYTargetData = []; // 清空数据
+        if (this.selectYear === null) {
+          const times = new Date();
+          this.selectYear = times.getFullYear() + ''; // 初始获取年份
+        }
+        const { data, code } = await Get_i_data_ListByCycle({
+          index_Id: this.nodeValue.index_id,
+          year: this.selectYear
+        });
+        if (code === 200) {
+          this.echartData = data;
+
+          this.echartData.map((item) => {
+            this.echartXNameData.push(item.Month + '月');
+            this.echartYNumData.push(item.Number);
+            this.echartYTargetData.push(item.Number_Target);
+          });
+
+        }
+      } catch (e) {
+        console.log(e);
       }
-      this.$nextTick(() => {
-        this.SelectIValue();
-      });
     },
     // 查询指标，获取指标导航树数据,// 单击指标导航树
     async nodeClickCatalog(value) {
       this.isShowTH = false; // 只要点击节点，先隐藏表头
       console.log(value);
       this.nodeValue = value;
-      await this.SelectObjValue(); // 查询指定目标值
-      await this.SelectMonthClick(); // 查询对应指标的目标值数据
-    },
-    // 查询对应指标的目标值数据
-    async SelectIValue() {
-      // // 因为要根据downloadValue，1,2，3，的值传相应的参数Number1，Number2，Number3
-      // if (this.downloadValue === 1) {
-      //   this.targetNum = this.settingTarget.Number1;
-      //   this.number = 'Number1';
-      // }
-      // if (this.downloadValue === 2) {
-      //   this.targetNum = this.settingTarget.Number2;
-      //   this.number = 'Number2';
-      // }
-      // if (this.downloadValue === 3) {
-      //   this.targetNum = this.settingTarget.Number3;
-      //   this.number = 'Number3';
-      // }
-      this.targetData = [];
-      this.chartData = [];
-      this.isShowTH = false; // 开始查询的时候先恢复初始，不显示表
-      try {
-        this.targetDataLoading = true; // 开启表格加载等待
-        const { data } = await Get_i_data_ListByCycle({
-          index_id: this.nodeValue.index_id,
-          year: this.selectYear || 2021,
-          month: this.selectMonth
-        });
 
-        this.targetData = data;
-        this.targetDataLoading = false; // 关闭表格加载等待
-        if (this.targetData.length > 0) {
-          this.isShowTH = true; // 如果表有数据，就显示表头
-        }
-        // 查询图表数据
-        const data1 = await SelectBIVaule1({
-          index_id: this.nodeValue.index_id,
-          year: this.indexYear || 2021,
-          number: this.number,
-          num: this.downloadValue,
-          monthOr: this.dateType
-        });
-        this.chartData = data1.data;
+      await this.Get_i_data_ListByCycle();
 
-        this.zhuXingTu();
-        console.log('目标值数据', this.targetData);
-      } catch (e) {
-        this.targetDataLoading = false; // 关闭表格加载等待
-        console.log(e);
-      }
+      this.createEcharts();
     },
-    // 打开添加目标值对话框
-    openAddTargetDia() {
-      this.isShowTargetDia = true; // 打开目标值对话框
-    },
-    // 查询指定目标值
-    async SelectObjValue() {
-      try {
-        const { data, code } = await SelectObjValue({
-          index_id: this.nodeValue.index_id
-        });
-        if (code === 200) {
-          if (data.length === 0) { // 为0 代表还没设置目标值
-            this.settingTarget.Number1 = 0; // 获取另外节点中的目标值之前，重置
-            this.settingTarget.Number2 = 0;
-            this.settingTarget.Number3 = 0;
-            this.targetTitle = '添加目标值'; // 这时候改变设置目标值对话框标题
-          } else { // 其他代表已经设置目标值
-            this.settingTarget = data[0]; // 将获取的数据存放在settingTarget对象中
-            this.targetTitle = '修改目标值'; // 这时候改变设置目标值对话框标题
+    createEcharts() {
+      const colors = ['#5470C6', '#91CC75'];
+
+      const main_ = echarts.init(this.$refs.echatsRef);
+      this.option = {
+        color: colors,
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross'
           }
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    // 添加目标值
-    async addTarget() {
-      this.settingTargetLoading = true; // 设置目标值管理确认后按钮提交等待圈开启
-      try {
-        const { code } = await InsertObjValue( // 之所以加|| 0是为了如果清楚了input框中的数值，没有数值就导致出错
-          {
-            index_id: this.nodeValue.index_id,
-            Number1: this.settingTarget.Number1 || 0,
-            Number2: this.settingTarget.Number2 || 0,
-            Number3: this.settingTarget.Number3 || 0
-          }
-        );
-        if (code === 200) {
-          this.$message.success('设置成功');
-          this.settingTargetLoading = false; // 设置目标值管理确认后按钮提交等待圈关闭
-          this.isShowTargetDia = false; // 关闭新增目标值对话框
-          this.SelectObjValue(); // 查询指定目标值，刷新
-        }
-      } catch (e) {
-        this.settingTargetLoading = false; // 设置目标值管理确认后按钮提交等待圈关闭
-        console.log(e);
-      }
-    },
-    // 更新目标值
-    async updateTarget() {
-      this.settingTargetLoading = true; // 设置目标值管理确认后按钮提交等待圈开启
-      try {
-        const { code } = await UpdateObjValue( // 之所以加|| 0是为了如果清楚了input框中的数值，没有数值就导致出错
-          {
-            index_id: this.nodeValue.index_id,
-            Number1: this.settingTarget.Number1 || 0,
-            Number2: this.settingTarget.Number2 || 0,
-            Number3: this.settingTarget.Number3 || 0
-          }
-        );
-        if (code === 200) {
-          this.$message.success('更新成功');
-          this.settingTargetLoading = false; // 设置目标值管理确认后按钮提交等待圈关闭
-          this.isShowTargetDia = false; // 关闭更新目标值对话框
-          await this.SelectObjValue(); // 查询指定目标值，刷新
-        }
-      } catch (e) {
-        this.settingTargetLoading = false; // 设置目标值管理确认后按钮提交等待圈关闭
-        console.log(e);
-      }
-    },
-    // 改变表数据,通过选择数值
-    changeTNum(val) { // 选择要显示的数值
-      this.SelectIValue();
-    },
-    // 改变表数据,通过选择年份
-    changeTYear(val) {
-      this.SelectIValue();
-    },
-    // 改变统计视图
-    chaneType(val) {
-      this.dateType = val;
-      this.SelectIValue();
-    },
-    zhuXingTu() {
-      var chartDom = this.$refs.zhuXingTu;
-      var myChart = echarts.init(chartDom);
-      const data1 = this.chartData;
-      const xAxisName = []; // x轴刻度的名字如1到12月
-      var nowMonth = []; // 本年本月的数据
-      var lastMonth = []; // 上年对应的月的数据
-      console.log('data1', data1);
-      data1.map((item) => {
-        xAxisName.push(item['月份/季度']);
-        nowMonth.push(item['本年']);
-        lastMonth.push(item['上年']);
-      });
-      // if (this.dateType === '月度') { // 展示12个月
-      //   xAxisName = data2.slice(0, 12);
-      //   nowMonth = data3.slice(0, 12);
-      //   lastMonth = data3.slice(0, 12);
-      // } else { // 展示季度
-      //   xAxisName = data2.slice(12, 16);
-      //   nowMonth = data3.slice(12, 16);
-      //   lastMonth = data3.slice(12, 16);
-      // }
-      var option;
-      option = {
-        legend: {
-          data: ['上一年', '本年']
         },
-        xAxis: {
-          show: true, // 是否显示 x 轴
-          type: 'category',
-          axisLabel: { interval: '' },
-          data: xAxisName
-        },
-        yAxis: {
-          type: 'value'
+        grid: {
+          left: '5%',
+          right: '10%',
+          bottom: '1%',
+          containLabel: true
         },
         toolbox: {
           feature: {
@@ -676,113 +207,88 @@ export default {
             saveAsImage: { show: true }
           }
         },
-        series: [
+        legend: {
+          data: ['月份', '目标值']
+        },
+        xAxis: [
           {
-            name: '上一年',
-            barWidth: 20, // 柱形图宽度
-            // barGap: '5%',
-            // barCategoryGap:'50%',/*多个并排柱子设置柱子之间的间距*/
-
-            markLine: { // 预警线
-              symbol: 'none',
-              data: [
-                {
-                  silent: false, // 鼠标悬停事件  true没有，false有
-                  lineStyle: { // 警戒线的样式  ，虚实  颜色
-                    type: 'solid',
-                    color: '#FA3934'
-                  },
-                  label: {
-                    position: 'end',
-                    formatter: '目标值' + this.targetNum,
-                    fontSize: '12'
-                  },
-                  yAxis: this.targetNum // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
-                }
-              ]
+            type: 'category',
+            axisTick: {
+              alignWithLabel: true
             },
-            data: lastMonth,
-            type: 'bar',
-            itemStyle: { // 上方显示数值
-              normal: {
-                // color: '#13ce66',
-                label: {
-                  show: true, // 开启显示
-                  position: 'top', // 在上方显示
-                  textStyle: { // 数值样式
-                    color: 'black',
-                    fontSize: 12
-                  }
-                }
-              }
-            }
-          },
+            data: this.echartXNameData
+          }
+        ],
+        yAxis: [
           {
-            name: '本年',
-            barWidth: 20, // 柱形图宽度
-            markLine: { // 预警线
-              symbol: 'none',
-              data: [
-                {
-                  silent: false, // 鼠标悬停事件  true没有，false有
-                  lineStyle: { // 警戒线的样式  ，虚实  颜色
-                    type: 'solid',
-                    color: '#FA3934'
-                  },
-                  label: {
-                    position: 'end',
-                    formatter: '目标值' + this.targetNum,
-                    fontSize: '12'
-                  },
-                  yAxis: this.targetNum // 警戒线的标注值，可以有多个yAxis,多条警示线   或者采用   {type : 'average', name: '平均值'}，type值有  max  min  average，分为最大，最小，平均值
-                }
-              ]
-            },
-            data: nowMonth,
-            // barGap: '5%',
-            // barCategoryGap:'50%',/*多个并排柱子设置柱子之间的间距*/
-            type: 'bar',
-            itemStyle: { // 上方显示数值
-              normal: {
-                // color: '#13ce66',
-                label: {
-                  show: true, // 开启显示
-                  position: 'top', // 在上方显示
-                  textStyle: { // 数值样式
-                    color: 'black',
-                    fontSize: 12
-                  }
-                }
+            type: 'value',
+            name: '数量',
+            position: 'left',
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: colors[0]
               }
+            },
+            axisLabel: {
+              formatter: '{value} '
             }
           }
-
-
+        ],
+        series: [
+          {
+            name: '月份',
+            type: 'bar',
+            data: this.echartYNumData,
+            itemStyle: { // 上方显示数值
+              normal: {
+                // color: '#13ce66',
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: 'black'
+                  }
+                }
+              }
+            },
+            barWidth: 40 // 柱形图宽度
+          },
+          {
+            name: '目标值',
+            type: 'line',
+            data: this.echartYTargetData,
+            itemStyle: { // 上方显示数值
+              normal: {
+                // color: '#13ce66',
+                label: {
+                  show: true, // 开启显示
+                  position: 'top', // 在上方显示
+                  textStyle: { // 数值样式
+                    color: '#91CC75'
+                  }
+                }
+              }
+            },
+            barWidth: 40 // 柱形图宽度
+          }
         ]
       };
-      option && myChart.setOption(option);
+      main_.setOption(this.option, true);
+      this.$nextTick(() => {
+        this.echartData = []; // 清空数据
+        this.echartXNameData = []; // 清空数据
+        this.echartYNumData = []; // 清空数据
+        this.echartYTargetData = []; // 清空数据
+      });
     }
+
   }
 };
 </script>
-<style lang="scss" >
+<style lang="scss">
 @import "src/styles/loading.scss";
-.zhuXingTu {
-  height: 450px;
-}
 
-.targetVis {
-  display: flex;
-  width: 50%;
-  height: 20px;
-  line-height: 40px;
-  margin-left: 20px;
-  justify-content: space-between;
-
-  .div {
-    display: flex;
-  }
-}
 
 .lineTree {
   height: 76vh;

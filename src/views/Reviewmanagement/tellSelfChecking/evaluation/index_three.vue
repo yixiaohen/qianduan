@@ -2,26 +2,17 @@
   <div class="EvaluationThree">
     <el-card class="box-card">
       <div
-        slot="header"
-        :style="{ height: clearfixHeight + 'px' }"
-        class="clearfix"
+        style="width: 100%;
+        background-color:#f4f4f5;
+        display: inline-block;
+        height: 32px;
+        line-height: 32px;"
       >
         <el-form
           :inline="true"
           :model="EvaluationForm"
           size="mini"
         >
-          <el-form-item>
-            <el-button
-              :class="
-                clearfixHeight == 30
-                  ? 'el-icon-arrow-right'
-                  : 'el-icon-arrow-down'
-              "
-              size="mini"
-              @click="unfold"
-            />
-          </el-form-item>
           <el-form-item>
             <el-input
               v-model="EvaluationForm.CatalogCode"
@@ -32,6 +23,63 @@
               @keyup.enter.native="clickSelectEvaluation()"
             />
           </el-form-item>
+          <el-divider direction="vertical"/>
+          <el-form-item>
+            <cascaderFilter @getDeptorUser="getDeptorUser"/>
+          </el-form-item>
+          <el-divider direction="vertical"/>
+          <el-form-item>
+            <period @getPeriodValue="getPeriodValue"/>
+          </el-form-item>
+          <el-divider direction="vertical"/>
+          <el-form-item>
+            <el-select
+              v-model="EvaluationForm.Progress"
+              size="mini"
+              clearable
+              style="width: 120px"
+              placeholder="进度"
+              @keyup.enter.native="clickSelectEvaluation()"
+            >
+              <el-option
+                v-for="item in schedule"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-divider direction="vertical"/>
+          <el-form-item>
+            <el-input
+              v-model="EvaluationForm.Grade"
+              placeholder="最终评审结果"
+              style="width: 120px"
+              size="mini"
+              clearable
+              @keyup.enter.native="clickSelectEvaluation()"
+            />
+          </el-form-item>
+          <el-divider direction="vertical"/>
+          <el-form-item>
+            <el-select
+              v-model="EvaluationForm.GroupIDArr"
+              size="mini"
+              clearable
+              style="width: 120px"
+              placeholder="组别"
+              multiple
+              @change="changeGroupID"
+            >
+              <el-option
+                v-for="GroupItem in SelectGroupListData"
+                :key="GroupItem.GroupID"
+                :label="GroupItem.GroupName"
+                :value="GroupItem.GroupID"
+              />
+            </el-select>
+          </el-form-item>
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select
               v-model="EvaluationForm.StepValue"
@@ -56,9 +104,6 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <cascaderFilter @getDeptorUser="getDeptorUser" />
-          </el-form-item>
-          <el-form-item>
             <el-input
               v-model="EvaluationForm.CurrentGrade"
               placeholder="当前层级评审结果"
@@ -68,16 +113,7 @@
               @keyup.enter.native="clickSelectEvaluation()"
             />
           </el-form-item>
-          <!-- <el-form-item>
-            <el-select v-model="value" size="mini" style="width: 120px;" clearable placeholder="自评结果">
-              <el-option
-                v-for="item in selfResult"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>-->
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select
               v-model="EvaluationForm.UploadStatus"
@@ -97,6 +133,7 @@
               />
             </el-select>
           </el-form-item>
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select
               v-model="status"
@@ -116,36 +153,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <period @getPeriodValue="getPeriodValue" />
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model="EvaluationForm.Progress"
-              size="mini"
-              clearable
-              style="width: 120px"
-              placeholder="进度"
-              @keyup.enter.native="clickSelectEvaluation()"
-            >
-              <el-option
-                v-for="item in schedule"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              v-model="EvaluationForm.Grade"
-              placeholder="最终评审结果"
-              style="width: 120px"
-              size="mini"
-              clearable
-              @keyup.enter.native="clickSelectEvaluation()"
-            />
-          </el-form-item>
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select
               v-model="EvaluationForm.CurrentStatus"
@@ -172,27 +180,19 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model="EvaluationForm.GroupIDArr"
-              size="mini"
-              clearable
-              style="width: 120px"
-              placeholder="组别"
-              multiple
-              @change="changeGroupID"
-            >
-              <el-option
-                v-for="GroupItem in SelectGroupListData"
-                :key="GroupItem.GroupID"
-                :label="GroupItem.GroupName"
-                :value="GroupItem.GroupID"
-              />
-            </el-select>
-          </el-form-item>
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-checkbox v-model="EvaluationForm.assignedMe">分配给我的</el-checkbox>
           </el-form-item>
+          <el-divider direction="vertical"/>
+          <el-form-item>
+            <el-checkbox
+              v-model="EvaluationForm.UnReview"
+              @change="UnReviewChange"
+            >未审资料
+            </el-checkbox>
+          </el-form-item>
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-button
               type="primary"
@@ -202,9 +202,8 @@
               @click="clickSelectEvaluation"
             >搜索
             </el-button>
-            <!-- <el-button type="info" icon="el-icon-search" size="mini" @click="dialogTableVisible = true">个人工作进度</el-button>
-            <el-button type="info" icon="el-icon-search" size="mini">导出评审条款</el-button>-->
           </el-form-item>
+          <el-divider direction="vertical"/>
           <el-form-item style="width: 150px">
             <el-select
               v-model="downloadValue"
@@ -243,138 +242,133 @@
             >导出
             </el-button>
           </el-form-item>
-          <el-form-item>
-            <el-checkbox
-              v-model="EvaluationForm.UnReview"
-              @change="UnReviewChange"
-            >未审资料
-            </el-checkbox>
-          </el-form-item>
+
         </el-form>
       </div>
-      <div class="content">
-        <el-table
-          v-loading="listLoading"
-          :data="tableData"
-          style="width: 100%"
-          border
-          highlight-current-row
-          size="mini"
-          height="calc(100vh - 210px)"
-          :row-class-name="tableRowClassName"
-          stripe
+
+      <el-table
+        v-loading="listLoading"
+        :data="tableData"
+        border
+        highlight-current-row
+        size="mini"
+        style="margin-top: 10px"
+        height="calc(100vh - 260px)"
+        :row-class-name="tableRowClassName"
+        stripe
+        tooltip-effect="light"
+      >
+        <el-table-column
+          type="expand"
+          label="详情"
         >
-          <el-table-column
-            type="expand"
-            label="详情"
-          >
-            <template slot-scope="{ row }">
-              <el-form
-                label-position="left"
-                class="demo-table-expand"
-              >
-                <el-form-item label="评审状态">
-                  <span>{{ row.isAudit }}</span>
-                </el-form-item>
-                <el-form-item label="评审结果">
-                  <!--                   <p v-if="gradeType">
+          <template slot-scope="{ row }">
+            <el-form
+              label-position="left"
+              class="demo-table-expand"
+            >
+              <el-form-item label="评审状态">
+                <span>{{ row.isAudit }}</span>
+              </el-form-item>
+              <el-form-item label="评审结果">
+                <!--                   <p v-if="gradeType">
                     {{
                       row.Matter_Solution[row.Matter_Solution.length - 1] &&
                       row.Matter_Solution[row.Matter_Solution.length - 1].Grade
                     }}
                   </p> -->
+                <p
+                  v-for="(item, index) in row.Matter_Solution"
+                  :key="index"
+                >
+                  {{ item.Grade }}
+                </p>
+              </el-form-item>
+              <el-form-item label="存在问题">
+                <span>
                   <p
                     v-for="(item, index) in row.Matter_Solution"
                     :key="index"
                   >
-                    {{ item.Grade }}
+                    {{ item.Matter }}
                   </p>
-                </el-form-item>
-                <el-form-item label="存在问题">
-                  <span>
-                    <p
-                      v-for="(item, index) in row.Matter_Solution"
-                      :key="index"
-                    >
-                      {{ item.Matter }}
-                    </p>
-                  </span>
-                </el-form-item>
-                <el-form-item label="改进措施">
-                  <span>
-                    <p
-                      v-for="(item, index) in row.Matter_Solution"
-                      :key="index"
-                    >
-                      {{ item.Solution }}
-                    </p>
-                  </span>
-                </el-form-item>
-                <el-form-item label="最终结果">
-                  <span>{{ row.Grade }}</span>
-                </el-form-item>
-                <el-form-item label="评审人">
-                  <span>{{ row.CreateUserName }}</span>
-                </el-form-item>
-                <el-form-item label="评审日期">
-                  <span>{{ row.CreateDate }}</span>
-                </el-form-item>
-                <el-form-item label="整改时间">
-                  <span>{{ row.RectifyEndTime.replace('T', ' ') }}</span>
-                </el-form-item>
-                <!--<el-form-item label="是否达标">
+                </span>
+              </el-form-item>
+              <el-form-item label="改进措施">
+                <span>
+                  <p
+                    v-for="(item, index) in row.Matter_Solution"
+                    :key="index"
+                  >
+                    {{ item.Solution }}
+                  </p>
+                </span>
+              </el-form-item>
+              <el-form-item label="最终结果">
+                <span>{{ row.Grade }}</span>
+              </el-form-item>
+              <el-form-item label="评审人">
+                <span>{{ row.CreateUserName }}</span>
+              </el-form-item>
+              <el-form-item label="评审日期">
+                <span>{{ row.CreateDate }}</span>
+              </el-form-item>
+              <el-form-item label="整改时间">
+                <span>{{ row.RectifyEndTime.replace('T', ' ') }}</span>
+              </el-form-item>
+              <!--<el-form-item label="是否达标">
                   <span>{{ row.Standard === 0 ? "否" : "是" }}</span>
                 </el-form-item>-->
-              </el-form>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="CatalogCode"
-            label="标准"
-            width="69"
-          >
-            <template slot-scope="{ row }">
-              <span
-                class="CatalogName"
-                @click="history(row)"
-              >{{
-                  row.CatalogCode
-               }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="TypeName"
-            label="章节"
-            align="center"
-            width="120"
-            :show-overflow-tooltip="cellOverflow"
-          />
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="CatalogCode"
+          label="标准"
+          width="69"
+        >
+          <template slot-scope="{ row }">
+            <span
+              class="CatalogName"
+              @click="history(row)"
+            >{{
+                row.CatalogCode
+             }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="TypeName"
+          label="章节"
+          align="center"
+          width="120"
+          :show-overflow-tooltip="cellOverflow"
+        />
 
-          <el-table-column
-            prop="ManageName"
-            label="主管人员"
-            align="center"
-            width="120"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <!--        宁海妇幼保健院不显示核心条款-->
-          <el-table-column
-            v-if="CatalogVersion !== '宁海妇幼保健院'"
-            prop="IsPoint"
-            label="核心条款"
-            align="center"
-            width="70"
-          >
-            <template slot-scope="{ row }">
-              <el-tag
-                size="mini"
-                :type="row.IsPoint === 0 ? 'danger' : 'success'"
-              >
-                {{ row.IsPoint === 0 ? '否' : '是' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <!-- <el-table-column label="执行人员自评" align="center">
+        <el-table-column
+          prop="ManageName"
+          label="主管人员"
+          align="center"
+          width="120"
+          :show-overflow-tooltip="cellOverflow"
+        />
+        <!--        宁海妇幼保健院不显示核心条款-->
+        <el-table-column
+          v-if="CatalogVersion !== '宁海妇幼保健院'"
+          prop="IsPoint"
+          label="核心条款"
+          align="center"
+          width="70"
+        >
+          <template slot-scope="{ row }">
+            <el-tag
+              size="mini"
+              :type="row.IsPoint === 0 ? 'danger' : 'success'"
+            >
+              {{ row.IsPoint === 0 ? '否' : '是' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="执行人员自评" align="center">
             <el-table-column
               v-if="gradeType"
               label="评审结果"
@@ -414,157 +408,157 @@
               </template>
             </el-table-column>
           </el-table-column> -->
-          <el-table-column
-            label="评审状态"
-            prop="isAudit"
-            width="100"
-            align="center"
-          />
-          <!--          <el-table-column-->
-          <!--            :label="CatalogVersion === '广东标准' ? '是否达标' : '是否达标'"-->
-          <!--            prop="Standard"-->
-          <!--            align="center"-->
-          <!--          >-->
-          <!--            <template slot-scope="{ row }">-->
-          <!--              {{ row.Standard == 0 ? '否' : '是' }}-->
-          <!--            </template>-->
-          <!--          </el-table-column>-->
-          <!--        宁海妇幼保健院不显示当前级评审状态-->
-          <el-table-column
-            v-if="CatalogVersion !== '宁海妇幼保健院'"
-            label="当前级评审状态"
-            prop="CurrentAudit"
-            width="110"
-            align="center"
-          />
-          <el-table-column
-            :label="selectData.menu_three + '审查结果'"
-            width="145"
-            prop="Grade"
-            align="center"
-            :show-overflow-tooltip="cellOverflow"
-          >
-            <template slot-scope="scope">
-              <p v-if="gradeType">
-                {{
-                  scope.row.Matter_Solution[
-                  scope.row.Matter_Solution.length - 1
-                    ] &&
-                  scope.row.Matter_Solution[
-                  scope.row.Matter_Solution.length - 1
-                    ].Grade
-                }}
-              </p>
-              <p
-                v-for="(item, index) in scope.row.Matter_Solution"
-                v-else
-                :key="index"
-              >
-                {{ item.Grade }}
-              </p>
-            </template>
-          </el-table-column>
-          <!--        宁海妇幼保健院不显示当前自评人员评审结果-->
-          <el-table-column
-            v-if="CatalogVersion !== '宁海妇幼保健院'"
-            :label="para.menu_one+'评审结果'"
-            width="145"
-            prop="Step1Grade"
-            align="center"
-          />
-          <el-table-column
-            :label="para.menu_two+'评审结果'"
-            width="145"
-            prop="Step2Grade"
-            align="center"
-          />
-          <el-table-column
-            label="存在问题"
-            width="150"
-            :show-overflow-tooltip="cellOverflow"
-          >
-            <template slot-scope="scope">
-              <p
-                v-for="(item, index) in scope.row.Matter_Solution"
-                :key="index"
-              >
-                {{ item.Matter }}
-              </p>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="改进措施"
-            width="150"
-            :show-overflow-tooltip="cellOverflow"
-          >
-            <template slot-scope="scope">
-              <p
-                v-for="(item, index) in scope.row.Matter_Solution"
-                :key="index"
-              >
-                {{ item.Solution }}
-              </p>
-            </template>
-          </el-table-column>
+        <el-table-column
+          label="评审状态"
+          prop="isAudit"
+          width="100"
+          align="center"
+        />
+        <!--          <el-table-column-->
+        <!--            :label="CatalogVersion === '广东标准' ? '是否达标' : '是否达标'"-->
+        <!--            prop="Standard"-->
+        <!--            align="center"-->
+        <!--          >-->
+        <!--            <template slot-scope="{ row }">-->
+        <!--              {{ row.Standard == 0 ? '否' : '是' }}-->
+        <!--            </template>-->
+        <!--          </el-table-column>-->
+        <!--        宁海妇幼保健院不显示当前级评审状态-->
+        <el-table-column
+          v-if="CatalogVersion !== '宁海妇幼保健院'"
+          label="当前级评审状态"
+          prop="CurrentAudit"
+          width="110"
+          align="center"
+        />
+        <el-table-column
+          :label="selectData.menu_three + '审查结果'"
+          width="145"
+          prop="Grade"
+          align="center"
+          :show-overflow-tooltip="cellOverflow"
+        >
+          <template slot-scope="scope">
+            <p v-if="gradeType">
+              {{
+                scope.row.Matter_Solution[
+                scope.row.Matter_Solution.length - 1
+                  ] &&
+                scope.row.Matter_Solution[
+                scope.row.Matter_Solution.length - 1
+                  ].Grade
+              }}
+            </p>
+            <p
+              v-for="(item, index) in scope.row.Matter_Solution"
+              v-else
+              :key="index"
+            >
+              {{ item.Grade }}
+            </p>
+          </template>
+        </el-table-column>
+        <!--        宁海妇幼保健院不显示当前自评人员评审结果-->
+        <el-table-column
+          v-if="CatalogVersion !== '宁海妇幼保健院'"
+          :label="para.menu_one+'评审结果'"
+          width="145"
+          prop="Step1Grade"
+          align="center"
+        />
+        <el-table-column
+          :label="para.menu_two+'评审结果'"
+          width="145"
+          prop="Step2Grade"
+          align="center"
+        />
+        <el-table-column
+          label="存在问题"
+          width="150"
+          :show-overflow-tooltip="cellOverflow"
+        >
+          <template slot-scope="scope">
+            <p
+              v-for="(item, index) in scope.row.Matter_Solution"
+              :key="index"
+            >
+              {{ item.Matter }}
+            </p>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="改进措施"
+          width="150"
+          :show-overflow-tooltip="cellOverflow"
+        >
+          <template slot-scope="scope">
+            <p
+              v-for="(item, index) in scope.row.Matter_Solution"
+              :key="index"
+            >
+              {{ item.Solution }}
+            </p>
+          </template>
+        </el-table-column>
 
-          <el-table-column
-            label="最终结果"
-            width="70"
-            prop="Grade"
-            align="center"
-          />
+        <el-table-column
+          label="最终结果"
+          width="70"
+          prop="Grade"
+          align="center"
+        />
 
-          <el-table-column
-            label="评审人"
-            width="150"
-            prop="CreateUserName"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            label="评审日期"
-            width="135"
-            align="center"
-            prop="CreateDate"
-          >
-            <template slot-scope="{ row }">{{ row.CreateDate }}</template>
-          </el-table-column>
-          <!--          评审按钮-->
-          <el-table-column
-            label="评审"
-            align="center"
-            fixed="right"
-            width="60"
-          >
-            <template slot-scope="scope">
-              <el-button
-                type="primary"
-                size="mini"
-                icon="el-icon-s-check"
-                :style="{backgroundColor:( ReviewIndex1===scope.$index?'#42b983':'#1890ff')}"
-                :disabled="scope.row.Lock === 1 ? true : false"
-                @click.native.prevent="Review(scope.row,scope.$index)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="整改时间"
-            width="135"
-            align="center"
-            prop="RectifyEndTime"
-          >
-            <template slot-scope="{ row }">{{ row.RectifyEndTime }}</template>
-          </el-table-column>
-          <el-table-column
-            :label="CatalogVersion === '广东标准' ? '是否达标' : '是否达标'"
-            prop="Standard"
-            align="center"
-            width="70"
-          >
-            <template slot-scope="{ row }">
-              {{ row.Standard == 0 ? '否' : '是' }}
-            </template>
-          </el-table-column>
-          <!--<el-table-column
+        <el-table-column
+          label="评审人"
+          width="150"
+          prop="CreateUserName"
+          :show-overflow-tooltip="cellOverflow"
+        />
+        <el-table-column
+          label="评审日期"
+          width="135"
+          align="center"
+          prop="CreateDate"
+        >
+          <template slot-scope="{ row }">{{ row.CreateDate }}</template>
+        </el-table-column>
+        <!--          评审按钮-->
+        <el-table-column
+          label="评审"
+          align="center"
+          fixed="right"
+          width="60"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-s-check"
+              :style="{backgroundColor:( ReviewIndex1===scope.$index?'#42b983':'#1890ff')}"
+              :disabled="scope.row.Lock === 1 ? true : false"
+              @click.native.prevent="Review(scope.row,scope.$index)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="整改时间"
+          width="135"
+          align="center"
+          prop="RectifyEndTime"
+        >
+          <template slot-scope="{ row }">{{ row.RectifyEndTime }}</template>
+        </el-table-column>
+        <el-table-column
+          :label="CatalogVersion === '广东标准' ? '是否达标' : '是否达标'"
+          prop="Standard"
+          align="center"
+          width="70"
+        >
+          <template slot-scope="{ row }">
+            {{ row.Standard == 0 ? '否' : '是' }}
+          </template>
+        </el-table-column>
+        <!--<el-table-column
             label="是否达标"
             prop="Standard"
             width="100"
@@ -574,54 +568,55 @@
               row.Standard === 0 ? "否" : "是"
             }}</template>
           </el-table-column>-->
-          <el-table-column
-            label="操作"
-            fixed="right"
-            align="center"
-            width="150"
-          >
-            <template slot-scope="scope">
-              <el-button
-                :type="scope.row.Lock === 1 ? 'info' : 'warning'"
-                size="mini"
-                :disabled="scope.row.isAudit == '未审核' ? true : false"
-                :icon="scope.row.Lock === 1 ? 'el-icon-lock' : 'el-icon-unlock'"
-                @click.native.prevent="UpdateLock(scope.row)"
-              />
-              <el-button
-                v-if="userCode === 'admin'"
-                type="danger"
-                size="mini"
-                icon="el-icon-delete"
-                :disabled="scope.row.Lock === 1 ? true : false"
-                @click.native.prevent="UpdateRevoke(scope.row)"
-              />
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-row>
-          <el-col :span="3">
-            <el-switch
-              v-model="cellOverflow"
-              style="margin: 6px 0px"
-              active-text="收起"
-              inactive-text="展开"
+        <el-table-column
+          label="操作"
+          fixed="right"
+          align="center"
+          width="150"
+        >
+          <template slot-scope="scope">
+            <el-button
+              :type="scope.row.Lock === 1 ? 'info' : 'warning'"
+              size="mini"
+              :disabled="scope.row.isAudit == '未审核' ? true : false"
+              :icon="scope.row.Lock === 1 ? 'el-icon-lock' : 'el-icon-unlock'"
+              @click.native.prevent="UpdateLock(scope.row)"
             />
-          </el-col>
-          <el-col :span="20">
-            <el-pagination
-              background
-              :current-page.sync="pagination.pageIndex"
-              :page-size="pagination.pageSize"
-              :page-sizes="pagination.pageSizes"
-              :total="pagination.total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
+            <el-button
+              v-if="userCode === 'admin'"
+              type="danger"
+              size="mini"
+              icon="el-icon-delete"
+              :disabled="scope.row.Lock === 1 ? true : false"
+              @click.native.prevent="UpdateRevoke(scope.row)"
             />
-          </el-col>
-        </el-row>
-      </div>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-row>
+        <el-col :span="3">
+          <el-switch
+            v-model="cellOverflow"
+            style="margin: 26px 0px"
+            active-text="收起"
+            inactive-text="展开"
+          />
+        </el-col>
+        <el-col :span="20">
+          <el-pagination
+            background
+            style="margin: 26px 0 0 0"
+            :current-page.sync="pagination.pageIndex"
+            :page-size="pagination.pageSize"
+            :page-sizes="pagination.pageSizes"
+            :total="pagination.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </el-col>
+      </el-row>
+
     </el-card>
     <!-- <el-dialog
       title="个人工作进度"
@@ -1288,10 +1283,10 @@
         </el-form-item>
         <div style="display: flex; flex-wrap: wrap; justify-content: space-between">
           <el-form-item label="上传日期">
-            <el-input v-model="seeStatusViewForm.CreatDate" />
+            <el-input v-model="seeStatusViewForm.CreatDate"/>
           </el-form-item>
           <el-form-item label="上传人">
-            <el-input v-model="seeStatusViewForm.AuthorName" />
+            <el-input v-model="seeStatusViewForm.AuthorName"/>
           </el-form-item>
           <el-form-item
             v-if="ReviewRow.CatalogType === 1"
@@ -1462,7 +1457,7 @@
       :visible.sync="dialogFormVisibleView"
       width="50%"
     >
-      <filePreview :preview-data="previewData" />
+      <filePreview :preview-data="previewData"/>
       <div
         class="htmlPane"
         v-html="seeStatusViewForm.Content"
@@ -1484,7 +1479,7 @@
       :visible.sync="uploadDialog"
       :width="device === 'desktop' ? '50%' : '99%'"
     >
-      <filePreview :preview-data="previewData" />
+      <filePreview :preview-data="previewData"/>
     </el-dialog>
     <el-dialog
       v-adaptive
@@ -1552,7 +1547,7 @@
           :preview-data="uploadForm.File_list"
           :delete-show-file="true"
         />
-        <tinymce ref="tinymceRef" />
+        <tinymce ref="tinymceRef"/>
       </el-form>
       <div
         slot="footer"
@@ -1805,7 +1800,7 @@ export default {
         GroupID: [],
         GroupIDArr: [],
         UserIDs: '',
-        StepValue: 3,
+        StepValue: null, // 原先默认为3=》监管人员审核，现在改为null主要为了不一开始就显示监管人员审核
         CurrentGrade: this.$route.params.Grade || '',
         CurrentStatus: this.$route.params.CurrentStatus || '',
         assignedMe: true,
@@ -2877,6 +2872,13 @@ export default {
 };
 </script>
 <style lang="scss">
+.box-card {
+  width: 98%;
+  margin: 10px;
+  height: 87vh;
+  overflow: auto;
+}
+
 .EvaluationThree {
   .el-loading-spinner {
     width: 30px;

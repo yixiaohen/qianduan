@@ -1,25 +1,19 @@
 <template>
-  <el-container
-    class="CatalogAuthorization"
-  >
-    <el-header
-      :style="{ height: clearfixHeight + 'px' }"
-      class="clearfix"
+  <el-card style="width: 98%;margin: 10px;height: 87vh;overflow: auto">
+
+
+    <div
+      style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
     >
       <el-form
         :inline="true"
         size="mini"
       >
-        <el-form-item>
-          <el-button
-            :class="
-              clearfixHeight == 30
-                ? 'el-icon-arrow-right'
-                : 'el-icon-arrow-down'
-            "
-            @click="unfold"
-          />
-        </el-form-item>
+
         <el-form-item>
           <el-input
             v-model="CatalogCodes"
@@ -30,6 +24,7 @@
             @keyup.enter.native="clickSelectCatalogAuthorization()"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="UserNames"
@@ -40,6 +35,7 @@
             @keyup.enter.native="clickSelectCatalogAuthorization()"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="formData.CatalogName"
@@ -67,7 +63,7 @@
         <!--            />-->
         <!--          </el-select>-->
         <!--        </el-form-item>-->
-
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-select
             v-model="formData.Status"
@@ -85,16 +81,18 @@
             />
           </el-select>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-button
             :loading="listLoading"
-            type="info"
+            type="primary"
             icon="el-icon-search"
             size="mini"
             @click="clickSelectCatalogAuthorization()"
           >搜索
           </el-button>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-button
             icon="el-icon-thumb"
@@ -104,6 +102,7 @@
           >授权
           </el-button>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item style="width: 150px">
           <el-select
             v-model="downloadValue"
@@ -142,245 +141,248 @@
           >导出
           </el-button>
         </el-form-item>
+
       </el-form>
-    </el-header>
-    <el-main>
-      <el-table
-        ref="multipleTable"
-        v-loading="listLoading"
-        :data="tableData"
-        size="mini"
-        style="width: 98%;margin-top: 10px;margin-left: 10px;margin-right: 10px"
-        border
-        tooltip-effect="light"
-        select-on-indeterminate
-        row-key="CatalogID"
-        height="calc(100vh - 160px)"
-        :span-method="objectSpanMethod"
-        highlight-current-row
-        @selection-change="selectionChange"
+    </div>
+
+    <el-table
+      ref="multipleTable"
+      v-loading="listLoading"
+      :data="tableData"
+      size="mini"
+      border
+      stripe
+      style="margin-top: 10px"
+      tooltip-effect="light"
+      select-on-indeterminate
+      row-key="CatalogID"
+      height="calc(100vh - 260px)"
+      :span-method="objectSpanMethod"
+      highlight-current-row
+      @selection-change="selectionChange"
+    >
+      <!--        评审标准-->
+      <el-table-column
+        type="selection"
+        width="40"
+        align="center"
+      />
+      <el-table-column
+        prop="catalogCode"
+        label="评审标准"
+        align="center"
+        width="80"
+        :show-overflow-tooltip="cellOverflow"
       >
-        <!--        评审标准-->
-        <el-table-column
-          type="selection"
-          width="40"
-          align="center"
-        />
-        <el-table-column
-          prop="catalogCode"
-          label="评审标准"
-          align="center"
-          width="80"
-          :show-overflow-tooltip="cellOverflow"
-        >
-          <template slot-scope="{ row }">
-            <span
-              class="CatalogName"
-              @click="selectAllot(row)"
-            >
-              {{ row.catalogCode }}
-            </span>
-          </template>
-        </el-table-column>
-        <!--        评审等级-->
-        <el-table-column
-          v-if="CatalogVersion == '中医院' ? false : true"
-          prop="pointCode"
-          label="评审等级"
-          align="center"
-          width="80"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <!--        <el-table-column-->
-        <!--          v-if="CatalogVersion == '中医院' ? false : true"-->
-        <!--          prop="pointItem"-->
-        <!--          label="细则编码"-->
-        <!--          align="center"-->
-        <!--          width="70"-->
-        <!--          :show-overflow-tooltip="cellOverflow"-->
-        <!--        />-->
-        <!--评审项目-->
-        <el-table-column
-          v-if="CatalogVersion == '中医院'|| CatalogVersion == '宁海妇幼保健院' ?false : true"
-          prop="pointItem"
-          label="评审项目"
-          align="center"
-          width="70"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <!--        核心条款-->
-        <el-table-column
-          v-if=" CatalogVersion == '宁海妇幼保健院' ?false : true"
-          prop="IsPoint"
-          label="核心条款"
-          align="center"
-          width="80"
-          :show-overflow-tooltip="cellOverflow"
-        >
-          <template slot-scope="{ row }">
-            <el-tag
-              size="mini"
-              :type="row.IsPoint === 0 ? 'danger' : 'success'"
-            >
-              {{ row.IsPoint === 0 ? '否' : '是' }}
-            </el-tag>
-          </template>
-        </el-table-column>
+        <template slot-scope="{ row }">
+          <span
+            class="CatalogName"
+            @click="selectAllot(row)"
+          >
+            {{ row.catalogCode }}
+          </span>
+        </template>
+      </el-table-column>
+      <!--        评审等级-->
+      <el-table-column
+        v-if="CatalogVersion == '中医院' ? false : true"
+        prop="pointCode"
+        label="评审等级"
+        align="center"
+        width="80"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <!--        <el-table-column-->
+      <!--          v-if="CatalogVersion == '中医院' ? false : true"-->
+      <!--          prop="pointItem"-->
+      <!--          label="细则编码"-->
+      <!--          align="center"-->
+      <!--          width="70"-->
+      <!--          :show-overflow-tooltip="cellOverflow"-->
+      <!--        />-->
+      <!--评审项目-->
+      <el-table-column
+        v-if="CatalogVersion == '中医院'|| CatalogVersion == '宁海妇幼保健院' ?false : true"
+        prop="pointItem"
+        label="评审项目"
+        align="center"
+        width="70"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <!--        核心条款-->
+      <el-table-column
+        v-if=" CatalogVersion == '宁海妇幼保健院' ?false : true"
+        prop="IsPoint"
+        label="核心条款"
+        align="center"
+        width="80"
+        :show-overflow-tooltip="cellOverflow"
+      >
+        <template slot-scope="{ row }">
+          <el-tag
+            size="mini"
+            :type="row.IsPoint === 0 ? 'danger' : 'success'"
+          >
+            {{ row.IsPoint === 0 ? '否' : '是' }}
+          </el-tag>
+        </template>
+      </el-table-column>
 
-        <!--        评审要点内容-->
-        <el-table-column
-          prop="pointName"
-          label="评审要点内容"
-          :show-overflow-tooltip="cellOverflow"
-        >
-          <template slot-scope="{ row }">
-            <div v-html="row.pointName"/>
-          </template>
-        </el-table-column>
+      <!--        评审要点内容-->
+      <el-table-column
+        prop="pointName"
+        label="评审要点内容"
+        :show-overflow-tooltip="cellOverflow"
+      >
+        <template slot-scope="{ row }">
+          <div v-html="row.pointName" />
+        </template>
+      </el-table-column>
 
 
-        <!--        <el-table-column-->
-        <!--          prop="DeptStatus"-->
-        <!--          label="本科室人员是否分配"-->
-        <!--          :show-overflow-tooltip="cellOverflow"-->
-        <!--          width="130px"-->
-        <!--        >-->
-        <!--          <template slot-scope="{ row }">-->
-        <!--            <div v-html="row.DeptStatus===1 ?'已分配':'未分配'"/>-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
+      <!--        <el-table-column-->
+      <!--          prop="DeptStatus"-->
+      <!--          label="本科室人员是否分配"-->
+      <!--          :show-overflow-tooltip="cellOverflow"-->
+      <!--          width="130px"-->
+      <!--        >-->
+      <!--          <template slot-scope="{ row }">-->
+      <!--            <div v-html="row.DeptStatus===1 ?'已分配':'未分配'"/>-->
+      <!--          </template>-->
+      <!--        </el-table-column>-->
 
-        <el-table-column
-          prop="UserName"
-          label="资料录入人员"
-          :show-overflow-tooltip="cellOverflow"
-        >
-          <template slot-scope="{ row }">
-            <el-popover placement="top-start" title="资料录入人员" width="90%" trigger="hover">
-              <div>{{ row.UserName }}</div>
-              <span slot="reference">{{ row.UserName }}</span>
-            </el-popover>
-          </template>
+      <el-table-column
+        prop="UserName"
+        label="资料录入人员"
+        :show-overflow-tooltip="cellOverflow"
+      >
+        <template slot-scope="{ row }">
+          <el-popover placement="top-start" title="资料录入人员" width="90%" trigger="hover">
+            <div>{{ row.UserName }}</div>
+            <span slot="reference">{{ row.UserName }}</span>
+          </el-popover>
+        </template>
 
-        </el-table-column>
-        <!--        授权-->
-        <el-table-column
-          prop="CatalogName"
-          label="授权"
-          width="60"
-          align="center"
-        >
-          <template slot-scope="scope">
+      </el-table-column>
+      <!--        授权-->
+      <el-table-column
+        prop="CatalogName"
+        label="授权"
+        width="60"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <el-button
+            type="primary"
+            icon="el-icon-thumb"
+            size="mini"
+            circle
+            @click.native.prevent="Authorization(scope.row, '单选')"
+          />
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-dialog
+      title="人员选择"
+      :close-on-click-modal="false"
+      :visible.sync="dialogVisible"
+      :width="device === 'desktop' ? '40%' : '90%'"
+    >
+      <el-container>
+        <el-main style="padding: 0px">
+          <select-deptor-user
+            ref="userTree"
+            :value="`资料录入员分配`"
+            @getSelectDeptorUser="getSelectDeptorUser"
+          />
+        </el-main>
+        <el-footer style="display: flex; justify-content: space-between; padding: 0px">
+          <el-checkbox v-model="formDatas.IsDistribution">用户添加对应角色
+            <!--              <span>已选数量:</span>-->
+            <!--              <template v-if="$refs.userTree">-->
+            <!--                //因为在js里写不能达到效果，不是响应式的可能，所以直接写在页面上-->
+            <!--                {{filterCheckedLeaf()}}-->
+            <!--              </template>-->
+            <!--              <span>{{ selectedNodesNum }}</span>-->
+
+          </el-checkbox>
+          <el-tag>已勾选：<span style="color: #4a9de7">{{ manNum }}</span> /2000</el-tag>
+          <div>
             <el-button
               type="primary"
-              icon="el-icon-thumb"
               size="mini"
-              circle
-              @click.native.prevent="Authorization(scope.row, '单选')"
-            />
-          </template>
-        </el-table-column>
+              @click="UpdatetCatalogAuthorization"
+            >增量保存
+            </el-button>
+            <el-button
+              v-show="isCover"
+              type="info"
+              size="mini"
+              @click="UpdatetCatalogAuthorization"
+            >覆盖保存
+            </el-button>
+            <el-button
+              size="mini"
+              @click="dialogVisible = false"
+            >取 消
+            </el-button>
+          </div>
+        </el-footer>
+      </el-container>
+    </el-dialog>
+    <el-drawer
+      title="历史记录"
+      :visible.sync="drawer"
+      :direction="device === 'mobile' ? 'btt' : 'rtl'"
+      size="50%"
+      :with-header="false"
+    >
+      <el-table
+        :data="allotData"
+        border
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="ReviewName"
+          :label="para.menu_one"
+        />
+        <el-table-column
+          prop="ManageName"
+          :label="para.menu_two"
+        />
+        <el-table-column
+          prop="VisitName"
+          :label="para.menu_three"
+        />
       </el-table>
-      <el-dialog
-        title="人员选择"
-        :close-on-click-modal="false"
-        :visible.sync="dialogVisible"
-        :width="device === 'desktop' ? '40%' : '90%'"
-      >
-        <el-container>
-          <el-main style="padding: 0px">
-            <select-deptor-user
-              ref="userTree"
-              :value="`资料录入员分配`"
-              @getSelectDeptorUser="getSelectDeptorUser"
-            />
-          </el-main>
-          <el-footer style="display: flex; justify-content: space-between; padding: 0px">
-            <el-checkbox v-model="formDatas.IsDistribution">用户添加对应角色
-                                                            <!--              <span>已选数量:</span>-->
-                                                            <!--              <template v-if="$refs.userTree">-->
-                                                            <!--                //因为在js里写不能达到效果，不是响应式的可能，所以直接写在页面上-->
-                                                            <!--                {{filterCheckedLeaf()}}-->
-                                                            <!--              </template>-->
-                                                            <!--              <span>{{ selectedNodesNum }}</span>-->
+    </el-drawer>
 
-            </el-checkbox>
-            <el-tag>已勾选：<span style="color: #4a9de7">{{ manNum }}</span> /2000</el-tag>
-            <div>
-              <el-button
-                type="primary"
-                size="mini"
-                @click="UpdatetCatalogAuthorization"
-              >增量保存
-              </el-button>
-              <el-button
-                v-show="isCover"
-                type="info"
-                size="mini"
-                @click="UpdatetCatalogAuthorization"
-              >覆盖保存
-              </el-button>
-              <el-button
-                size="mini"
-                @click="dialogVisible = false"
-              >取 消
-              </el-button>
-            </div>
-          </el-footer>
-        </el-container>
-      </el-dialog>
-      <el-drawer
-        title="历史记录"
-        :visible.sync="drawer"
-        :direction="device === 'mobile' ? 'btt' : 'rtl'"
-        size="50%"
-        :with-header="false"
-      >
-        <el-table
-          :data="allotData"
-          border
-          style="width: 100%"
-        >
-          <el-table-column
-            prop="ReviewName"
-            :label="para.menu_one"
-          />
-          <el-table-column
-            prop="ManageName"
-            :label="para.menu_two"
-          />
-          <el-table-column
-            prop="VisitName"
-            :label="para.menu_three"
-          />
-        </el-table>
-      </el-drawer>
-    </el-main>
-    <el-footer>
-      <el-row>
-        <el-col :span="3">
-          <el-switch
-            v-model="cellOverflow"
-            style="margin: 6px 0px"
-            active-text="收起"
-            inactive-text="展开"
-          />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            background
-            :current-page.sync="pagination.pageIndex"
-            :page-size="pagination.pageSize"
-            :page-sizes="pagination.pageSizes"
-            :total="pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-col>
-      </el-row>
-    </el-footer>
-  </el-container>
+
+    <el-row>
+      <el-col :span="3">
+        <el-switch
+          v-model="cellOverflow"
+          style="margin: 26px 0px"
+          active-text="收起"
+          inactive-text="展开"
+        />
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          background
+          style="margin: 26px 0 0 0"
+          :current-page.sync="pagination.pageIndex"
+          :page-size="pagination.pageSize"
+          :page-sizes="pagination.pageSizes"
+          :total="pagination.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+
+  </el-card>
 </template>
 <script>
 import {
@@ -497,7 +499,6 @@ export default {
       } else {
         this.isCover = true;
       }
-
     },
     getJBXXTableData() {
       this.spanOneArr = [];
@@ -814,101 +815,6 @@ export default {
   }
 };
 </script>
-<style lang="scss">
-.CatalogAuthorization {
-  /*   .el-table__header-wrapper .el-checkbox {
-    //找到表头那一行，然后把里面的复选框隐藏掉
-    display: none;
-  } */
-  .el-header,
-  .el-main,
-  .el-footer {
-    padding: 0;
-    margin: 0;
-  }
+<style lang="scss" >
 
-  .content {
-    .el-table--mini {
-      height: calc(100vh - 185px) !important;
-    }
-  }
-
-  .CatalogName {
-    cursor: pointer !important;
-    color: #3e84e9;
-  }
-
-  .CatalogName:hover {
-    color: #597fb5;
-  }
-
-  .el-loading-spinner {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    -webkit-animation: typing 1s linear infinite alternate;
-    -moz-animation: Typing 1s linear infinite alternate;
-    animation: typing 1s linear infinite alternate;
-    margin: 0px auto; /* Not necessary- its only for layouting*/
-    position: relative;
-    left: -40px;
-  }
-
-  @-webkit-keyframes typing {
-    0% {
-      background-color: rgba(247, 111, 73, 1);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    25% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    75% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 1);
-    }
-  }
-
-  @-moz-keyframes typing {
-    0% {
-      background-color: rgba(247, 111, 73, 1);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    25% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    75% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 1);
-    }
-  }
-  @keyframes typing {
-    0% {
-      background-color: rgba(247, 111, 73, 1);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    25% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    75% {
-      background-color: rgba(0, 184, 220, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(249, 54, 0, 0.2),
-      80px 0px 0px 0px rgb(2, 243, 130);
-    }
-  }
-
-  .el-loading-spinner .circular {
-    display: none; //隐藏之前element-ui默认的loading动画
-  }
-}
 </style>

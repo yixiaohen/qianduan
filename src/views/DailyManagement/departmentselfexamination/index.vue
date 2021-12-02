@@ -1,11 +1,16 @@
 <template>
   <div class="DepartmentSelfExamination">
-    <el-card style="margin: 10px;width: 98%">
-      <div slot="header" class="clearfix">
+    <el-card style="margin: 10px;width: 98%;height: 87vh;overflow: auto">
+      <div
+        style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+      >
         <el-form :inline="true" :model="listQuery" size="mini">
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
               type="primary"
               icon="el-icon-circle-plus"
               size="mini"
@@ -13,6 +18,7 @@
             >使用表单
             </el-button>
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-input
               v-model="listQuery.RC_ProjectName"
@@ -23,6 +29,7 @@
               @keyup.enter.native="clickSelectUseTemp()"
             />
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <default-depts
               v-if="!addFormData.RC_InspectionDepartmentID"
@@ -36,6 +43,7 @@
               @focus="focus"
             />
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item prop="CheckMonth">
             <el-date-picker
               v-model="listQuery.CheckMonth"
@@ -44,10 +52,10 @@
               placeholder="选择自查月份"
             />
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
-              type="info"
+              type="primary"
               icon="el-icon-search"
               size="mini"
               :loading="listLoading"
@@ -55,14 +63,15 @@
             >搜索
             </el-button>
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-checkbox
               v-model="checked"
-              style="margin-top: 7px"
               @change="checkbox"
             >只看草稿
             </el-checkbox>
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item style="width: 150px">
             <el-select v-model="downloadValue" placeholder="请选择要导出数据">
               <el-option label="前一百条" :value="100"/>
@@ -74,7 +83,6 @@
           </el-form-item>
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
               :loading="downloadLoading"
               :disabled="listLoading"
               type="success"
@@ -91,7 +99,7 @@
         <el-table
           v-loading="listLoading"
           :data="tableData"
-          style="width: 100%"
+          style="width: 100%;margin-top: 10px"
           border
           size="mini"
           height="calc(100vh - 240px)"
@@ -102,12 +110,21 @@
             prop="RC_ProjectName"
             label="项目名称"
             min-width="300"
+            align="center"
             :show-overflow-tooltip="cellOverflow"
           >
             <template slot-scope="{ row }">
               {{ row.RC_ProjectName }}
             </template>
           </el-table-column>
+          <!--  抽查表单不应出现在科室自查，先隐藏-->
+          <el-table-column
+            v-if="tableData.RC_TemplateType!=='抽查表单'"
+            prop="RC_TemplateType"
+            label="表单类型"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
           <el-table-column
             prop="RC_InspectionTimeStat"
             label="检查日期"
@@ -184,6 +201,7 @@
             prop="RC_DeductedPoints"
             label="自查存在的问题"
             width="300"
+            align="center"
             :show-overflow-tooltip="cellOverflow"
           />
 
@@ -1994,10 +2012,14 @@ export default {
         const { data } = await SelectUseTemp(this.listQuery);
         this.tableData = data.DataList;
         this.pagination.total = data.Total;
-        this.tableData.map(item => {
+        this.tableData.map((item,index) => {
           item.RC_DeductedPoints = [
             ...new Set(item.RC_DeductedPoints.split('$'))
           ].join('\n');
+          // 科室自查这一栏页面，不需要显示抽查表单，所以得到数据后，是抽查表单类型的就删除该条
+          if (item.RC_TemplateType === '抽查表单') {
+            delete this.tableData[index];
+          }
         });
       } catch {
       } finally {

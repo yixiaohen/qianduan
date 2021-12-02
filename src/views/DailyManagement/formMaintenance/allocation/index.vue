@@ -1,6 +1,13 @@
 <template>
-  <el-container class="allocation">
-    <el-header>
+  <el-card style="margin: 10px;width: 98%;height: 87vh;overflow: auto">
+
+    <div
+      style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+    >
       <el-form :inline="true" size="mini" class="demo-form-inline">
         <el-form-item>
           <el-input
@@ -9,6 +16,7 @@
             @keyup.enter.native="SelectDistribution('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="form.RC_TemplateName"
@@ -16,6 +24,7 @@
             @keyup.enter.native="SelectDistribution('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="form.DistributionUserName"
@@ -23,6 +32,7 @@
             @keyup.enter.native="SelectDistribution('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="form.CheckUserName"
@@ -30,6 +40,7 @@
             @keyup.enter.native="SelectDistribution('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-button
             type="primary"
@@ -37,110 +48,132 @@
           >搜索</el-button>
         </el-form-item>
       </el-form>
-    </el-header>
-    <el-main>
-      <el-table
-        v-loading="listLoading"
-        :data="tableData"
-        border
-        size="mini"
-        style="width: 100%"
-        height="calc(100vh - 180px)"
-        stripe
+    </div>
+
+    <el-table
+      v-loading="listLoading"
+      :data="tableData"
+      border
+      highlight-current-row
+      :header-cell-style="{'text-align':'center'}"
+      :cell-style="{'text-align':'center'}"
+      size="mini"
+      style="margin-top: 10px"
+      height="calc(100vh - 240px)"
+      stripe
+    >
+      <el-table-column
+        align="center"
+        prop="DistributionName"
+        label="任务名称"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <el-table-column
+        align="center"
+        prop="RC_TemplateName"
+        label="表单名称"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <el-table-column
+        align="center"
+        prop="DistributionUserName"
+        label="自查人员"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <el-table-column
+        align="center"
+        prop="RC_InspectionDepartmentName"
+        label="自查科室"
+        :show-overflow-tooltip="cellOverflow"
       >
-        <el-table-column
-          align="center"
-          prop="DistributionName"
-          label="任务名称"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          align="center"
-          prop="RC_TemplateName"
-          label="表单名称"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          align="center"
-          prop="DistributionUserName"
-          label="自查人员"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          align="center"
-          prop="RC_InspectionDepartmentName"
-          label="自查科室"
-          :show-overflow-tooltip="cellOverflow"
-        >
-          <template slot-scope="{ row }">
-            <p v-for="(item, index) in row.UsetemplateList" :key="index">
-              {{ item.RC_InspectionDepartmentName }}
-            </p>
-          </template>
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="RC_ProjectName"
-          label="项目名称"
-          :show-overflow-tooltip="cellOverflow"
-          width="180"
-        ><template slot-scope="{ row }">
+        <template slot-scope="{ row }">
           <p v-for="(item, index) in row.UsetemplateList" :key="index">
-            {{ item.RC_ProjectName }}
+            {{ item.RC_InspectionDepartmentName }}
           </p>
         </template>
-        </el-table-column>
-        <el-table-column
-          label="状态"
-          width="120"
-          align="center"
-          prop="StatusName"
-        ><template slot-scope="{ row }">
-          <p v-for="(item, index) in row.UsetemplateList" :key="index">
-            {{ item.StatusName }}
-          </p>
-        </template>
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="CheckUserName"
-          label="审核人员"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column label="操作" fixed="right" align="center" width="120">
-          <template slot-scope="{ row }">
-            <el-button
-              type="info"
-              size="mini"
-              icon="el-icon-edit"
-              @click="SelectTemplateByID(row)"
-            />
-            <el-button
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-              @click="DeleteDistribution(row)"
-            />
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-row>
-        <el-col :span="1">
-          <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            :current-page="form.pageIndex"
-            :page-sizes="[15, 20, 30, 40, 50, 100]"
-            :page-size="form.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="form.total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="RC_ProjectName"
+        label="项目名称"
+        :show-overflow-tooltip="cellOverflow"
+        width="180"
+      ><template slot-scope="{ row }">
+        <p v-for="(item, index) in row.UsetemplateList" :key="index">
+          {{ item.RC_ProjectName }}
+        </p>
+      </template>
+      </el-table-column>
+      <el-table-column
+        label="状态"
+        width="120"
+        align="center"
+        prop="StatusName"
+      ><template slot-scope="{ row }">
+        <p v-for="(item, index) in row.UsetemplateList" :key="index">
+          {{ item.StatusName }}
+        </p>
+      </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="CheckUserName"
+        label="审核人员"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <el-table-column label="操作" fixed="right" align="center" width="120">
+        <template slot-scope="{ row }">
+          <el-button
+            type="info"
+            size="mini"
+            icon="el-icon-edit"
+            @click="SelectTemplateByID(row)"
           />
-        </el-col>
-      </el-row>
-    </el-main>
+          <el-popconfirm
+            style="margin-left: 3px"
+            confirm-button-text="是"
+            cancel-button-text="否"
+            icon="el-icon-info"
+            icon-color="green"
+            title="确定再次分配该表单吗？适用于再次分配相同表单。"
+            @confirm="againTemplate(row)"
+          >
+            <el-button
+              slot="reference"
+              type="success"
+              icon="el-icon-connection"
+              size="mini"
+            />
+          </el-popconfirm>
+
+          <el-button
+            type="danger"
+            size="mini"
+            icon="el-icon-delete"
+            @click="DeleteDistribution(row)"
+          />
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-row>
+      <el-col :span="1">
+        <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          background
+          style="margin-top: 10px"
+          :current-page="form.pageIndex"
+          :page-sizes="[15, 20, 30, 40, 50, 100]"
+          :page-size="form.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="form.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+
     <!-- 弹窗 -->
     <el-dialog
       :width="device === 'desktop' ? '50%' : '90%'"
@@ -306,11 +339,11 @@
         >点击修改</el-button>
       </span>
     </el-dialog>
-  </el-container>
+  </el-card>
 </template>
 
 <script>
-import { DeleteDistribution, SelectDistribution, UpdateDistribution } from '@/api/RC_Distribution';
+import { CopyDistribution, DeleteDistribution, SelectDistribution, UpdateDistribution } from '@/api/RC_Distribution';
 import { mapGetters } from 'vuex';
 import defaultDepts from '@/views/components/defaultDepts';
 import { SelectTemplateByID } from '@/api/RC_Template';
@@ -322,6 +355,7 @@ export default {
   components: { treeFilter, defaultDepts },
   data() {
     return {
+      nowDistributionUserID: '',
       form: {
         RC_ProjectName: '',
         RC_TemplateName: '',
@@ -458,6 +492,8 @@ export default {
       }
 
       try {
+        this.addFormData.DistributionUserID = this.nowDistributionUserID;
+        this.addFormData.DistributionUserID2 = this.nowDistributionUserID;
         const { code } = await UpdateDistribution(this.addFormData);
         if (code === 200) {
           this.$message.success('修改成功');
@@ -466,6 +502,7 @@ export default {
         }
       } catch (error) { console.log(error); }
     },
+    // 编辑表单
     async SelectTemplateByID(row) {
       this.innerDisabled = true;
       row = JSON.parse(JSON.stringify(row));
@@ -495,11 +532,9 @@ export default {
         Rc_checkcontent: [],
         Status: row.Status,
         RC_AllAuditOpinion: row.RC_AllAuditOpinion,
-        ID: row.ID,
         UserID: window.userInfo[0].UserID,
         DistributionID: row.DistributionID,
         DistributionUserID2: row.DistributionUserID /* 用来存放默认选中 */,
-        Status: row.Status,
         IsJump: row.IsJump,
         CheckUserID: row.CheckUserID,
         RC_InspectionDepartment: RC_InspectionDepartment
@@ -516,6 +551,21 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    // 再分配一次选中表单
+    async againTemplate(row) {
+      try {
+        const { code } = await CopyDistribution({
+          distributionId: row.DistributionID
+        });
+        if (code === 200) {
+          this.$message.success('再次分配此表单成功');
+          await this.SelectDistribution(); // 刷新表格
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
     },
     dataFiltter(arr) {
       const map = {};
@@ -684,6 +734,8 @@ export default {
     },
     getSelect(val) {
       this.addFormData.DistributionUserID = val;
+
+      this.nowDistributionUserID = val; // 此时的选择人员的id
     },
 
     DeleteDistribution(row) {
@@ -694,7 +746,7 @@ export default {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'error'
       })
         .then(() => {
           DeleteDistribution({
@@ -754,18 +806,5 @@ export default {
 };
 </script>
 <style lang="scss">
-.allocation {
-  .el-header {
-    padding: 3px 0px;
-    height: 40px !important;
-  }
-  .el-main {
-    padding: 0px 0px;
-  }
-  .el-dialog__body {
-    .el-table {
-      // height: calc(100vh - 1000px);
-    }
-  }
-}
+
 </style>

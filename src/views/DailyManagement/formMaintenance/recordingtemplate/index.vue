@@ -1,11 +1,17 @@
 <template>
   <div class="RecordingTemplate">
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
+    <el-card style="margin: 10px;width: 98%;height: 87vh;overflow: auto">
+
+      <div
+        style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+      >
         <el-form :inline="true" size="mini">
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
               type="primary"
               icon="el-icon-circle-plus"
               size="mini"
@@ -15,20 +21,14 @@
           </el-form-item>
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
               type="primary"
               size="mini"
               @click="categoryAdmin"
             >类别管理
             </el-button>
           </el-form-item>
-          <el-form-item>
-            <el-select v-model="listQuery.StateType" placeholder="表单状态">
-              <el-option label="全部" :value="-1"/>
-              <el-option label="已启用" :value="0"/>
-              <el-option label="已禁用" :value="1"/>
-            </el-select>
-          </el-form-item>
+
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-input
               v-model="listQuery.RC_TemplateName"
@@ -39,6 +39,7 @@
               @keyup.enter.native="clickSelectTemplate()"
             />
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-select
               v-model="listQuery.RC_TemplateType"
@@ -51,6 +52,7 @@
               <el-option label="抽查表单" value="抽查表单"/>
             </el-select>
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-select
               v-model="listQuery.TemplateTypeName"
@@ -66,7 +68,7 @@
               />
             </el-select>
           </el-form-item>
-
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-select
               v-model="listQuery.TemplateSource"
@@ -79,10 +81,17 @@
               <el-option label="自建表单" value="自建表单"/>
             </el-select>
           </el-form-item>
-
+          <el-divider direction="vertical" />
+          <el-form-item>
+            <el-select v-model="listQuery.StateType" placeholder="表单状态">
+              <el-option label="全部" :value="-1"/>
+              <el-option label="已启用" :value="0"/>
+              <el-option label="已禁用" :value="1"/>
+            </el-select>
+          </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
               :loading="listLoading"
               type="primary"
               icon="el-icon-search"
@@ -97,7 +106,7 @@
         <el-table
           v-loading="listLoading"
           :data="tableData"
-          style="width: 100%"
+          style="width: 100%;margin-top: 10px"
           border
           highlight-current-row
           size="mini"
@@ -205,6 +214,7 @@
           >
             <template slot-scope="{ row }">
               <el-button
+                type="primary"
                 class="iconfont al-icon-fenpei"
                 size="mini"
                 circle
@@ -218,24 +228,26 @@
             prop="RC_TemplateName"
             align="center"
             fixed="right"
-            width="250"
+            width="200"
           >
             <template slot-scope="scope">
               <el-button
                 v-if="scope.row.RC_CreatUser===UserID"
-                type="success"
+                type="info"
                 size="mini"
+                class="el-icon-edit"
                 :disabled="scope.row.RC_StateType === 1"
                 @click="UpdateRow(scope.row)"
-              >修改
+              >
               </el-button>
               <el-button
                 v-if="scope.row.RC_CreatUser!==UserID"
-                type="info"
+                type="primary"
                 size="mini"
+                class="el-icon-view"
                 :disabled="scope.row.RC_StateType === 1"
                 @click="UpdateRow(scope.row)"
-              >查看
+              >
               </el-button>
               <el-popconfirm
                 v-if="scope.row.RC_CreatUser!==UserID"
@@ -245,10 +257,11 @@
               >
                 <el-button
                   slot="reference"
-                  type="primary"
+                  type="success"
                   size="mini"
+                  class="el-icon-s-promotion"
                   :disabled="scope.row.RC_StateType === 1"
-                >另存为
+                >
                 </el-button>
               </el-popconfirm>
               <!--              <el-button-->
@@ -262,22 +275,25 @@
                 v-if="scope.row.RC_StateType === 1"
                 type="success"
                 size="mini"
+                class="el-icon-success"
                 @click="UpdateTemplateStatus(scope.row, 0, '启用')"
-              >启用
+              >
               </el-button>
               <el-button
                 v-else
-                type="danger"
+                type="warning"
                 size="mini"
+                class="el-icon-error"
                 @click="UpdateTemplateStatus(scope.row, 1, '禁用')"
-              >禁用
+              >
               </el-button>
               <el-button
                 :disabled="scope.row.RC_CreatUser!==UserID&&RoleCode!=='R0001'"
                 size="mini"
                 type="danger"
+                class="el-icon-delete"
                 @click="Delete(scope.row)"
-              >删除
+              >
               </el-button>
             </template>
           </el-table-column>
@@ -289,7 +305,7 @@
           <el-col :span="20">
             <el-pagination
               background
-              style="margin: 6px 0 0 0"
+              style="margin: 10px 0 0 0"
               :current-page.sync="pagination.pageIndex"
               :page-size="pagination.pageSize"
               :page-sizes="pagination.pageSizes"
@@ -325,7 +341,6 @@
     </el-dialog>
     <el-dialog
       :width="device === 'desktop' ? '60%' : '90%'"
-      fullscreen
       :title="dialogTitle"
       :close-on-click-modal="false"
       :visible.sync="dialogFormVisible"
@@ -446,9 +461,10 @@
         :data="ContentData"
         border
         size="mini"
+        style="margin-top: 10px"
         :header-cell-style="{'text-align':'center'}"
         :cell-style="{'text-align':'center'}"
-        height="calc(100vh - 220px)"
+        height="calc(100vh - 260px)"
       >
         <el-table-column
           type="index"
@@ -483,7 +499,10 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="Content" label="检查内容" min-width="100px">
+        <el-table-column
+           prop="Content"
+           label="检查内容"
+           min-width="100px">
           <template slot-scope="scope">
             <el-input
               v-model="scope.row.Content"
@@ -562,7 +581,6 @@
     </el-dialog>
     <el-dialog
       :width="device === 'desktop' ? '50%' : '90%'"
-      fullscreen
       title="表单分配"
       :close-on-click-modal="false"
       :visible.sync="dialogAllot"

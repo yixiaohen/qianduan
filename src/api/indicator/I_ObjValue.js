@@ -25,3 +25,11 @@ export function UpdateObjValue(data) {
     data
   });
 }
+// 目标值图表
+export function Get_i_data_ListByCycle(data) {
+  return request({
+    url: '/I_ObjValue/Get_i_data_ListByCycle',
+    method: 'get',
+    params: data
+  });
+}

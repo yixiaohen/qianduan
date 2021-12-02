@@ -5,6 +5,7 @@
         :inline="true"
         size="mini"
       >
+
         <el-form-item>
           <el-button
             type="primary"
@@ -29,6 +30,7 @@
             />
           </el-select>
         </el-form-item>
+
       </el-form>
       <div
         v-if="device === 'mobile'"
@@ -79,6 +81,7 @@
                       v-loading="midLoading"
                       :data="ResortName"
                       border
+                      stripe
                       size="mini"
                       style="width: 100%"
                       highlight-current-row
@@ -117,82 +120,85 @@
                         class="demo-form-inline"
                         size="mini"
                       >
-                        <el-form-item> 资料列表</el-form-item>
-                        <el-form-item>
-                          <el-select
-                            v-model="formCatalog.AuditStatus"
-                            clearable
-                            size="mini"
-                            style="width: 140px"
-                            placeholder="审核状态"
-                            @keyup.enter.native="SelectArticle()"
-                            @change="selectAuditStatus"
-                          >
-                            <el-option
-                              label="全部"
-                              value=""
-                            />
-                            <el-option
-                              label="未审核"
-                              value="0"
-                            />
-                            <el-option
-                              label="通过"
-                              value="1"
-                            />
-                            <el-option
-                              label="退回"
-                              value="2"
-                            />
-                            <el-option
-                              label="退回已修改"
-                              value="3"
-                            />
-                          </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                          <el-select
-                            v-model="formCatalog.SortField"
-                            clearable
-                            size="mini"
-                            style="width: 140px"
-                            placeholder="按照字段排序"
-                            @change="sortOrderField"
-                          >
-                            <el-option
-                              v-for="(itemTH, indexTH) in materialDataTh"
-                              :key="indexTH"
-                              :label="itemTH.vcName"
-                              :value="itemTH.vcItemID"
-                            />
-                          </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                          <el-tooltip
-                            class="item"
-                            effect="dark"
-                            content="升序"
-                            placement="top"
-                          >
-                            <el-button
-                              icon="el-icon-arrow-up"
-                              circle
-                              @click="sortOrder('asc')"
-                            />
-                          </el-tooltip>
-                          <el-tooltip
-                            class="item"
-                            effect="dark"
-                            content="降序"
-                            placement="bottom"
-                          >
-                            <el-button
-                              icon="el-icon-arrow-down"
-                              circle
-                              @click="sortOrder('desc')"
-                            />
-                          </el-tooltip>
-                        </el-form-item>
+                        <el-tag type="info" style="width: 100%">
+                          <el-form-item> 资料列表</el-form-item>
+                          <el-form-item>
+                            <el-select
+                              v-model="formCatalog.AuditStatus"
+                              clearable
+                              size="mini"
+                              style="width: 140px"
+                              placeholder="审核状态"
+                              @keyup.enter.native="SelectArticle()"
+                              @change="selectAuditStatus"
+                            >
+                              <el-option
+                                label="全部"
+                                value=""
+                              />
+                              <el-option
+                                label="未审核"
+                                value="0"
+                              />
+                              <el-option
+                                label="通过"
+                                value="1"
+                              />
+                              <el-option
+                                label="退回"
+                                value="2"
+                              />
+                              <el-option
+                                label="退回已修改"
+                                value="3"
+                              />
+                            </el-select>
+                          </el-form-item>
+                          <el-divider direction="vertical" />
+                          <el-form-item>
+                            <el-select
+                              v-model="formCatalog.SortField"
+                              clearable
+                              size="mini"
+                              style="width: 140px"
+                              placeholder="按照字段排序"
+                              @change="sortOrderField"
+                            >
+                              <el-option
+                                v-for="(itemTH, indexTH) in materialDataTh"
+                                :key="indexTH"
+                                :label="itemTH.vcName"
+                                :value="itemTH.vcItemID"
+                              />
+                            </el-select>
+                          </el-form-item>
+                          <el-form-item>
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              content="升序"
+                              placement="top"
+                            >
+                              <el-button
+                                icon="el-icon-arrow-up"
+                                circle
+                                @click="sortOrder('asc')"
+                              />
+                            </el-tooltip>
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              content="降序"
+                              placement="bottom"
+                            >
+                              <el-button
+                                icon="el-icon-arrow-down"
+                                circle
+                                @click="sortOrder('desc')"
+                              />
+                            </el-tooltip>
+                          </el-form-item>
+                        </el-tag>
                       </el-form>
                     </div>
                   </div>
@@ -671,6 +677,7 @@
                             class="middleBodyTb"
                             :data="ResortName"
                             border
+                            stripe
                             size="mini"
                             style="width: 100%"
                             height="100%"
@@ -722,82 +729,85 @@
                             class="demo-form-inline"
                             size="mini"
                           >
-                            <el-form-item> 资料列表</el-form-item>
-                            <el-form-item>
-                              <el-select
-                                v-model="formCatalog.AuditStatus"
-                                clearable
-                                size="mini"
-                                style="width: 140px"
-                                placeholder="审核状态"
-                                @keyup.enter.native="SelectArticle()"
-                                @change="selectAuditStatus"
-                              >
-                                <el-option
-                                  label="全部"
-                                  value=""
-                                />
-                                <el-option
-                                  label="未审核"
-                                  value="0"
-                                />
-                                <el-option
-                                  label="通过"
-                                  value="1"
-                                />
-                                <el-option
-                                  label="退回"
-                                  value="2"
-                                />
-                                <el-option
-                                  label="退回已修改"
-                                  value="3"
-                                />
-                              </el-select>
-                            </el-form-item>
-                            <el-form-item>
-                              <el-select
-                                v-model="formCatalog.SortField"
-                                clearable
-                                size="mini"
-                                style="width: 140px"
-                                placeholder="按照字段排序"
-                                @change="sortOrderField"
-                              >
-                                <el-option
-                                  v-for="(itemTH, indexTH) in materialDataTh"
-                                  :key="indexTH"
-                                  :label="itemTH.vcName"
-                                  :value="itemTH.vcItemID"
-                                />
-                              </el-select>
-                            </el-form-item>
-                            <el-form-item>
-                              <el-tooltip
-                                class="item"
-                                effect="dark"
-                                content="升序"
-                                placement="top"
-                              >
-                                <el-button
-                                  icon="el-icon-arrow-up"
-                                  circle
-                                  @click="sortOrder('asc')"
-                                />
-                              </el-tooltip>
-                              <el-tooltip
-                                class="item"
-                                effect="dark"
-                                content="降序"
-                                placement="bottom"
-                              >
-                                <el-button
-                                  icon="el-icon-arrow-down"
-                                  circle
-                                  @click="sortOrder('desc')"
-                                />
-                              </el-tooltip>
-                            </el-form-item>
+                            <el-tag type="info" style="width: 100%">
+                              <el-form-item> 资料列表</el-form-item>
+                              <el-form-item>
+                                <el-select
+                                  v-model="formCatalog.AuditStatus"
+                                  clearable
+                                  size="mini"
+                                  style="width: 140px"
+                                  placeholder="审核状态"
+                                  @keyup.enter.native="SelectArticle()"
+                                  @change="selectAuditStatus"
+                                >
+                                  <el-option
+                                    label="全部"
+                                    value=""
+                                  />
+                                  <el-option
+                                    label="未审核"
+                                    value="0"
+                                  />
+                                  <el-option
+                                    label="通过"
+                                    value="1"
+                                  />
+                                  <el-option
+                                    label="退回"
+                                    value="2"
+                                  />
+                                  <el-option
+                                    label="退回已修改"
+                                    value="3"
+                                  />
+                                </el-select>
+                              </el-form-item>
+                              <el-divider direction="vertical" />
+                              <el-form-item>
+                                <el-select
+                                  v-model="formCatalog.SortField"
+                                  clearable
+                                  size="mini"
+                                  style="width: 140px"
+                                  placeholder="按照字段排序"
+                                  @change="sortOrderField"
+                                >
+                                  <el-option
+                                    v-for="(itemTH, indexTH) in materialDataTh"
+                                    :key="indexTH"
+                                    :label="itemTH.vcName"
+                                    :value="itemTH.vcItemID"
+                                  />
+                                </el-select>
+                              </el-form-item>
+                              <el-form-item>
+                                <el-tooltip
+                                  class="item"
+                                  effect="dark"
+                                  content="升序"
+                                  placement="top"
+                                >
+                                  <el-button
+                                    icon="el-icon-arrow-up"
+                                    circle
+                                    @click="sortOrder('asc')"
+                                  />
+                                </el-tooltip>
+                                <el-tooltip
+                                  class="item"
+                                  effect="dark"
+                                  content="降序"
+                                  placement="bottom"
+                                >
+                                  <el-button
+                                    icon="el-icon-arrow-down"
+                                    circle
+                                    @click="sortOrder('desc')"
+                                  />
+                                </el-tooltip>
+                              </el-form-item>
+                            </el-tag>
                           </el-form>
                         </div>
                         <div class="bottomBody">
@@ -1275,7 +1285,7 @@
 <script>
 import splitPane from 'vue-splitpane';
 import standardCatalog from '@/views/components/standardCatalog';
-import articlegroup from './components/articlegroup';
+import articlegroup from '@/views/Reviewmanagement/booksManagement/article/components/articlegroup';
 import SelectDeptorUser from '@/views/components/SelectDeptorUser';
 import filePreview from '@/views/components/file/filePreview'; // 导入有修改功能的附件列表组件
 import filePreview2 from '@/views/components/file/filePreview2'; // 导入无修改功能的附件列表组件

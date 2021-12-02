@@ -35,7 +35,7 @@
           </el-button>
         </td>
       </div>
-      <div style="margin-left: 6px;margin-top: 6px">
+      <div style="margin-left: 6px;">
         <el-radio-group v-model="ShowRes" size="small" @change="changeState">
           <el-radio-button label="显示全部" round/>
           <el-radio-button label="不显示退回资料" round/>

@@ -8,7 +8,10 @@
 .el-upload__input {
   display: none;
 }
-
+// input框距离顶部的位置
+.el-input__inner{
+  margin-top: 0 !important;
+}
 .el-dialog {
   transform: none;
   left: 0;
@@ -88,11 +91,20 @@
   .cell {
     color: black;
   }
-}
 
-.el-table__body tr:hover > td {
-  background-color: oldlace !important;
 }
+//.el-tooltip__popper.is-dark {
+//
+//  background: black !important;
+//  line-height: 20px !important;
+//}
+///*箭头样式修改*/
+//.el-tooltip__popper[x-placement^=right] .popper__arrow:after {
+//  border-right-color: rgba(0, 0, 0, 0.2) !important;
+//}
+//.el-table__body tr:hover > td {
+//  background-color: oldlace !important;
+//}
 
 .el-table__body tr.current-row > td {
   background-color: oldlace !important;

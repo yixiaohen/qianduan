@@ -1,39 +1,33 @@
 <template>
   <el-container class="committee">
-    <el-card style="margin: 10px;width: 98%">
+    <el-card style="margin: 10px;width: 98%;height: 87vh;overflow: auto">
 <!--    <el-header>-->
 <!--    </el-header>-->
       <el-main>
-        <el-col
-          :span="4"
-          :md="4"
-          :lg="4"
-          :xl="3"
-          :xs="9"
+        <div
+          style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
         >
-          <el-radio-group
-            v-model="radio"
-            style="margin-top: 4px"
-            size="small"
-          >
-            <el-radio-button label="委员会" />
-            <el-radio-button label="会议明细" />
-          </el-radio-group>
-        </el-col>
-        <el-col
-          :span="20"
-          :md="20"
-          :lg="20"
-          :xl="20"
-          :xs="14"
-        >
+
           <el-form
             :inline="true"
             size="mini"
           >
+            <el-form-item>
+              <el-radio-group
+                v-model="radio"
+                size="small"
+              >
+                <el-radio-button label="委员会" />
+                <el-radio-button label="会议明细" />
+              </el-radio-group>
+
+            </el-form-item>
             <el-form-item v-if="radio == '委员会'">
               <el-button
-                style="margin-top: 4px"
                 icon="el-icon-plus"
                 size="mini"
                 type="primary"
@@ -43,7 +37,6 @@
             </el-form-item>
             <el-form-item v-if="radio != '委员会'">
               <el-button
-                style="margin-top: 4px"
                 icon="el-icon-plus"
                 size="mini"
                 type="primary"
@@ -54,10 +47,9 @@
             <el-form-item v-if="radio == '委员会'">
               <el-input
                 v-model="pagination.CommitteeName"
-                style="margin-bottom:4px !important;"
                 placeholder="委员会名称"
                 clearable
-                size="small"
+                size="mini"
                 @keyup.enter.native="SelectCommittee('搜索')"
               ><i
                 slot="prefix"
@@ -67,10 +59,9 @@
             <el-form-item v-if="radio != '委员会'">
               <el-input
                 v-model="MeetingTableDataVal.MeetingName"
-                style="margin-bottom: 4px!important;"
                 placeholder="会议名称"
                 clearable
-                size="small"
+                size="mini"
                 @keyup.enter.native="SelectMeeting('搜索')"
               ><i
                 slot="prefix"
@@ -79,8 +70,7 @@
             </el-form-item>
             <el-form-item>
               <el-button
-                style="margin-top: 4px"
-                type="info"
+                type="primary"
                 icon="el-icon-search"
                 size="mini"
                 @click="
@@ -88,11 +78,11 @@
                     ? SelectCommittee('搜索')
                     : SelectMeeting('搜索')
                 "
-              >查询
+              >搜索
               </el-button>
             </el-form-item>
           </el-form>
-        </el-col>
+        </div>
         <transition name="el-zoom-in-center">
           <el-table
             v-if="radio == '委员会'"
@@ -1157,6 +1147,7 @@
             <el-pagination
               v-if="radio == '委员会'"
               background
+              style="margin-top: 10px"
               :current-page="pagination.pageIndex"
               :page-sizes="[10, 20, 30, 40, 50]"
               :page-size="pagination.pageSize"
@@ -1168,6 +1159,7 @@
             <el-pagination
               v-if="radio != '委员会'"
               background
+              style="margin-top: 10px"
               :current-page="MeetingTableDataVal.pageIndex"
               :page-sizes="[10, 20, 30, 40, 50]"
               :page-size="MeetingTableDataVal.pageSize"

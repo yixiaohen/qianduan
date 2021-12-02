@@ -337,7 +337,7 @@
                         ' | '+
                         item.Cycle +
                         ' | '+
-                        item.Num : item.Starway === 10 ?item.Type+ ' | '+'当年' +
+                        item.Num : item.Starway === 10 ?item.Type+ ' | '+'今年' +
                         ' | '+
                         item.Cycle +
                         ' | '+
@@ -348,6 +348,10 @@
                           item.Num : item.Starway === 12 ? item.Type+' | '+'当月' +
                             ' | '+
                             item.Cycle +
+                             ' | '+
+                          item.Num : item.Starway === 20 ? item.Type+' | '+'去年' +
+                            ' | '+
+                            item.Cycle +
                             ' | '+
                             item.Num : item.Starway
                     "
@@ -356,7 +360,7 @@
                     <span
                       style="float: right; color: #8492a6; font-size: 13px"
                     >{{
-                      item.Starway === 0 ? '结束日期往前' : item.Starway === 10 ? '当年' : item.Starway === 11 ? '当季' : item.Starway === 12 ? '当月' : item.Starway
+                      item.Starway === 0 ? '结束日期往前' : item.Starway === 10 ? '今年' : item.Starway === 11 ? '当季' : item.Starway === 12 ? '当月'  : item.Starway === 20 ? '去年': item.Starway
                     }}{{ ' | ' + item.Cycle + ' | ' + item.Num }}</span>
                   </el-option>
                 </el-select>

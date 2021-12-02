@@ -2,46 +2,68 @@
   <el-tabs v-model="activeName" type="card">
     <!--    @tab-click="handleClick"-->
     <el-tab-pane label="定时指标数据采集" name="first">
-      <div style="margin: 10px;">
-        <el-button type="warning" size="mini" @click="calculate">立即触发全部计算</el-button>
-        <el-tag v-if="isShowCal" style="margin-left: 10px" type="info">提示：已经开始计算，请稍等片刻在执行日志中查阅相关信息。</el-tag>
-      </div>
-      <el-form ref="form" label-width="80px" style="height: 680px;overflow: auto">
-        <el-form-item
-          v-for="(item, index) in setTimimg"
-          :label="'定时'+(index+1)"
-          :prop="item.TimingTime"
+      <el-card
+        style="width: 98%;
+        margin: 10px;
+        height:calc(100vh - 200px);"
+      >
+        <div
+          style="margin: 10px;
+          width: 98%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
         >
-          <el-time-picker
-            v-model="item.TimingTime"
-            :clearable="false"
-            style="margin-right: 10px"
-            size="mini"
-            arrow-control
-            format="HH:mm:ss"
-            value-format="HH:mm:ss"
-            placeholder="任意时间点"
-            @change="getTimingTime"
-          >
-          </el-time-picker>
-          <br>
-          <el-tag type="info" v-if="item.Createtime">
-            <span>创建时间:{{ item.Createtime ? item.Createtime.replace('T', ' ') : '' }} </span>
-            <span>
-               创建人:{{ item.username }}
-        </span>
-          </el-tag>
-          <br v-if="item.Createtime">
-          <el-button type="primary" size="mini" @click="timingBtn(item,index)">保存定时</el-button>
-          <el-button type="danger" size="mini" @click="offTimingBtn(item)">删除定时</el-button>
-
-        </el-form-item>
-        <el-form-item>
+          <el-button type="warning" size="mini" @click="calculate">立即触发全部计算</el-button>
+          <el-tag v-if="isShowCal" style="margin-left: 10px" type="info">提示：已经开始计算，请稍等片刻在执行日志中查阅相关信息。</el-tag>
+          <el-divider direction="vertical" />
           <el-button type="success" size="mini" @click="addTiming">添加定时</el-button>
 
-        </el-form-item>
-      </el-form>
+        </div>
+        <el-form
+          ref="form"
+              :inline="true"
+              label-width="80px"
+                 style="height: calc(100vh - 300px);
+                 width:98%;
+                overflow: auto">
+          <el-form-item
+            v-for="(item, index) in setTimimg"
+            :prop="item.TimingTime"
+          >
+            <template slot-scope="{ row }">
+              <el-card style="height: 180px;width: 330px;">
+                <span>{{ '定时' + (index + 1) }}: </span>
+                <el-time-picker
+                  v-model="item.TimingTime"
+                  :clearable="false"
+                  style="margin-right: 10px"
+                  size="mini"
+                  arrow-control
+                  format="HH:mm:ss"
+                  value-format="HH:mm:ss"
+                  placeholder="任意时间点"
+                  @change="getTimingTime"
+                />
+                <br>
+                <el-tag v-if="item.Createtime" type="info">
+                  <span>创建时间:{{ item.Createtime ? item.Createtime.replace('T', ' ') : '' }} </span>
+                  <span>
+                    创建人:{{ item.username }}
+                  </span>
+                </el-tag>
+                <br v-if="item.Createtime">
+                <el-button type="primary" size="mini" @click="timingBtn(item,index)">保存定时</el-button>
+                <el-button type="danger" size="mini" @click="offTimingBtn(item)">删除定时</el-button>
 
+              </el-card>
+            </template>
+          </el-form-item>
+
+
+        </el-form>
+      </el-card>
     </el-tab-pane>
     <!--    <el-tab-pane label="手动触发计算" name="second">ip地址</el-tab-pane>-->
 
@@ -105,7 +127,7 @@ export default {
         if (code === 200) {
           this.setTimimg = data;
           this.setTimimg2 = JSON.parse(JSON.stringify(data)); // 要想用到 this.setTimimg2对别 this.setTimimg，就要深拷贝，使得改变了setTimimg，不会再改变setTimimg2，这样就可以对比前后的时间
-          console.log('初始时间',this.setTimimg2);
+          console.log('初始时间', this.setTimimg2);
         }
       } catch (e) {
         console.log(e);
@@ -127,8 +149,8 @@ export default {
             this.$message.warning('更新不能为空！');
             console.log(item.TimingTime);
           } else if (item.TimingTime === this.setTimimg2[index].TimingTime) { // 如果更新前后时间一致，更新失败
-            console.log('旧的',this.setTimimg2[index].TimingTime);
-            console.log('新的',this.TimingTime);
+            console.log('旧的', this.setTimimg2[index].TimingTime);
+            console.log('新的', this.TimingTime);
             this.$message.warning('更新前后时间一致，更新失败！');
           } else {
             console.log(item.TimingTime);
@@ -138,9 +160,9 @@ export default {
               Userid: window.userInfo[0].UserID
             });
             if (code === 200) {
-              debugger
-              console.log('旧的',this.setTimimg2[index].TimingTime);
-              console.log('新的',this.TimingTime);
+              debugger;
+              console.log('旧的', this.setTimimg2[index].TimingTime);
+              console.log('新的', this.TimingTime);
               this.$message.success('更新成功');
               await this.SelectTiming(); // 刷新
             }

@@ -1,6 +1,15 @@
 <template>
-  <el-container class="insitution">
-    <el-header>
+  <el-card
+    style="width: 98%;margin: 10px;height: 87vh"
+  >
+
+    <div
+      style="width: 100%;
+  background-color:#f4f4f5;
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;"
+    >
       <el-form
         v-show="!ManagementFrame"
         :inline="true"
@@ -23,27 +32,34 @@
           >类别管理
           </el-button>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model.trim="searchCatalogData.instTitle"
             placeholder="请输入制度标题"
+            clearable
             @keyup.enter.native="SelectinstHome('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model.trim="searchCatalogData.instContent"
             placeholder="制度内容"
+            clearable
             @keyup.enter.native="SelectinstHome('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model.trim="searchCatalogData.instVesion"
             placeholder="制度版本"
+            clearable
             @keyup.enter.native="SelectinstHome('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-cascader
             ref="addDia"
@@ -90,6 +106,7 @@
           <!--            />-->
           <!--          </el-select>-->
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item prop="instID">
           <el-select
             v-model="searchCatalogData.instUpUser"
@@ -109,6 +126,7 @@
             />
           </el-select>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item prop="DeptName">
           <el-select
             v-model="searchCatalogData.UpDeptList"
@@ -128,6 +146,7 @@
             />
           </el-select>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-select
             v-model="searchCatalogData.uploadState"
@@ -149,13 +168,24 @@
           <!--            @keyup.enter.native="SelectinstHome('搜索')"-->
           <!--          />-->
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-button
-            type="info"
+            type="primary"
             icon="el-icon-search"
             size="mini"
             @click="SelectinstHome('搜索')"
-          >查询
+          >搜索
+          </el-button>
+        </el-form-item>
+        <el-divider direction="vertical" />
+        <el-form-item>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="moreDel"
+          >批量删除
           </el-button>
         </el-form-item>
       </el-form>
@@ -187,286 +217,380 @@
           </el-button>
         </el-form-item>
       </el-form>
-    </el-header>
-    <el-main>
-      <transition name="el-zoom-in-center">
-        <div v-show="!ManagementFrame">
-          <el-table
-            v-loading="deptPDCALoading"
-            :data="tableDataPage"
-            style="width: 100%"
-            height="calc(100vh - 180px)"
-            border
-            size="mini"
-            stripe
-          >
-            <el-table-column
-              label="序号"
-              type="index"
-              width="50"
-              align="center"
-            />
-            <el-table-column
-              v-if="false"
-              label="编号"
-              prop="instID"
-              width="49"
-            />
-            <el-table-column
-              label="标题"
-              prop="instTitle"
-              min-width="200"
-              :show-overflow-tooltip="cellOverflow"
-            />
-            <el-table-column
-              v-if="false"
-              label="内容"
-              prop="instContent"
-              width="180"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            />
-            <el-table-column
-              v-if="true"
-              label="所属科室"
-              prop="DeptName"
-              width="180"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            />
+    </div>
 
-            <el-table-column
-              label="类别"
-              prop="instTypeName"
-              width="100"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            />
-            <el-table-column
-              label="上传人"
-              prop="instUpUserName"
-              width="200"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            />
-            <el-table-column
-              v-if="false"
-              label="上传ID"
-              prop="instUpUser"
-              width="180"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            />
-            <el-table-column
-              label="上传时间"
-              width="130"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            >
-              <template slot-scope="scope">
-                <p>
-                  {{ scope.row.instUpTime }}
-                </p>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="审核人"
-              prop="AduitList"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            >
-              <template slot-scope="scope">
-                <p
-                  v-for="(instAuditUserItem, instAuditUserIndex) in scope.row
-                    .AduitList"
-                  :key="instAuditUserIndex"
-                >
-                  {{ instAuditUserItem.instUpUserName }}
-                </p>
-              </template>
-            </el-table-column>
-            <el-table-column
-              v-if="false"
-              label="审核人ID"
-              prop="AduitList"
-              width="180"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            >
-              <template
-                slot-scope="scope"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <p
-                  v-for="(instAuditUserIDItem, instAuditUserIDIndex) in scope
-                    .row.AduitList"
-                  :key="instAuditUserIDIndex"
-                >
-                  {{ instAuditUserIDItem.instAuditUserID }}
-                </p>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="审核状态"
-              width="70"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            >
-              <template slot-scope="scope">
-                <p
-                  v-for="(instAuditStateItem, instAuditStateIndex) in scope.row
-                    .AduitList"
-                  :key="instAuditStateIndex"
-                  :style="{
-                    color:
-                      instAuditStateItem.instAuditState == '通过'
-                        ? 'green'
-                        : instAuditStateItem.instAuditState == '退回'
-                          ? 'red'
-                          : 'black',
-                    'font-weight': 'bold',
-                  }"
-                >
-                  {{ instAuditStateItem.instAuditState }}
-                </p>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="审核意见"
-              width="70"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            >
-              <template slot-scope="scope">
-                <p
-                  v-for="(instAuditStateItem, instAuditStateIndex) in scope.row
-                    .AduitList"
-                  :key="instAuditStateIndex"
-                >
-                  {{ instAuditStateItem.instAduitOpinion }}
-                </p>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="审核时间"
-              prop="AduitList"
-              width="140"
-              align="center"
-              :show-overflow-tooltip="cellOverflow"
-            >
-              <template slot-scope="scope">
-                <p
-                  v-for="(AuditTimeItem, AuditTimeIndex) in scope.row.AduitList"
-                  :key="AuditTimeIndex"
-                >
-                  {{
-                    AuditTimeItem.instAuditTime
-                      ? AuditTimeItem.instAuditTime.replace(/T/g, '')
-                      : ''
-                  }}
-                </p>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="归档"
-              align="center"
-              fixed="right"
-              width="60"
-            >
-              <template slot-scope="{ row }">
-                <el-button
-                  size="mini"
-                  class="iconfont al-icon-guidang2"
-                  @click="Archive(row)"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="操作"
-              align="center"
-              min-width="220"
-            >
-              <template slot-scope="scope">
-                <el-button
-                  size="mini"
-                  circle
-                  type="primary"
-                  icon="el-icon-view"
-                  @click="seeRow(scope.row)"
-                />
-                <el-button
-                  size="mini"
-                  circle
-                  type="info"
-                  icon="el-icon-edit"
-                  @click="addArtical(scope.row)"
-                />
-                <el-button
-                  size="mini"
-                  circle
-                  type="warning"
-                  icon="el-icon-user"
-                  @click="audit(scope.row)"
-                />
-                <el-button
-                  size="mini"
-                  circle
-                  type="info"
-                  icon="el-icon-top"
-                  @click="upRow(scope.row, scope.$index)"
-                />
-                <el-button
-                  size="mini"
-                  circle
-                  type="info"
-                  icon="el-icon-bottom"
-                  @click="downRow(scope.row, scope.$index)"
-                />
-                <el-button
-                  size="mini"
-                  circle
-                  type="danger"
-                  icon="el-icon-delete"
-                  @click="Deleteinst(scope.row)"
-                />
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </transition>
-      <div v-show="ManagementFrame">
-        <div class="block">
-          <el-tree
-            class="tree-line"
-            :data="tableTypeData"
-            :props="{
-              children: 'children',
-              label: 'instTypeName',
-            }"
-            node-key="id"
-            accordion
-            default-expand-all
-            :expand-on-click-node="false"
-            :default-expanded-keys="[defaultExpandedId]"
+    <transition name="el-zoom-in-center">
+      <div v-show="!ManagementFrame">
+        <el-table
+          ref="multipleTable"
+          v-loading="deptPDCALoading"
+          :data="tableDataPage"
+          style="width: 100%;margin-top: 10px"
+          height="calc(100vh - 280px)"
+          border
+          size="mini"
+          stripe
+          highlight-current-row
+          @selection-change="handleSelectionChange"
+          @row-click="handleRowClick"
+        >
+          <el-table-column
+            type="selection"
+            width="55"
+          />
+          <el-table-column
+            label="序号"
+            type="index"
+            width="50"
+            align="center"
+          />
+          <el-table-column
+            v-if="false"
+            label="编号"
+            prop="instID"
+            align="center"
+            width="49"
+          />
+          <el-table-column
+            label="标题"
+            prop="instTitle"
+            min-width="200"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
           >
-            <span
-              slot-scope="{ node, data }"
-              class="custom-tree-node"
-            >
-              <span>{{ data.instTypeName }}</span>
-              <span>({{ data.DeptName }})</span>
-              <el-input
-                v-if="data.instTypeID == beforeId && inputText == ''"
-                v-model="editorText"
-                placeholder="修改"
+            <template slot-scope="{row}">
+              <span>{{ row.instTitle }} </span>
+              <el-tag
+                v-if="row.instUpUser===nowUseID"
+                type="success"
                 size="mini"
-                style="width: 300px"
+              >
+                <span>{{ row.instUpUser===nowUseID? '自建':'' }}</span>
+              </el-tag>
+            </template>
+
+          </el-table-column>
+          <el-table-column
+            label="最新版本号"
+            prop="instVesion"
+            align="center"
+            min-width="100px"
+            :show-overflow-tooltip="cellOverflow"
+          />
+
+          <el-table-column
+            v-if="false"
+            label="内容"
+            prop="instContent"
+            width="180"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            v-if="true"
+            label="制度所属科室"
+            prop="DeptName"
+            min-width="100"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+
+          <el-table-column
+            label="类别"
+            prop="instTypeName"
+            width="100"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            label="上传人"
+            prop="instUpUserName"
+            width="200"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            v-if="false"
+            label="上传ID"
+            prop="instUpUser"
+            width="180"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          />
+          <el-table-column
+            label="上传时间"
+            width="130"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          >
+            <template slot-scope="scope">
+              <p>
+                {{ scope.row.instUpTime }}
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="审核人"
+            prop="AduitList"
+            align="center"
+            min-width="150px"
+            :show-overflow-tooltip="cellOverflow"
+          >
+            <template slot-scope="scope">
+              <p
+                v-for="(instAuditUserItem, instAuditUserIndex) in scope.row
+                  .AduitList"
+                :key="instAuditUserIndex"
+              >
+                {{ instAuditUserItem.instUpUserName }}
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-if="false"
+            label="审核人ID"
+            prop="AduitList"
+            width="180"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          >
+            <template
+              slot-scope="scope"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <p
+                v-for="(instAuditUserIDItem, instAuditUserIDIndex) in scope
+                  .row.AduitList"
+                :key="instAuditUserIDIndex"
+              >
+                {{ instAuditUserIDItem.instAuditUserID }}
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="审核状态"
+            width="70"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          >
+            <template slot-scope="scope">
+              <p
+                v-for="(instAuditStateItem, instAuditStateIndex) in scope.row
+                  .AduitList"
+                :key="instAuditStateIndex"
+                :style="{
+                  color:
+                    instAuditStateItem.instAuditState == '通过'
+                      ? 'green'
+                      : instAuditStateItem.instAuditState == '退回'
+                        ? 'red'
+                        : 'black',
+                  'font-weight': 'bold',
+                }"
+              >
+                {{ instAuditStateItem.instAuditState }}
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="审核意见"
+            width="70"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          >
+            <template slot-scope="scope">
+              <p
+                v-for="(instAuditStateItem, instAuditStateIndex) in scope.row
+                  .AduitList"
+                :key="instAuditStateIndex"
+              >
+                {{ instAuditStateItem.instAduitOpinion }}
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="审核时间"
+            prop="AduitList"
+            width="140"
+            align="center"
+            :show-overflow-tooltip="cellOverflow"
+          >
+            <template slot-scope="scope">
+              <p
+                v-for="(AuditTimeItem, AuditTimeIndex) in scope.row.AduitList"
+                :key="AuditTimeIndex"
+              >
+                {{
+                  AuditTimeItem.instAuditTime
+                    ? AuditTimeItem.instAuditTime.replace(/T/g, '')
+                    : ''
+                }}
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="归档"
+            align="center"
+            fixed="right"
+            width="60"
+          >
+            <template slot-scope="{ row }">
+              <el-button
+                size="mini"
+                class="iconfont al-icon-guidang2"
+                @click="Archive(row)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            align="center"
+            min-width="220"
+            fixed="right"
+          >
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                circle
+                type="primary"
+                icon="el-icon-view"
+                @click="seeRow(scope.row)"
+              />
+              <el-button
+                size="mini"
+                circle
+                type="info"
+                icon="el-icon-edit"
+                @click="addArtical(scope.row)"
+              />
+              <el-button
+                size="mini"
+                circle
+                type="warning"
+                icon="el-icon-user"
+                @click="audit(scope.row)"
+              />
+              <el-button
+                size="mini"
+                circle
+                type="info"
+                icon="el-icon-top"
+                @click="upRow(scope.row, scope.$index)"
+              />
+              <el-button
+                size="mini"
+                circle
+                type="info"
+                icon="el-icon-bottom"
+                @click="downRow(scope.row, scope.$index)"
+              />
+              <el-button
+                size="mini"
+                circle
+                type="danger"
+                icon="el-icon-delete"
+                @click="Deleteinst(scope.row)"
+              />
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </transition>
+    <div v-show="ManagementFrame">
+      <div class="block">
+        <el-tree
+          class="tree-line"
+          :data="tableTypeData"
+          :props="{
+            children: 'children',
+            label: 'instTypeName',
+          }"
+          node-key="id"
+          accordion
+          default-expand-all
+          :expand-on-click-node="false"
+          :default-expanded-keys="[defaultExpandedId]"
+        >
+          <span
+            slot-scope="{ node, data }"
+            class="custom-tree-node"
+          >
+            <span>{{ data.instTypeName }}</span>
+            <span>({{ data.DeptName }})</span>
+            <el-input
+              v-if="data.instTypeID == beforeId && inputText == ''"
+              v-model="editorText"
+              placeholder="修改"
+              size="mini"
+              style="width: 300px"
+              clearable
+              @keyup.enter.native="finishEditClick(data)"
+            />
+            <defaultDepts
+              v-if="data.instTypeID == beforeId && inputText == ''"
+              v-model="data.DeptID"
+              :multiple="false"
+              w="300px"
+              type="mini"
+              @getDefaultDeptsValue="getDefaultDeptsValue"
+              @getDefaultDeptsDeptName="getDefaultDeptsName"
+            />
+            <el-button
+              v-if="data.instTypeID == beforeId && inputText == ''"
+              type="primary"
+              size="mini"
+              @click="finishEditClick(data)"
+            >确定
+            </el-button>
+            <el-button
+              v-if="data.instTypeID == beforeId && inputText == ''"
+              type="primary"
+              size="mini"
+              @click="beforeId = ''"
+            >放弃
+            </el-button>
+            <span>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-plus"
+                @click="() => append(data)"
+              />
+              <el-popconfirm
+                confirm-button-text="是"
+                cancel-button-text="否"
+                icon="el-icon-info"
+                icon-color="red"
+                title="确定删除吗？"
+                @confirm="() => DeleteType(node, data)"
+              >
+                <el-button
+                  slot="reference"
+                  icon="el-icon-delete"
+                  type="text"
+                  size="mini"
+                />
+              </el-popconfirm>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-edit"
+                @click="() => editorNode(data)"
+              />
+            </span>
+            <el-form ref="form">
+              <el-input
+                v-if="data.instTypeID == inputText"
+                v-model="addText"
+                placeholder="请输入内容"
+                size="mini"
+                width="300px"
                 clearable
                 @keyup.enter.native="finishEditClick(data)"
               />
               <defaultDepts
-                v-if="data.instTypeID == beforeId && inputText == ''"
-                v-model="data.DeptID"
+                v-if="data.instTypeID == inputText"
+                v-model="FindDepartmentID"
                 :multiple="false"
                 w="300px"
                 type="mini"
@@ -474,473 +598,131 @@
                 @getDefaultDeptsDeptName="getDefaultDeptsName"
               />
               <el-button
-                v-if="data.instTypeID == beforeId && inputText == ''"
+                v-if="data.instTypeID == inputText"
                 type="primary"
                 size="mini"
                 @click="finishEditClick(data)"
-              >确定
+              >
+                确定
               </el-button>
               <el-button
-                v-if="data.instTypeID == beforeId && inputText == ''"
+                v-if="data.instTypeID == inputText"
                 type="primary"
                 size="mini"
-                @click="beforeId = ''"
-              >放弃
+                @click="canceladd()"
+              >
+                取消
               </el-button>
-              <span>
-                <el-button
-                  type="text"
-                  size="mini"
-                  icon="el-icon-plus"
-                  @click="() => append(data)"
-                />
-                <el-popconfirm
-                  confirm-button-text="是"
-                  cancel-button-text="否"
-                  icon="el-icon-info"
-                  icon-color="red"
-                  title="确定删除吗？"
-                  @confirm="() => DeleteType(node, data)"
-                >
-                  <el-button
-                    slot="reference"
-                    icon="el-icon-delete"
-                    type="text"
-                    size="mini"
-                  />
-                </el-popconfirm>
-                <el-button
-                  type="text"
-                  size="mini"
-                  icon="el-icon-edit"
-                  @click="() => editorNode(data)"
-                />
-              </span>
-              <el-form ref="form">
-                <el-input
-                  v-if="data.instTypeID == inputText"
-                  v-model="addText"
-                  placeholder="请输入内容"
-                  size="mini"
-                  width="300px"
-                  clearable
-                  @keyup.enter.native="finishEditClick(data)"
-                />
-                <defaultDepts
-                  v-if="data.instTypeID == inputText"
-                  v-model="FindDepartmentID"
-                  :multiple="false"
-                  w="300px"
-                  type="mini"
-                  @getDefaultDeptsValue="getDefaultDeptsValue"
-                  @getDefaultDeptsDeptName="getDefaultDeptsName"
-                />
-                <el-button
-                  v-if="data.instTypeID == inputText"
-                  type="primary"
-                  size="mini"
-                  @click="finishEditClick(data)"
-                >
-                  确定
-                </el-button>
-                <el-button
-                  v-if="data.instTypeID == inputText"
-                  type="primary"
-                  size="mini"
-                  @click="canceladd()"
-                >
-                  取消
-                </el-button>
 
-                <el-button
-                  v-if="data.instTypeName == inputText"
-                  type="primary"
-                  size="mini"
-                  @click="giveUp(data, node)"
-                >
-                  放弃
-                </el-button>
-              </el-form>
-            </span>
-          </el-tree>
-        </div>
+              <el-button
+                v-if="data.instTypeName == inputText"
+                type="primary"
+                size="mini"
+                @click="giveUp(data, node)"
+              >
+                放弃
+              </el-button>
+            </el-form>
+          </span>
+        </el-tree>
       </div>
+    </div>
 
-      <!--制度上传 上传资料弹窗begin -->
-      <el-dialog
-        :title="dialogTitle"
-        :close-on-click-modal="false"
-        :visible.sync="dialogFormVisible"
-        height="350px"
-        :width="device === 'desktop' ? '33%' : '90%'"
-      >
-        <el-tabs v-model="activeName">
-          <el-tab-pane
-            label="基本资料"
-            name="first"
-          >
-            <el-form
-              ref="listQuery"
-              :rules="rules"
-              size="mini"
-              :model="listQuery"
-              :inline="true"
-              label-width="80px"
-            >
-              <div style="display: flex; flex-wrap: wrap">
-                <el-form-item
-                  label="制度类别"
-                  prop="instID"
-                >
-
-                  <el-cascader
-                    v-model="listQuery.instID"
-                    size="mini"
-                    style="width: 250px"
-                    :options="tableTypeData"
-                    :show-all-levels="true"
-                    placeholder="可在此框直接搜索"
-                    filterable
-                    clearable
-                    :props="{
-                      checkStrictly: true,
-                      expandTrigger: 'hover',
-                      children: 'children',
-                      label: 'instTypeName',
-                      value: 'instTypeID',
-                    }"
-                  >
-
-                    <template slot-scope="{ node, data }">
-                      <el-tooltip class="item" effect="dark" :content="data.instTypeName" placement="top">
-                        <span>{{ data.instTypeName }}</span>
-                      </el-tooltip>
-                    </template>
-                  </el-cascader>
-
-
-                </el-form-item>
-                <el-form-item
-                  label="制度标题"
-                  prop="Title"
-                >
-                  <el-input
-                    v-model="listQuery.Title"
-                    style="width: 250px"
-                  />
-                </el-form-item>
-                <el-form-item/>
-                <el-form-item
-                  label="版本号"
-                  prop="VersionNumber"
-                >
-                  <el-input
-                    v-model="listQuery.VersionNumber"
-                    style="width: 250px"
-                  />
-                </el-form-item>
-
-              </div>
-              <el-form-item label="附件上传">
-                <el-upload
-                  :multiple="true"
-                  :show-file-list="true"
-                  :on-success="handleSuccess"
-                  class="editor-slide-upload"
-                  :file-list="fileList"
-                  action="/api/RC_File/UploadFile"
-                >
-                  <el-button
-                    size="mini"
-                    type="primary"
-                    :disabled="listQuery.GroupID === ''"
-                  >选择文件
-                  </el-button>
-                </el-upload>
-              </el-form-item>
-              <el-table
-                v-if="listQuery.File_dto.length > 0"
-                :data="listQuery.File_dto"
-                border
-                height="200px"
-              >
-                <el-table-column
-                  prop="title"
-                  label="资料标题"
-                >
-                  <template slot-scope="{row, $index }">
-                    <el-input
-                      v-if="currentEdit2 === $index"
-                      v-model="row.FileName"
-                      size="mini"
-                    />
-                    <span
-                      v-else
-                      style="cursor: pointer !important"
-                      @click="PreviewFile(row.FileUrl)"
-                    >{{ row.title || row.FileName }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  width="90px"
-                  align="center"
-                >
-                  <template slot-scope="{ row, $index }">
-                    <el-button
-                      v-if="currentEdit2 === $index"
-                      type="text"
-                      size="small"
-                      @click="finishEditClick2(row.FileID,row.FileName)"
-                    >完成
-                    </el-button>
-                    <span
-                      v-else
-                      style="cursor: pointer !important; color: #3e84e9"
-                      @click="EditClick2($index)"
-                    >修改</span>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  width="90px"
-                  align="center"
-                >
-                  <template slot-scope="{ row }">
-                    <span
-                      style="cursor: pointer !important; color: #3e84e9"
-                      @click="PreviewFile(row.FileUrl)"
-                    >点击预览</span>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  width="90px"
-                  align="center"
-                >
-                  <template slot-scope="{ row }">
-                    <el-link
-                      :href="row.FileUrl"
-                      type="primary"
-                      target="_blank"
-                    >下载
-                    </el-link>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  width="90px"
-                  align="center"
-                >
-                  <template
-                    v-if="scope.row.type != 'editor'"
-                    slot-scope="scope"
-                  >
-                    <i
-                      class="el-icon-delete"
-                      @click="deleteFile_dto(scope)"
-                    />
-                  </template>
-                </el-table-column>
-              </el-table>
-              <!--              <wangeditor-->
-              <!--                v-if="listQuery.Content"-->
-              <!--                ref="wangEditUpdate"-->
-              <!--                @change="getContent"-->
-              <!--              />-->
-
-            </el-form>
-          </el-tab-pane>
-          <el-tab-pane
-            label="指定审核人"
-            name="second"
-          >
-            <tree-filter
-              ref="TreeID"
-              :tree-data="TreeFilterData"
-              @getSelect="getSelect"
-            />
-          </el-tab-pane>
-        </el-tabs>
-        <div
-          slot="footer"
-          class="dialog-footer"
+    <!--制度上传 上传资料弹窗begin -->
+    <el-dialog
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible.sync="dialogFormVisible"
+      height="350px"
+      :width="device === 'desktop' ? '33%' : '90%'"
+    >
+      <el-tabs v-model="activeName">
+        <el-tab-pane
+          label="基本资料"
+          name="first"
         >
-          <el-button
-            size="small"
-            @click="dialogForm"
-          >关闭
-          </el-button>
-          <el-button
-            type="primary"
-            size="small"
-            :loading="uploadEnd"
-            @click="upload()"
-          >提交
-          </el-button>
-        </div>
-      </el-dialog>
-      <!-- 制度上传，修改 上传资料弹窗end -->
-      <!--  制度详情历史 -->
-      <el-dialog
-        title="制度详情历史"
-        class="TypeDetail"
-        :visible.sync="dialogFormVisibleDetails"
-        fullscreen
-      >
-        <el-row>
-          <el-col :span="12">
-            <el-form
-              :inline="true"
-              label-position="right"
-              size="mini"
-              class="demo-form-inline"
-            >
-              <el-form-item label="制度标题:">
-                <el-input
-                  v-model="seeRowData.instTitle"
+          <el-form
+            ref="listQuery"
+            :rules="rules"
+            size="mini"
+            :model="listQuery"
+            :inline="true"
+            label-width="80px"
+          >
+            <div style="display: flex; flex-wrap: wrap">
+              <el-form-item
+                label="制度类别"
+                prop="instID"
+              >
+
+                <el-cascader
+                  v-model="listQuery.instID"
                   size="mini"
-                  :disabled="true"
-                />
-              </el-form-item>
-              <el-form-item label="制度类别:">
-                <el-input
-                  v-model="seeRowData.instTypeName"
-                  size="mini"
-                  :disabled="true"
-                />
-              </el-form-item>
-              <el-form-item label="日期:">
-                <el-select
-                  v-model="instHistoryTime"
-                  placeholder="请选择时间"
-                  @change="HistoryTime"
+                  style="width: 250px"
+                  :options="tableTypeData"
+                  :show-all-levels="true"
+                  placeholder="可在此框直接搜索"
+                  filterable
+                  clearable
+                  :props="{
+                    checkStrictly: true,
+                    expandTrigger: 'hover',
+                    children: 'children',
+                    label: 'instTypeName',
+                    value: 'instTypeID',
+                  }"
                 >
-                  <el-option
-                    v-for="(itemTime1, indexTime1) in rowDataTime"
-                    :key="indexTime1"
-                    :label="itemTime1.instUpTime"
-                    :value="itemTime1.instHistoryID"
-                  />
-                </el-select>
+
+                  <template slot-scope="{ node, data }">
+                    <el-tooltip class="item" effect="dark" :content="data.instTypeName" placement="top">
+                      <span>{{ data.instTypeName }}</span>
+                    </el-tooltip>
+                  </template>
+                </el-cascader>
+
+
               </el-form-item>
-              <el-form-item label="制度版本:">
+              <el-form-item
+                label="制度标题"
+                prop="Title"
+              >
                 <el-input
-                  v-model="seeRowData.instVesion"
-                  size="mini"
-                  :disabled="true"
+                  v-model="listQuery.Title"
+                  style="width: 250px"
                 />
               </el-form-item>
-              <el-form-item label="上传人:">{{
-                  seeRowData.instUpUserName
-                                         }}
+              <el-form-item />
+              <el-form-item
+                label="版本号"
+                prop="VersionNumber"
+              >
+                <el-input
+                  v-model="listQuery.VersionNumber"
+                  style="width: 250px"
+                />
               </el-form-item>
-            </el-form>
+
+            </div>
+            <el-form-item label="附件上传">
+              <el-upload
+                :multiple="true"
+                :show-file-list="true"
+                :on-success="handleSuccess"
+                class="editor-slide-upload"
+                :file-list="fileList"
+                action="/api/RC_File/UploadFile"
+              >
+                <el-button
+                  size="mini"
+                  type="primary"
+                  :disabled="listQuery.GroupID === ''"
+                >选择文件
+                </el-button>
+              </el-upload>
+            </el-form-item>
             <el-table
-              :data="seeRowData.FileList"
-              border
-              height="200px"
-            >
-              <el-table-column
-                prop="FileName"
-                label="资料标题"
-              >
-                <template slot-scope="{ row }">
-                  <span
-                    style="cursor: pointer !important"
-                    @click="PreviewFile(row.FileUrl)"
-                  >{{ row.FileName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                width="90px"
-                align="center"
-              >
-                <template slot-scope="{ row }">
-                  <span
-                    style="cursor: pointer !important; color: #3e84e9"
-                    @click="PreviewFile(row.FileUrl)"
-                  >点击预览</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                width="90px"
-                align="center"
-              >
-                <template slot-scope="{ row }">
-                  <el-link
-                    :href="row.FileUrl"
-                    type="primary"
-                    target="_blank"
-                  >下载
-                  </el-link>
-                </template>
-              </el-table-column>
-              <el-table-column
-                width="90px"
-                align="center"
-              >
-                <template
-                  v-if="scope.row.type != 'editor'"
-                  slot-scope="scope"
-                >
-                  <i
-                    class="el-icon-delete"
-                    @click="deleteFile_dto(scope)"
-                  />
-                </template>
-              </el-table-column>
-            </el-table>
-            <wangeditor1
-              ref="wangEdit1"
-              class="wangeditorDetail"
-            />
-          </el-col>
-          <el-col :span="12">
-            <el-form
-              :inline="true"
-              label-position="right"
-              size="mini"
-              class="demo-form-inline"
-            >
-              <el-form-item label="制度标题:">
-                <el-input
-                  v-model="seeRowData2.instTitle"
-                  size="mini"
-                  :disabled="true"
-                />
-              </el-form-item>
-              <el-form-item label="制度类别:">
-                <el-input
-                  v-model="seeRowData2.instTypeName"
-                  size="mini"
-                  :disabled="true"
-                />
-              </el-form-item>
-              <el-form-item label="日期:">
-                <el-select
-                  v-model="instHistoryTime2"
-                  placeholder="请选择时间"
-                  @change="HistoryTime2"
-                >
-                  <el-option
-                    v-for="(itemTime2, indexTime1) in rowDataTime"
-                    :key="indexTime1"
-                    :label="itemTime2.instUpTime"
-                    :value="itemTime2.instHistoryID"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="制度版本:">
-                <el-input
-                  v-model="seeRowData2.instVesion"
-                  :disabled="true"
-                  size="mini"
-                />
-              </el-form-item>
-              <el-form-item label="上传人:">{{
-                  seeRowData2.instUpUserName
-                                         }}
-              </el-form-item>
-            </el-form>
-            <el-table
-              :data="seeRowData2.FileList"
+              v-if="listQuery.File_dto.length > 0"
+              :data="listQuery.File_dto"
               border
               height="200px"
             >
@@ -948,11 +730,36 @@
                 prop="title"
                 label="资料标题"
               >
-                <template slot-scope="{ row }">
+                <template slot-scope="{row, $index }">
+                  <el-input
+                    v-if="currentEdit2 === $index"
+                    v-model="row.FileName"
+                    size="mini"
+                  />
                   <span
+                    v-else
                     style="cursor: pointer !important"
                     @click="PreviewFile(row.FileUrl)"
-                  >{{ row.FileName }}</span>
+                  >{{ row.title || row.FileName }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                width="90px"
+                align="center"
+              >
+                <template slot-scope="{ row, $index }">
+                  <el-button
+                    v-if="currentEdit2 === $index"
+                    type="text"
+                    size="small"
+                    @click="finishEditClick2(row.FileID,row.FileName)"
+                  >完成
+                  </el-button>
+                  <span
+                    v-else
+                    style="cursor: pointer !important; color: #3e84e9"
+                    @click="EditClick2($index)"
+                  >修改</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -994,164 +801,420 @@
                 </template>
               </el-table-column>
             </el-table>
-            <wangeditor2
-              ref="wangEdit2"
-              class="wangeditorDetail"
+            <wangeditor
+              v-if="listQuery.Content"
+              ref="wangEditUpdate"
+              @change="getContent"
             />
-          </el-col>
-        </el-row>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="small"
-            @click="dialogFormVisibleDetails = false"
-          >关闭</el-button>
-        </span>
-      </el-dialog>
-      <!-- 查看详情弹窗end -->
 
-      <!-- 审核begin -->
-      <el-dialog
-        title="制度审核"
-        :visible.sync="auditData.audiDialogVisible"
-        :width="device === 'desktop' ? '30%' : '95%'"
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane
+          label="指定审核人"
+          name="second"
+        >
+          <tree-filter
+            ref="TreeID"
+            :tree-data="TreeFilterData"
+            @getSelect="getSelect"
+          />
+        </el-tab-pane>
+      </el-tabs>
+      <div
+        slot="footer"
+        class="dialog-footer"
       >
-        <el-form
-          size="mini"
-          :model="auditData"
-          label-position="top"
-        >
-          <el-form-item>
-            <el-input
-              v-model="auditData.instAduitOpinion"
-              size="mini"
-              autocomplete="off"
-              type="textarea"
-              placeholder="请填写审核意见"
-            />
-          </el-form-item>
-          <el-form-item
-            label="评审结果"
-            label-width="100px"
-          >
-            <el-select
-              v-model="auditData.instAuditState"
-              size="mini"
-              placeholder="请选择通过或退回"
-            >
-              <el-option
-                label="通过"
-                value="通过"
-              />
-              <el-option
-                label="退回"
-                value="退回"
-              />
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <div
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="small"
-            @click="auditData.audiDialogVisible = false"
-          >取 消
-          </el-button>
-          <el-button
-            size="small"
-            type="primary"
-            @click="auditDialog"
-          >确 定
-          </el-button>
-        </div>
-      </el-dialog>
-      <!-- 审核end -->
-      <!-- 归档begin -->
-      <el-dialog
-        :title="titleArchive"
-        :visible.sync="dialogVisibleArchive"
-        :close-on-click-modal="false"
-        :width="device === 'desktop' ? '40%' : '95%'"
-        height="400px"
-      >
-        <el-row>
-          <el-col
-            :span="7"
-            :xs="12"
-            :sm="12"
-          >
-            <standardCatalog
-              maxheight="500px"
-              @nodeClickCatalog="nodeClickCatalog"
-            />
-          </el-col>
-          <!-- <div style="width: 290px"> -->
-          <el-col
-            :span="8"
-            :xs="12"
-            :sm="12"
-          >
-            <articlegroup
-              style="width: 140px"
-              @getSelectAllArticleGroupValue="getSelectAllArticleGroupValue2"
-            />
-            <el-input
-              v-model="catalogName"
-              type="textarea"
-              placeholder="条款要点"
-              disabled
-              :rows="12"
-              style="margin-top: 5px"
-            />
-          </el-col>
-        </el-row>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="dialogVisibleArchive = false"
-          >取 消</el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            :loading="uploadEnd"
-            @click="InsertArticle"
-          >确 定</el-button>
-        </span>
-      </el-dialog>
-      <!-- 归档end -->
-    </el-main>
-    <el-footer>
+        <el-button
+          size="small"
+          @click="dialogForm"
+        >关闭
+        </el-button>
+        <el-button
+          type="primary"
+          size="small"
+          :loading="uploadEnd"
+          @click="upload()"
+        >提交
+        </el-button>
+      </div>
+    </el-dialog>
+    <!-- 制度上传，修改 上传资料弹窗end -->
+    <!--  制度详情历史 -->
+    <el-dialog
+      title="制度详情历史"
+      class="TypeDetail"
+      :visible.sync="dialogFormVisibleDetails"
+      fullscreen
+    >
       <el-row>
-        <el-col :span="2">
-          <el-switch
-            v-if="stateS===1"
-            v-model="cellOverflow"
-            style="margin: 6px 0px"
+        <el-col :span="12">
+          <el-form
+            :inline="true"
+            label-position="right"
+            size="mini"
+            class="demo-form-inline"
+          >
+            <el-form-item label="制度标题:">
+              <el-input
+                v-model="seeRowData.instTitle"
+                size="mini"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="制度类别:">
+              <el-input
+                v-model="seeRowData.instTypeName"
+                size="mini"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="日期:">
+              <el-select
+                v-model="instHistoryTime"
+                placeholder="请选择时间"
+                @change="HistoryTime"
+              >
+                <el-option
+                  v-for="(itemTime1, indexTime1) in rowDataTime"
+                  :key="indexTime1"
+                  :label="itemTime1.instUpTime"
+                  :value="itemTime1.instHistoryID"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="制度版本:">
+              <el-input
+                v-model="seeRowData.instVesion"
+                size="mini"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="上传人:">{{
+              seeRowData.instUpUserName
+            }}
+            </el-form-item>
+          </el-form>
+          <el-table
+            :data="seeRowData.FileList"
+            border
+            height="200px"
+          >
+            <el-table-column
+              prop="FileName"
+              label="资料标题"
+            >
+              <template slot-scope="{ row }">
+                <span
+                  style="cursor: pointer !important"
+                  @click="PreviewFile(row.FileUrl)"
+                >{{ row.FileName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="90px"
+              align="center"
+            >
+              <template slot-scope="{ row }">
+                <span
+                  style="cursor: pointer !important; color: #3e84e9"
+                  @click="PreviewFile(row.FileUrl)"
+                >点击预览</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="90px"
+              align="center"
+            >
+              <template slot-scope="{ row }">
+                <el-link
+                  :href="row.FileUrl"
+                  type="primary"
+                  target="_blank"
+                >下载
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="90px"
+              align="center"
+            >
+              <template
+                v-if="scope.row.type != 'editor'"
+                slot-scope="scope"
+              >
+                <i
+                  class="el-icon-delete"
+                  @click="deleteFile_dto(scope)"
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+          <wangeditor1
+            ref="wangEdit1"
+            class="wangeditorDetail"
           />
         </el-col>
-        <el-col :span="20">
-          <!-- 分页 -->
-          <el-pagination
-            v-if="stateS===1"
-            :current-page="pagination.pageIndex"
-            :page-sizes="[15, 20, 30, 40]"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+        <el-col :span="12">
+          <el-form
+            :inline="true"
+            label-position="right"
+            size="mini"
+            class="demo-form-inline"
+          >
+            <el-form-item label="制度标题:">
+              <el-input
+                v-model="seeRowData2.instTitle"
+                size="mini"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="制度类别:">
+              <el-input
+                v-model="seeRowData2.instTypeName"
+                size="mini"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="日期:">
+              <el-select
+                v-model="instHistoryTime2"
+                placeholder="请选择时间"
+                @change="HistoryTime2"
+              >
+                <el-option
+                  v-for="(itemTime2, indexTime1) in rowDataTime"
+                  :key="indexTime1"
+                  :label="itemTime2.instUpTime"
+                  :value="itemTime2.instHistoryID"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="制度版本:">
+              <el-input
+                v-model="seeRowData2.instVesion"
+                :disabled="true"
+                size="mini"
+              />
+            </el-form-item>
+            <el-form-item label="上传人:">{{
+              seeRowData2.instUpUserName
+            }}
+            </el-form-item>
+          </el-form>
+          <el-table
+            :data="seeRowData2.FileList"
+            border
+            height="200px"
+          >
+            <el-table-column
+              prop="title"
+              label="资料标题"
+            >
+              <template slot-scope="{ row }">
+                <span
+                  style="cursor: pointer !important"
+                  @click="PreviewFile(row.FileUrl)"
+                >{{ row.FileName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="90px"
+              align="center"
+            >
+              <template slot-scope="{ row }">
+                <span
+                  style="cursor: pointer !important; color: #3e84e9"
+                  @click="PreviewFile(row.FileUrl)"
+                >点击预览</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="90px"
+              align="center"
+            >
+              <template slot-scope="{ row }">
+                <el-link
+                  :href="row.FileUrl"
+                  type="primary"
+                  target="_blank"
+                >下载
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="90px"
+              align="center"
+            >
+              <template
+                v-if="scope.row.type != 'editor'"
+                slot-scope="scope"
+              >
+                <i
+                  class="el-icon-delete"
+                  @click="deleteFile_dto(scope)"
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+          <wangeditor2
+            ref="wangEdit2"
+            class="wangeditorDetail"
           />
         </el-col>
       </el-row>
-    </el-footer>
-  </el-container>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="small"
+          @click="dialogFormVisibleDetails = false"
+        >关闭</el-button>
+      </span>
+    </el-dialog>
+    <!-- 查看详情弹窗end -->
+
+    <!-- 审核begin -->
+    <el-dialog
+      title="制度审核"
+      :visible.sync="auditData.audiDialogVisible"
+      :width="device === 'desktop' ? '30%' : '95%'"
+    >
+      <el-form
+        size="mini"
+        :model="auditData"
+        label-position="top"
+      >
+        <el-form-item>
+          <el-input
+            v-model="auditData.instAduitOpinion"
+            size="mini"
+            autocomplete="off"
+            type="textarea"
+            placeholder="请填写审核意见"
+          />
+        </el-form-item>
+        <el-form-item
+          label="评审结果"
+          label-width="100px"
+        >
+          <el-select
+            v-model="auditData.instAuditState"
+            size="mini"
+            placeholder="请选择通过或退回"
+          >
+            <el-option
+              label="通过"
+              value="通过"
+            />
+            <el-option
+              label="退回"
+              value="退回"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="small"
+          @click="auditData.audiDialogVisible = false"
+        >取 消
+        </el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="auditDialog"
+        >确 定
+        </el-button>
+      </div>
+    </el-dialog>
+    <!-- 审核end -->
+    <!-- 归档begin -->
+    <el-dialog
+      :title="titleArchive"
+      :visible.sync="dialogVisibleArchive"
+      :close-on-click-modal="false"
+      :width="device === 'desktop' ? '40%' : '95%'"
+      height="400px"
+    >
+      <el-row>
+        <el-col
+          :span="7"
+          :xs="12"
+          :sm="12"
+        >
+          <standardCatalog
+            maxheight="500px"
+            @nodeClickCatalog="nodeClickCatalog"
+          />
+        </el-col>
+        <!-- <div style="width: 290px"> -->
+        <el-col
+          :span="8"
+          :xs="12"
+          :sm="12"
+        >
+          <articlegroup
+            style="width: 140px"
+            @getSelectAllArticleGroupValue="getSelectAllArticleGroupValue2"
+          />
+          <el-input
+            v-model="catalogName"
+            type="textarea"
+            placeholder="条款要点"
+            disabled
+            :rows="12"
+            style="margin-top: 5px"
+          />
+        </el-col>
+      </el-row>
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="dialogVisibleArchive = false"
+        >取 消</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          :loading="uploadEnd"
+          @click="InsertArticle"
+        >确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 归档end -->
+
+    <el-row>
+      <el-col :span="2">
+        <el-switch
+          v-if="stateS===1"
+          v-model="cellOverflow"
+          style="margin: 6px 0px"
+        />
+      </el-col>
+      <el-col :span="20">
+        <!-- 分页 -->
+        <el-pagination
+          v-if="stateS===1"
+          background
+          style="margin-top: 10px"
+          :current-page="pagination.pageIndex"
+          :page-sizes="[15, 20, 30, 40]"
+          :page-size="pagination.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="pagination.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+
+  </el-card>
 </template>
 <script>
 import wangeditor from '@/components/Editor/index'; /* 富文本编辑器 */
@@ -1180,7 +1243,8 @@ import {
 } from '@/api/institution';
 import standardCatalog from '@/views/components/standardCatalog2';
 import articlegroup from '@/views/components/articlegroup';
-import defaultDepts from '@/views/components/defaultDepts'; // 科室部门
+import defaultDepts from '@/views/components/defaultDepts';
+import { DeleteTopic } from '@/api/KS_Topic'; // 科室部门
 export default {
   name: 'Institution',
   components: {
@@ -1194,6 +1258,8 @@ export default {
   },
   data() {
     return {
+      nowUseID: window.userInfo[0].UserID, // 当前人员id，用于识别自建表单
+      nowTopicID: [], // 现在所选择的批量删除制度id数据集
       nowFileList: [], // 现在附件的内容
       FileStatus: [
         {
@@ -1389,6 +1455,43 @@ export default {
     this.SelectinstHome();
   },
   methods: {
+    // 获取选中的制度id
+    handleSelectionChange(val) {
+      this.nowTopicID = [];
+      val.map((item) => {
+        this.nowTopicID.push(item.topicID);
+      });
+      this.nowTopicID = this.nowTopicID.toString();
+    },
+    // 点击行触发，选中或不选中复选框
+    // handleRowClick(row, column, event) {
+    //   this.$refs.multipleTable.toggleRowSelection(row);
+    // },
+    // 确定批量删除
+    moreDel() {
+      this.$confirm('确定批量删除所选制度, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(async() => {
+        if (this.nowTopicID.length === 0) {
+          this.$message.warning('请至少勾选一条制度');
+        } else {
+          const { code, msg } = await DeleteTopic({ topicId: this.nowTopicID });
+          if (code === 200) {
+            this.$message({
+              type: 'success',
+              message: msg
+            });
+            this.listLoading = false; // 关闭表格加载条
+            await this.SelectinstHome(); // 刷新列表
+          }
+        }
+      }).catch(() => {
+        this.isShowMoreDel = false; // 取消勾选框，隐藏确定删除、取消按钮
+        this.listLoading = false; // 关闭表格加载条
+      });
+    },
     // 返回按钮
     ManagementFrame1() {
       this.stateS = 1; // 现在显示制度加科室
@@ -1469,7 +1572,10 @@ export default {
     },
     async upload() {
       this.currentEdit2 = -1; // 将input框关闭
-
+      if (this.instAduitUserNoRecord2.length === 0) {
+        this.$message.warning('还没选择审核人');
+        return;
+      }
       let obj = {
         instTitle: this.listQuery.Title,
         instTypeID: this.listQuery.instID[this.listQuery.instID.length - 1],
@@ -1500,6 +1606,10 @@ export default {
             : this.instAduitUserNoRecord2;
         if (this.instAduitUserNoRecord2.length === 0) {
           this.$message.warning('请选择指定的审核人');
+          return;
+        }
+        if (this.instAduitUserNoRecord2 === '') {
+          this.$message.warning('请选择审核人！');
           return;
         }
 
@@ -1784,7 +1894,7 @@ export default {
               ? '未知时间'
               : item.instUpTime == ''
                 ? '未知时间'
-                : item.instUpTime.split('T').join(' '),
+                : item.instUpTime.split('T').join(' ') + ' (版本：' + item.instVesion + ')',
           instHistoryID: item.instHistoryID
         };
       });
@@ -1814,25 +1924,30 @@ export default {
       });
     },
     async PreviewFile(url) {
-      /* 文件预览 */
-      const loading = this.$loading({
-        lock: true,
-        text: '文件格式转换中，请稍后......',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
-      const { data } = await PreviewFile({
-        Title: url.replace(/Annex\/file\/|\//g, '')
-      });
-      loading.close();
-      this.$nextTick(() => {
-        const link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = data;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-      });
+      try {
+        /* 文件预览 */
+        var loading = this.$loading({
+          lock: true,
+          text: '文件格式转换中，请稍后......',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        const { data } = await PreviewFile({
+          Title: url.replace(/Annex\/file\/|\//g, '')
+        });
+        loading.close();
+        this.$nextTick(() => {
+          const link = document.createElement('a');
+          link.style.display = 'none';
+          link.href = data;
+          link.target = '_blank';
+          document.body.appendChild(link);
+          link.click();
+        });
+      } catch (e) {
+        console.log(e);
+        loading.close();
+      }
     },
     setarr(array) {
       // 保存新数组

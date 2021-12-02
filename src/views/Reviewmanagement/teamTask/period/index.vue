@@ -2,223 +2,220 @@
   <el-card
     style="margin: 10px;"
   >
-  <el-container class="Period">
-
-
-
-    <el-header>
-      <el-form
-        label-position="left"
-        :inline="true"
-        size="mini"
-      >
-        <el-form-item>
-          <el-button
-            type="primary"
-            icon="el-icon-circle-plus"
-            size="mini"
-            @click="addCurrent"
-          >添加批次</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-input
-            v-model="listQuery.condition"
-            placeholder="批次名"
-            style="width: 200px"
-            size="mini"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="info"
-            icon="el-icon-search"
-            :loading="listLoading"
-            size="mini"
-            @click="clickSelectPeriod()"
-          >搜索</el-button>
-        </el-form-item>
-      </el-form>
-    </el-header>
-    <el-main>
-      <el-table
-        v-loading="listLoading"
-        :data="tableData"
-        border
-        style="width: 100%"
-        size="mini"
-        height="calc(100vh - 200px)"
-      >
-        <el-table-column
-          type="index"
-          label="序号"
-          width="60"
-          align="center"
-        />
-        <el-table-column
-          prop="PeriodName"
-          label="批次名"
-        />
-        <el-table-column
-          prop="StartTime"
-          label="开始时间"
-
-        >
-          <template slot-scope="scope">
-            {{ scope.row.StartTime.split("T").join(" ") }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="EndTime"
-          label="结束时间"
-
-        >
-          <template slot-scope="scope">
-            {{ scope.row.EndTime.split("T").join(" ") }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="Status"
-          label="状态"
-          width="100"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <el-tag
-              size="mini"
-              :type="
-                scope.row.Status === 0
-                  ? 'warning'
-                  : scope.row.Status === 1
-                    ? 'success'
-                    : 'danger'
-              "
-            >
-              {{
-                scope.row.Status === 0
-                  ? "未开启"
-                  : scope.row.Status === 1
-                    ? "已开启"
-                    : "已结束"
-              }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed="right"
-          label="操作"
-          width="150"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <el-button
-              type="info"
-              size="mini"
-              icon="el-icon-edit"
-              @click.native.prevent="editRow(scope.row)"
-            />
-            <el-button
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-              @click.native.prevent="deleteRow(scope.row)"
-            />
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-dialog
-        :close-on-click-modal="false"
-        :title="title"
-        :visible.sync="dialogVisible"
-        :width="device === 'desktop' ? '50%' : '90%'"
-        @closed="$refs.FormData.resetFields()"
-      >
+    <el-container class="Period">
+      <el-header>
         <el-form
-          ref="FormData"
           label-position="left"
-          :model="FormData"
-          :rules="rules"
+          :inline="true"
           size="mini"
-          label-width="80px"
         >
-          <el-form-item
-            label="批次名"
-            prop="PeriodName"
-          >
-            <el-input v-model="FormData.PeriodName" />
-          </el-form-item>
-          <el-form-item
-            label="开始时间"
-            prop="StartTime"
-          >
-            <el-date-picker
-              v-model="FormData.StartTime"
-              type="datetime"
-              clearable
-              value-format="yyyy-MM-ddThh:mm:ss"
-              placeholder="选择开始时间"
-            />
-          </el-form-item>
-          <el-form-item
-            label="结束时间"
-            prop="EndTime"
-          >
-            <el-date-picker
-              v-model="FormData.EndTime"
-              type="datetime"
-              value-format="yyyy-MM-ddThh:mm:ss"
-              clearable
-              placeholder="选择结束时间"
-            />
-          </el-form-item>
-          <el-form-item
-            label="状态"
-            prop="Status"
-          >
-            <el-select
-              v-model="FormData.Status"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+          <el-tag type="info" style="width: 100%">
+            <el-form-item>
+              <el-button
+                type="primary"
+                icon="el-icon-circle-plus"
+                size="mini"
+                @click="addCurrent"
+              >添加批次</el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-input
+                v-model="listQuery.condition"
+                placeholder="批次名"
+                style="width: 200px"
+                size="mini"
+                clearable
               />
-            </el-select>
-          </el-form-item>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                :loading="listLoading"
+                size="mini"
+                @click="clickSelectPeriod()"
+              >搜索</el-button>
+            </el-form-item>
+          </el-tag>
         </el-form>
-        <span
-          slot="footer"
-          class="dialog-footer"
+      </el-header>
+      <el-main>
+        <el-table
+          v-loading="listLoading"
+          :data="tableData"
+          border
+          style="width: 100%"
+          size="mini"
+          height="calc(100vh - 200px)"
         >
-          <el-button
+          <el-table-column
+            type="index"
+            label="序号"
+            width="60"
+            align="center"
+          />
+          <el-table-column
+            prop="PeriodName"
+            label="批次名"
+          />
+          <el-table-column
+            prop="StartTime"
+            label="开始时间"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.StartTime.split("T").join(" ") }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="EndTime"
+            label="结束时间"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.EndTime.split("T").join(" ") }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="Status"
+            label="状态"
+            width="100"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <el-tag
+                size="mini"
+                :type="
+                  scope.row.Status === 0
+                    ? 'warning'
+                    : scope.row.Status === 1
+                      ? 'success'
+                      : 'danger'
+                "
+              >
+                {{
+                  scope.row.Status === 0
+                    ? "未开启"
+                    : scope.row.Status === 1
+                      ? "已开启"
+                      : "已结束"
+                }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="150"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <el-button
+                type="info"
+                size="mini"
+                icon="el-icon-edit"
+                @click.native.prevent="editRow(scope.row)"
+              />
+              <el-button
+                type="danger"
+                size="mini"
+                icon="el-icon-delete"
+                @click.native.prevent="deleteRow(scope.row)"
+              />
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-dialog
+          :close-on-click-modal="false"
+          :title="title"
+          :visible.sync="dialogVisible"
+          :width="device === 'desktop' ? '50%' : '90%'"
+          @closed="$refs.FormData.resetFields()"
+        >
+          <el-form
+            ref="FormData"
+            label-position="left"
+            :model="FormData"
+            :rules="rules"
             size="mini"
-            @click="dialogVisible = false"
-          >取 消</el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            @click="title === '添加批次' ? InsertPeriod() : UpdatePeriod()"
-          >确 定</el-button>
-        </span>
-      </el-dialog>
-    </el-main>
-    <el-footer>
-      <el-pagination
-        style="margin: 6px 0 0 0"
-        background
-        :current-page.sync="pagination.pageIndex"
-        :page-size="pagination.pageSize"
-        :page-sizes="pagination.pageSizes"
-        :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </el-footer>
+            label-width="80px"
+          >
+            <el-form-item
+              label="批次名"
+              prop="PeriodName"
+            >
+              <el-input v-model="FormData.PeriodName" />
+            </el-form-item>
+            <el-form-item
+              label="开始时间"
+              prop="StartTime"
+            >
+              <el-date-picker
+                v-model="FormData.StartTime"
+                type="datetime"
+                clearable
+                value-format="yyyy-MM-ddThh:mm:ss"
+                placeholder="选择开始时间"
+              />
+            </el-form-item>
+            <el-form-item
+              label="结束时间"
+              prop="EndTime"
+            >
+              <el-date-picker
+                v-model="FormData.EndTime"
+                type="datetime"
+                value-format="yyyy-MM-ddThh:mm:ss"
+                clearable
+                placeholder="选择结束时间"
+              />
+            </el-form-item>
+            <el-form-item
+              label="状态"
+              prop="Status"
+            >
+              <el-select
+                v-model="FormData.Status"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <span
+            slot="footer"
+            class="dialog-footer"
+          >
+            <el-button
+              size="mini"
+              @click="dialogVisible = false"
+            >取 消</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="title === '添加批次' ? InsertPeriod() : UpdatePeriod()"
+            >确 定</el-button>
+          </span>
+        </el-dialog>
+      </el-main>
+      <el-footer>
+        <el-pagination
+          style="margin: 6px 0 0 0"
+          background
+          :current-page.sync="pagination.pageIndex"
+          :page-size="pagination.pageSize"
+          :page-sizes="pagination.pageSizes"
+          :total="pagination.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-footer>
 
-  </el-container>
+    </el-container>
   </el-card>
 </template>
 

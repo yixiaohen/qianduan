@@ -4,290 +4,303 @@
       <div
         slot="header"
         ref="clearfix"
-        :style="{ height: clearfixHeight + 'px' }"
-        class="clearfix"
-      >
-        <el-form
-          label-position="right"
-          :model="formData"
-          :inline="true"
-          size="mini"
-        >
-          <el-form-item>
-            <el-button
-              :class="
-                clearfixHeight == 28
-                  ? 'el-icon-arrow-right'
-                  : 'el-icon-arrow-down'
-              "
-              @click="unfold"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              v-model="listQuery.CatalogCode"
-              placeholder="标准编号"
-              style="width: 120px"
-              size="mini"
-              clearable
-              @keyup.enter.native="clickSelectEvaluationUser()"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              v-model="listQuery.CatalogName"
-              placeholder="评审标准内容"
-              style="width: 120px"
-              size="mini"
-              clearable
-              @keyup.enter.native="clickSelectEvaluationUser()"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model="listQuery.Step"
-              placeholder="请选择人员姓名"
-              style="width: 130px"
-              clearable
-              @change="changeUsername"
-              @keyup.enter.native="clickSelectEvaluationUser()"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model="listQuery.Status"
-              placeholder="条款是否已分配"
-              style="width: 100px"
-              clearable
-              @keyup.enter.native="clickSelectEvaluationUser()"
-            >
-              <el-option
-                label="是否分配"
-                value=""
-              />
-              <el-option
-                label="已分配"
-                value="已分配"
-              />
-              <el-option
-                label="未分配"
-                value="未分配"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              v-model="userName"
-              placeholder="人员姓名"
-              style="width: 100px"
-              size="mini"
-              clearable
-              @keyup.enter.native="clickSelectEvaluationUser()"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model="GroupNameArr"
-              placeholder="请选择"
-              style="width: 100px"
-              size="mini"
-              multiple
-              clearable
-              @change="selectGetGroupID"
-            >
-              <el-option
-                v-for="item in tableDataGroup"
-                :key="item.GroupID"
-                :label="item.GroupName"
-                :value="item.GroupID"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="info"
-              icon="el-icon-search"
-              :loading="listLoading"
-              size="mini"
-              @click="clickSelectEvaluationUser()"
-            >搜索
-            </el-button>
-          </el-form-item>
-          <!-- ReviewName:执行人员姓名
-          ManageName:主管人员姓名
-          VisitName:分管院领导姓名 -->
-          <el-form-item v-if="menu == false">
-            <el-button
-              v-if="EvaluationUserRoleCount === 0 ? false : true"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-            >{{ menu_one }}
-            </el-button>
-          </el-form-item>
-          <el-form-item v-if="menu == false">
-            <el-button
-              v-if="
-                EvaluationUserRoleCount === 0
-                  ? false
-                  : EvaluationUserRoleCount === 1
-                    ? false
-                    : true
-              "
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-            >{{ menu_two }}
-            </el-button>
-          </el-form-item>
-          <el-form-item v-if="menu == false">
-            <el-button
-              v-if="EvaluationUserRoleCount == 3"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-            >{{ menu_three }}
-            </el-button>
-          </el-form-item>
-          <el-form-item v-if="menu == true">
-            <el-button
-              v-if="EvaluationUserRoleCount == 3"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-            >{{ menu_one }}
-            </el-button>
-          </el-form-item>
-          <el-form-item v-if="menu == true">
-            <el-button
-              v-if="EvaluationUserRoleCount == 3"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-            >{{ menu_two }}
-            </el-button>
-          </el-form-item>
-          <el-form-item v-if="menu == true">
-            <el-button
-              v-if="EvaluationUserRoleCount == 3"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-            >{{ menu_three }}
-            </el-button>
-          </el-form-item>
 
-          <!-- <el-form-item>
-            <el-button
-              v-if="
-                menu_one != undefined &&
-                (showRoleNameButton('系统管理员') ||
-                  showRoleNameButton(menu_one.replace('审核', '负责人')) ||
-                  showRoleNameButton(menu_two.replace('审核', '负责人')) ||
-                  showRoleNameButton(menu_three.replace('审核', '负责人')))
-              "
-              tag="1"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-              >{{ menu_one }}</el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              v-if="
-                menu_two != undefined &&
-                (showRoleNameButton('系统管理员') ||
-                  showRoleNameButton(menu_two.replace('审核', '负责人')) ||
-                  showRoleNameButton(menu_three.replace('审核', '负责人')))
-              "
-              tag="2"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-              >{{ menu_two }}</el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              v-if="
-                menu_three != undefined &&
-                (showRoleNameButton('系统管理员') ||
-                  showRoleNameButton(menu_three.replace('审核', '负责人')))
-              "
-              tag="3"
-              :loading="listLoading"
-              icon="el-icon-user-solid"
-              size="mini"
-              @click="distributionFunction"
-              >{{ menu_three }}</el-button
-            >
-          </el-form-item> -->
-          <el-form-item>
-            <el-button
-              :loading="listLoading"
-              :disabled="downloadLoading"
-              type="success"
-              icon="el-icon-document"
-              size="mini"
-              @click="distributionFunction('分配组别')"
-            >分配组别
-            </el-button>
-          </el-form-item>
-          <el-form-item style="width: 150px">
-            <el-select
-              v-model="downloadValue"
-              placeholder="请选择要导出数据"
-            >
-              <el-option
-                label="前一百条"
-                value="100"
+      >
+        <div
+          style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+        >
+          <el-form
+            label-position="right"
+            :model="formData"
+            :inline="true"
+            size="mini"
+            class="searchBox "
+          >
+
+            <el-form-item>
+              <el-input
+                v-model="listQuery.CatalogCode"
+                placeholder="标准编号"
+                style="width: 120px"
+                size="mini"
+                clearable
+                @keyup.enter.native="clickSelectEvaluationUser()"
               />
-              <el-option
-                label="前三百条"
-                value="300"
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item>
+              <el-input
+                v-model="listQuery.CatalogName"
+                placeholder="评审标准内容"
+                style="width: 120px"
+                size="mini"
+                clearable
+                @keyup.enter.native="clickSelectEvaluationUser()"
               />
-              <el-option
-                label="前五百条"
-                value="500"
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item>
+              <el-select
+                v-model="listQuery.Step"
+                placeholder="请选择人员姓名"
+                style="width: 130px"
+                clearable
+                @change="changeUsername"
+                @keyup.enter.native="clickSelectEvaluationUser()"
+              >
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-select
+                v-model="listQuery.Status"
+                placeholder="条款是否已分配"
+                style="width: 140px"
+                clearable
+                @keyup.enter.native="clickSelectEvaluationUser()"
+              >
+                <!--                  <el-option-->
+                <!--                    label="是否分配"-->
+                <!--                    value=""-->
+                <!--                  />-->
+                <el-option
+                  label="已分配"
+                  value="已分配"
+                />
+                <el-option
+                  label="未分配"
+                  value="未分配"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-input
+                v-model="userName"
+                placeholder="人员姓名"
+                style="width: 100px"
+                size="mini"
+                clearable
+                @keyup.enter.native="clickSelectEvaluationUser()"
               />
-              <el-option
-                label="前一千条"
-                value="1000"
-              />
-              <el-option
-                label="全部"
-                :value="pagination.total"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              :loading="downloadLoading"
-              type="success"
-              icon="el-icon-download"
-              :disabled="listLoading"
-              size="mini"
-              @click="handleDownload"
-            >导出
-            </el-button>
-          </el-form-item>
-        </el-form>
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item>
+              <el-select
+                v-model="GroupNameArr"
+                placeholder="组别"
+                style="width: 200px"
+                size="mini"
+                multiple
+                clearable
+                @change="selectGetGroupID"
+              >
+                <el-option
+                  v-for="item in tableDataGroup"
+                  :key="item.GroupID"
+                  :label="item.GroupName"
+                  :value="item.GroupID"
+                />
+              </el-select>
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item>
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                :loading="listLoading"
+                size="mini"
+                @click="clickSelectEvaluationUser()"
+              >搜索
+              </el-button>
+            </el-form-item>
+
+
+            <!-- ReviewName:执行人员姓名
+  ManageName:主管人员姓名
+  VisitName:分管院领导姓名 -->
+
+            <el-form-item v-if="menu == false">
+              <el-button
+                v-if="EvaluationUserRoleCount === 0 ? false : true"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+              >{{ menu_one }}
+              </el-button>
+            </el-form-item>
+            <el-form-item v-if="menu == false">
+              <el-button
+                v-if="
+                  EvaluationUserRoleCount === 0
+                    ? false
+                    : EvaluationUserRoleCount === 1
+                      ? false
+                      : true
+                "
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+              >{{ menu_two }}
+              </el-button>
+            </el-form-item>
+            <el-form-item v-if="menu == false">
+              <el-button
+                v-if="EvaluationUserRoleCount == 3"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+              >{{ menu_three }}
+              </el-button>
+            </el-form-item>
+            <el-form-item v-if="menu == true">
+              <el-button
+                v-if="EvaluationUserRoleCount == 3"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+              >{{ menu_one }}
+              </el-button>
+            </el-form-item>
+            <el-form-item v-if="menu == true">
+              <el-button
+                v-if="EvaluationUserRoleCount == 3"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+              >{{ menu_two }}
+              </el-button>
+            </el-form-item>
+            <el-form-item v-if="menu == true">
+              <el-button
+                v-if="EvaluationUserRoleCount == 3"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+              >{{ menu_three }}
+              </el-button>
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item>
+              <el-button
+                :loading="listLoading"
+                :disabled="downloadLoading"
+                type="success"
+                icon="el-icon-document"
+                size="mini"
+                @click="distributionFunction('分配组别')"
+              >分配组别
+              </el-button>
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item style="width: 150px">
+              <el-select
+                v-model="downloadValue"
+                placeholder="请选择要导出数据"
+              >
+                <el-option
+                  label="前一百条"
+                  value="100"
+                />
+                <el-option
+                  label="前三百条"
+                  value="300"
+                />
+                <el-option
+                  label="前五百条"
+                  value="500"
+                />
+                <el-option
+                  label="前一千条"
+                  value="1000"
+                />
+                <el-option
+                  label="全部"
+                  :value="pagination.total"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                :loading="downloadLoading"
+                type="success"
+                icon="el-icon-download"
+                :disabled="listLoading"
+                size="mini"
+                @click="handleDownload"
+              >导出
+              </el-button>
+            </el-form-item>
+
+
+
+
+
+            <!-- <el-form-item>
+              <el-button
+                v-if="
+                  menu_one != undefined &&
+                  (showRoleNameButton('系统管理员') ||
+                    showRoleNameButton(menu_one.replace('审核', '负责人')) ||
+                    showRoleNameButton(menu_two.replace('审核', '负责人')) ||
+                    showRoleNameButton(menu_three.replace('审核', '负责人')))
+                "
+                tag="1"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+                >{{ menu_one }}</el-button
+              >
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                v-if="
+                  menu_two != undefined &&
+                  (showRoleNameButton('系统管理员') ||
+                    showRoleNameButton(menu_two.replace('审核', '负责人')) ||
+                    showRoleNameButton(menu_three.replace('审核', '负责人')))
+                "
+                tag="2"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+                >{{ menu_two }}</el-button
+              >
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                v-if="
+                  menu_three != undefined &&
+                  (showRoleNameButton('系统管理员') ||
+                    showRoleNameButton(menu_three.replace('审核', '负责人')))
+                "
+                tag="3"
+                :loading="listLoading"
+                icon="el-icon-user-solid"
+                size="mini"
+                @click="distributionFunction"
+                >{{ menu_three }}</el-button
+              >
+            </el-form-item> -->
+
+          </el-form>
+        </div>
       </div>
       <div class="content">
         <el-table
@@ -296,10 +309,11 @@
           :data="tableData"
           style="width: 100%"
           border
+          stripe
           row-key="CatalogID"
           size="mini"
           tooltip-effect="light"
-          height="calc(100vh - 200px)"
+          height="calc(100vh - 260px)"
           highlight-current-row
           @selection-change="handleSelectionChange"
         >
@@ -355,7 +369,7 @@
             <template slot-scope="{ row }">
               <el-popover placement="top-start" :title="menu_one" width="90%" trigger="hover">
                 <div>{{ row.ReviewName }}</div>
-                <span slot="reference">{{ row.ReviewName}}</span>
+                <span slot="reference">{{ row.ReviewName }}</span>
               </el-popover>
             </template>
 
@@ -369,7 +383,7 @@
             <template slot-scope="{ row }">
               <el-popover placement="top-start" :title="menu_two" width="90%" trigger="hover">
                 <div>{{ row.ManageName }}</div>
-                <span slot="reference">{{ row.ManageName}}</span>
+                <span slot="reference">{{ row.ManageName }}</span>
               </el-popover>
             </template>
 
@@ -399,7 +413,7 @@
           <el-col :span="3">
             <el-switch
               v-model="cellOverflow"
-              style="margin: 6px 0px"
+              style="margin: 26px 0px"
               active-text="收起"
               inactive-text="展开"
             />
@@ -407,6 +421,7 @@
           <el-col :span="20">
             <el-pagination
               background
+              style="margin: 26px 0 0 0"
               :current-page.sync="pagination.pageIndex"
               :page-size="pagination.pageSize"
               :page-sizes="pagination.pageSizes"
@@ -967,6 +982,28 @@ export default {
 };
 </script>
 <style lang="scss">
+// 头部搜索栏
+//.searchBox{
+//  .el-row{
+//    margin-top: 5px;
+//    .el-col{
+//      // 实现文字溢出隐藏加省略号
+//      overflow: hidden;
+//      text-overflow: ellipsis;
+//      white-space: nowrap
+//    }
+//  }
+
+
+//}
+//.content{
+//  margin-top: 24px;
+//}
+.box-card{
+  width: 98%;
+  margin: 10px;
+
+}
 .EvaluationUser {
   margin-top: 4px;
 

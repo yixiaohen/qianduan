@@ -1,7 +1,13 @@
 <template>
   <el-container class="RegulatoryRectification">
-    <el-card style="margin: 10px;width: 98%">
-      <el-header style="height: 60px">
+    <el-card style="margin: 10px;width: 98%;height: 87vh;overflow: auto">
+      <div
+        style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+      >
         <el-form
           :inline="true"
           :model="listQuery"
@@ -17,6 +23,7 @@
               @keyup.enter.native="clickSelectOpinions()"
             />
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-select
               v-model="listQuery.IsRequired"
@@ -34,6 +41,7 @@
               />
             </el-select>
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-select
               v-model="listQuery.Status"
@@ -70,6 +78,31 @@
               />
             </el-select>
           </el-form-item>
+
+          <el-divider direction="vertical" />
+          <el-form-item>
+            <default-depts
+              v-if="!addFormData.RC_InspectionDepartmentID"
+              w="100%"
+              :value="addFormData.RC_InspectionDepartmentID"
+              @getDefaultDeptsValue="getDefaultDeptValues"
+            />
+            <el-input
+              v-else
+              v-model="listQuery.RC_InspectionDepartment"
+              @focus="focus"
+            />
+          </el-form-item>
+          <el-divider direction="vertical" />
+          <el-form-item prop="CheckMonth">
+            <el-date-picker
+              v-model="listQuery.CheckMonth"
+              type="month"
+              value-format="yyyy-MM"
+              placeholder="选择自查月份"
+            />
+          </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-select
               v-model="listQuery.CommitStatus"
@@ -90,31 +123,10 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <default-depts
-              v-if="!addFormData.RC_InspectionDepartmentID"
-              w="100%"
-              :value="addFormData.RC_InspectionDepartmentID"
-              @getDefaultDeptsValue="getDefaultDeptValues"
-            />
-            <el-input
-              v-else
-              v-model="listQuery.RC_InspectionDepartment"
-              @focus="focus"
-            />
-          </el-form-item>
-          <el-form-item prop="CheckMonth">
-            <el-date-picker
-              v-model="listQuery.CheckMonth"
-              type="month"
-              value-format="yyyy-MM"
-              placeholder="选择自查月份"
-            />
-          </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
-              type="info"
+              type="primary"
               icon="el-icon-search"
               size="mini"
               :loading="listLoading"
@@ -122,6 +134,7 @@
             >搜索
             </el-button>
           </el-form-item>
+          <el-divider direction="vertical" />
           <el-form-item style="width: 150px">
             <el-select
               v-model="downloadValue"
@@ -151,7 +164,6 @@
           </el-form-item>
           <el-form-item>
             <el-button
-              style="margin-top: 7px"
               :loading="downloadLoading"
               :disabled="listLoading"
               type="success"
@@ -162,12 +174,12 @@
             </el-button>
           </el-form-item>
         </el-form>
-      </el-header>
-      <el-main>
+      </div>
+
         <el-table
           v-loading="listLoading"
           :data="tableData"
-          style="width: 100%;margin-top: 18px"
+          style="width: 100%;margin-top: 10px"
           border
           highlight-current-row
           size="mini"
@@ -1060,8 +1072,6 @@
           </span>
         </el-dialog>
 
-      </el-main>
-      <el-footer>
         <el-row>
           <el-col :span="1">
             <el-switch
@@ -1083,7 +1093,7 @@
             />
           </el-col>
         </el-row>
-      </el-footer>
+
     </el-card>
   </el-container>
 </template>

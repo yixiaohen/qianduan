@@ -1,6 +1,6 @@
 <template>
   <div class="evaluation_not_validated">
-    <split-pane split="horizontal"  :default-percent="60">
+    <split-pane split="horizontal" :default-percent="60">
 
       <template slot="paneL">
         <el-card
@@ -13,31 +13,33 @@
                 label-position="left"
                 :inline="true"
               >
-                <el-form-item>
-                  <el-button
-                    type="primary"
-                    icon="el-icon-circle-plus"
-                    size="mini"
-                    @click="addCatalogs"
-                  >增加
-                  </el-button>
-                </el-form-item>
-                <el-form-item>
-                  <el-button
-                    type="success"
-                    icon="el-icon-refresh"
-                    :disabled="disabled"
-                    size="mini"
-                    @click="refreshRoot()"
-                  />
-                </el-form-item>
+                <el-tag type="info" style="width: 100%">
+                  <el-form-item>
+                    <el-button
+                      type="primary"
+                      icon="el-icon-circle-plus"
+                      size="mini"
+                      @click="addCatalogs"
+                    >增加
+                    </el-button>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button
+                      type="success"
+                      icon="el-icon-refresh"
+                      :disabled="disabled"
+                      size="mini"
+                      @click="refreshRoot()"
+                    />
+                  </el-form-item>
+                  <el-form-item>
+                    <span>{{ catalogTitle || '当前栏目下不能添加资料，请选择子级栏目' }}</span>
+                  </el-form-item>
+                </el-tag>
+
               </el-form>
             </div>
-            <el-alert
-              :title="catalogTitle || '当前栏目下不能添加资料，请选择子级栏目'"
-              type="info"
-              :closable="false"
-            />
+
             <div class="top-container-body">
               <el-table
                 ref="tableData"
@@ -125,187 +127,187 @@
       </template>
 
       <!-- <div style="display:flex;"> -->
-      <template slot="paneR"  >
+      <template slot="paneR">
         <el-card
-        style="margin: 0px"
+          style="margin: 0px"
         >
 
 
-        <div class="bottom-container">
-          <el-tabs
-            v-model="activeName"
-            class="bottom-container"
-          >
-            <el-tab-pane
-              label="考评办法"
-              name="first"
+          <div class="bottom-container">
+            <el-tabs
+              v-model="activeName"
+              class="bottom-container"
             >
-              <div class="bottom-container">
-                <div class="bottom-container-head">
-                  <el-form
+              <el-tab-pane
+                label="考评办法"
+                name="first"
+              >
+                <div class="bottom-container">
+                  <div class="bottom-container-head">
+                    <el-form
+                      size="mini"
+                      label-position="left"
+                      :inline="true"
+                    >
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-circle-plus"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="InsertResort"
+                        >增加考评办法
+                        </el-button>
+                      </el-form-item>
+                      <el-form-item>
+                        <div class="block">
+                          <el-pagination
+                            background
+                            :current-page.sync="pagination2.pageIndex"
+                            :page-size="pagination2.pageSize"
+                            :page-sizes="pagination2.pageSizes"
+                            :total="pagination2.total"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            @size-change="handleSizeChange2"
+                            @current-change="handleCurrentChange2"
+                          />
+                        </div>
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                  <el-table
+                    class="bottom-container-body-tb"
+                    :data="Resort"
+                    style="width: 100%"
+                    border
                     size="mini"
-                    label-position="left"
-                    :inline="true"
+                    height="20vh"
                   >
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-circle-plus"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="InsertResort"
-                      >增加考评办法
-                      </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                      <div class="block">
-                        <el-pagination
-                          background
-                          :current-page.sync="pagination2.pageIndex"
-                          :page-size="pagination2.pageSize"
-                          :page-sizes="pagination2.pageSizes"
-                          :total="pagination2.total"
-                          layout="total, sizes, prev, pager, next, jumper"
-                          @size-change="handleSizeChange2"
-                          @current-change="handleCurrentChange2"
+                    <el-table-column
+                      type="index"
+                      width="50"
+                      label="序号"
+                      align="center"
+                    />
+                    <el-table-column
+                      label="内容"
+                      min-width="300"
+                    >
+                      <template slot-scope="{row}">
+                        <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '" />
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="操作"
+                      width="150"
+                      align="center"
+                      fixed="right"
+                    >
+                      <template slot-scope="scope">
+                        <el-button
+                          type="info"
+                          size="mini"
+                          icon="el-icon-edit"
+                          @click="UpdateResort(scope.row)"
                         />
-                      </div>
-                    </el-form-item>
-                  </el-form>
+                        <el-button
+                          type="danger"
+                          size="mini"
+                          icon="el-icon-delete"
+                          @click="DeleteResort(scope.row)"
+                        />
+                      </template>
+                    </el-table-column>
+                  </el-table>
                 </div>
-                <el-table
-                  class="bottom-container-body-tb"
-                  :data="Resort"
-                  style="width: 100%"
-                  border
-                  size="mini"
-                  height="20vh"
-                >
-                  <el-table-column
-                    type="index"
-                    width="50"
-                    label="序号"
-                    align="center"
-                  />
-                  <el-table-column
-                    label="内容"
-                    min-width="300"
-                  >
-                    <template slot-scope="{row}">
-                      <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="操作"
-                    width="150"
-                    align="center"
-                    fixed="right"
-                  >
-                    <template slot-scope="scope">
-                      <el-button
-                        type="info"
-                        size="mini"
-                        icon="el-icon-edit"
-                        @click="UpdateResort(scope.row)"
-                      />
-                      <el-button
-                        type="danger"
-                        size="mini"
-                        icon="el-icon-delete"
-                        @click="DeleteResort(scope.row)"
-                      />
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane
-              label="扣分原因"
-              name="second"
-            >
-              <div class="bottom-container">
-                <div class="bottom-container-head">
-                  <el-form
+              </el-tab-pane>
+              <el-tab-pane
+                label="扣分原因"
+                name="second"
+              >
+                <div class="bottom-container">
+                  <div class="bottom-container-head">
+                    <el-form
+                      size="mini"
+                      label-position="left"
+                      :inline="true"
+                    >
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-circle-plus"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="InsertPenalties"
+                        >选择扣分原因
+                        </el-button>
+                      </el-form-item>
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-edit"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="UpdatePenalties"
+                        >修改扣分原因
+                        </el-button>
+                      </el-form-item>
+                      <el-form-item>
+                        <el-button
+                          icon="el-icon-plus"
+                          :disabled="ResortDisabled"
+                          size="mini"
+                          type="info"
+                          @click="addReorCa"
+                        >添加扣分原因
+                        </el-button>
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                  <el-table
+                    class="bottom-container-body-tb"
+                    :data="PenaltiesData"
+                    style="width: 100%"
+                    border
                     size="mini"
-                    label-position="left"
-                    :inline="true"
+                    height="600"
                   >
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-circle-plus"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="InsertPenalties"
-                      >选择扣分原因
-                      </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-edit"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="UpdatePenalties"
-                      >修改扣分原因
-                      </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                      <el-button
-                        icon="el-icon-plus"
-                        :disabled="ResortDisabled"
-                        size="mini"
-                        type="info"
-                        @click="addReorCa"
-                      >添加扣分原因
-                      </el-button>
-                    </el-form-item>
-                  </el-form>
+                    <el-table-column
+                      prop="PenaltiesContent"
+                      label="扣分内容"
+                      width="300"
+                    />
+                    <el-table-column
+                      prop="PenaltiesFraction"
+                      label="扣分分数"
+                      min-width="100"
+                    />
+                    <el-table-column
+                      label="操作"
+                      fixed="right"
+                      align="center"
+                      width="120"
+                    >
+                      <template slot-scope="scope">
+                        <el-button
+                          type="primary"
+                          size="mini"
+                          @click.native.prevent="editRows(scope.row)"
+                        >编辑
+                        </el-button>
+                        <el-button
+                          type="danger"
+                          size="mini"
+                          @click.native.prevent="deleteRows(scope.row)"
+                        >删除
+                        </el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
                 </div>
-                <el-table
-                  class="bottom-container-body-tb"
-                  :data="PenaltiesData"
-                  style="width: 100%"
-                  border
-                  size="mini"
-                  height="600"
-                >
-                  <el-table-column
-                    prop="PenaltiesContent"
-                    label="扣分内容"
-                    width="300"
-                  />
-                  <el-table-column
-                    prop="PenaltiesFraction"
-                    label="扣分分数"
-                    min-width="100"
-                  />
-                  <el-table-column
-                    label="操作"
-                    fixed="right"
-                    align="center"
-                    width="120"
-                  >
-                    <template slot-scope="scope">
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click.native.prevent="editRows(scope.row)"
-                      >编辑
-                      </el-button>
-                      <el-button
-                        type="danger"
-                        size="mini"
-                        @click.native.prevent="deleteRows(scope.row)"
-                      >删除
-                      </el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
         </el-card>
       </template>
     </split-pane>
@@ -349,7 +351,7 @@
               label="分值"
               prop="Fraction"
             >
-              <el-input v-model="ExpertHandbooks.Fraction"/>
+              <el-input v-model="ExpertHandbooks.Fraction" />
             </el-form-item>
             <el-form-item
               label="扣分原因"
@@ -532,10 +534,10 @@
         </el-form-item>
 
         <el-form-item label="评审标准">
-          <el-checkbox v-model="installFormCatalog.IsCriterion"/>
+          <el-checkbox v-model="installFormCatalog.IsCriterion" />
         </el-form-item>
         <el-form-item label="核心条款">
-          <el-checkbox v-model="installFormCatalog.IsPoint"/>
+          <el-checkbox v-model="installFormCatalog.IsPoint" />
         </el-form-item>
       </el-form>
       <div
@@ -574,7 +576,7 @@
           />
         </el-form-item>
         <el-form-item label="条款编号">
-          <el-input v-model="updateFormCatalog.CatalogCode"/>
+          <el-input v-model="updateFormCatalog.CatalogCode" />
         </el-form-item>
         <el-form-item
           label="章节内容"
@@ -626,10 +628,10 @@
         </el-form-item>
 
         <el-form-item label="评审标准">
-          <el-checkbox v-model="updateFormCatalog.IsCriterion"/>
+          <el-checkbox v-model="updateFormCatalog.IsCriterion" />
         </el-form-item>
         <el-form-item label="核心条款">
-          <el-checkbox v-model="updateFormCatalog.IsPoint"/>
+          <el-checkbox v-model="updateFormCatalog.IsPoint" />
         </el-form-item>
       </el-form>
       <div
@@ -831,7 +833,7 @@
           />
         </el-form-item>
         <el-form-item label="扣分分数">
-          <el-input v-model="PenaltiesFrom.PenaltiesFraction"/>
+          <el-input v-model="PenaltiesFrom.PenaltiesFraction" />
         </el-form-item>
       </el-form>
       <div

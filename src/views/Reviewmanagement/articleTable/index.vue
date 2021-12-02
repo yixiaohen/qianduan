@@ -1,10 +1,17 @@
 <template>
-  <el-container class="article_Table">
-    <el-header>
+  <el-card style="width: 98%;margin: 10px;height: 87vh;overflow: auto">
+    <div
+      style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+    >
       <el-form
         :inline="true"
         size="mini"
       >
+
         <el-form-item>
           <el-input
             v-model="val.CatalogCode"
@@ -13,6 +20,7 @@
             @keyup.enter.native="SelectMyCatalogAuthorizationUser('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="val.CatalogName"
@@ -21,6 +29,7 @@
             @keyup.enter.native="SelectMyCatalogAuthorizationUser('搜索')"
           />
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-checkbox
             v-model="checked"
@@ -28,8 +37,10 @@
           >新分配任务
           </el-checkbox>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-button
+            type="primary"
             icon="el-icon-search"
             size="mini"
             @click="SelectMyCatalogAuthorizationUser('搜索')"
@@ -37,7 +48,7 @@
           </el-button>
         </el-form-item>
 
-
+        <el-divider direction="vertical" />
         <el-form-item style="width: 150px">
           <el-select
             v-model="downloadValue"
@@ -83,211 +94,212 @@
           <!--          </el-tag>-->
         </el-form-item>
       </el-form>
-    </el-header>
-    <el-main>
-      <el-table
-        v-loading="tableloading"
-        :data="tableData"
-        border
-        stripe
-        tooltip-effect="light"
-        style="width: 100%"
-        size="mini"
-        height="calc(100vh - 150px)"
-        row-key="CatalogID"
-        highlight-current-row
-        :span-method="objectSpanMethod"
+    </div>
+    <el-table
+      v-loading="tableloading"
+      :data="tableData"
+      border
+      stripe
+      tooltip-effect="light"
+      style="width: 100%;margin-top: 10px"
+      size="mini"
+      height="calc(100vh - 260px)"
+      row-key="CatalogID"
+      highlight-current-row
+      :span-method="objectSpanMethod"
+    >
+      <el-table-column
+        width="50"
+        align="center"
+        label=""
+        type="index"
+      />
+      <el-table-column
+        prop="catalogCode"
+        label="评审标准"
+        align="center"
+        width="80"
+      />
+      <el-table-column
+        prop="CatalogName"
+        label="标题"
+        align="center"
+        width="160"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <el-table-column
+        v-if="CatalogVersion == '中医院' ? false : true"
+        prop="pointCode"
+        label="标题编号"
+        align="center"
+        width="80"
+      />
+      <el-table-column
+        v-if="CatalogVersion == '中医院' ? false : true"
+        prop="pointItem"
+        label="评审项目"
+        align="center"
+        width="70"
+      />
+      <el-table-column
+        prop="IsPoint"
+        label="核心条款"
+        align="center"
+        width="80"
       >
-        <el-table-column
-          width="50"
-          align="center"
-          label=""
-          type="index"
-        />
-        <el-table-column
-          prop="catalogCode"
-          label="评审标准"
-          align="center"
-          width="80"
-        />
-        <el-table-column
-          prop="CatalogName"
-          label="标题"
-          width="160"
-          align="center"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          v-if="CatalogVersion == '中医院' ? false : true"
-          prop="pointCode"
-          label="标题编号"
-          align="center"
-          width="80"
-        />
-        <el-table-column
-          v-if="CatalogVersion == '中医院' ? false : true"
-          prop="pointItem"
-          label="评审项目"
-          align="center"
-          width="70"
-        />
-        <el-table-column
-          prop="IsPoint"
-          label="核心条款"
-          align="center"
-          width="80"
-        >
-          <template slot-scope="{ row }">
-            <el-tag
-              size="mini"
-              :type="row.IsPoint === 0 ? 'danger' : 'success'"
-            >
-              {{ row.IsPoint === 0 ? '否' : '是' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          width="80"
-          label="考评办法"
-          align="center"
-        >
-          <template slot-scope="{ row }">
-            <el-button
-              size="mini"
-              icon="el-icon-view"
-              @click="seeCheck(row)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="上传资料"
-          width="80"
-          align="center"
-        >
-          <template slot-scope="{ row }">
-            <el-button
-              icon="el-icon-upload"
-              size="mini"
-              circle
-              @click="addArtical(row, '上传资料')"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-if="ArticleCount"
-          width="60"
-          prop="ArticleCount"
-          label="资料数"
-          align="center"
-        >
-          <template slot-scope="{ row }">
-            <span
-              style="cursor: pointer !important; color: #3e84e9"
-              @click="history(row)"
-            >{{ row.ArticleCount }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-if="CatalogVersion == '中医院' ? false : true"
-          prop="pointName"
-          label="评审要点内容"
-          align="center"
-          :show-overflow-tooltip="cellOverflow"
-        />
-
-      </el-table>
-      <el-row>
-        <el-col :span="1">
-          <el-switch
-            v-model="cellOverflow"
-            style="margin: 6px 0px"
-          />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            :current-page="val.pageIndex"
-            :page-sizes="[10, 15, 20, 30, 50, 100]"
-            :page-size="val.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="val.total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-col>
-      </el-row>
-
-      <el-dialog
-        :title="dialogTitle + ' : ' + CatalogCode"
-        :width="device === 'desktop' ? '50%' : '100%'"
-        :close-on-click-modal="false"
-        :visible.sync="dialogVisible"
-        @opened="opened"
-        @close="cancel"
-      >
-        <el-tabs v-model="activeName">
-          <el-tab-pane
-            label="基本信息"
-            name="first"
+        <template slot-scope="{ row }">
+          <el-tag
+            size="mini"
+            :type="row.IsPoint === 0 ? 'danger' : 'success'"
           >
-            <el-form
-              ref="listQuery"
-              :rules="rules"
-              size="mini"
-              :model="listQuery"
-              :inline="true"
-              label-width="80px"
-            >
-              <div style="display: flex; flex-wrap: wrap">
-                <el-form-item
-                  label="资料标题"
-                  prop="Title"
-                >
-                  <el-input
-                    v-model="listQuery.Title"
-                    style="width: 300px"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="资料分类"
-                  prop="GroupID"
-                >
-                  <articlegroup
-                    style="width: 140px"
-                    :value="listQuery.GroupID"
-                    @getSelectAllArticleGroupValue="
-                      getSelectAllArticleGroupValue
-                    "
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="版本号"
-                  prop="VersionNumber"
-                >
-                  <el-input v-model="listQuery.VersionNumber" />
-                </el-form-item>
-              </div>
-              <el-form-item label="附件上传">
-                <el-upload
-                  :multiple="true"
-                  :show-file-list="true"
-                  :on-success="handleSuccess"
-                  :on-change="handleChange"
-                  :on-remove="handleRemove"
-                  class="editor-slide-upload"
-                  :file-list="fileList"
-                  :disabled="uploadEnd"
-                  action="/api/Article/UploadFile"
-                >
-                  <el-button
-                    size="mini"
-                    type="primary"
-                    :disabled="uploadEnd"
-                  >选择本地文件
-                  </el-button>
-                </el-upload>
+            {{ row.IsPoint === 0 ? '否' : '是' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        width="80"
+        label="考评办法"
+        align="center"
+      >
+        <template slot-scope="{ row }">
+          <el-button
+            size="mini"
+            icon="el-icon-view"
+            @click="seeCheck(row)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="上传资料"
+        width="80"
+        align="center"
+      >
+        <template slot-scope="{ row }">
+          <el-button
+            icon="el-icon-upload"
+            size="mini"
+            circle
+            @click="addArtical(row, '上传资料')"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="ArticleCount"
+        width="60"
+        prop="ArticleCount"
+        label="资料数"
+        align="center"
+      >
+        <template slot-scope="{ row }">
+          <span
+            style="cursor: pointer !important; color: #3e84e9"
+            @click="history(row)"
+          >{{ row.ArticleCount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="CatalogVersion == '中医院' ? false : true"
+        prop="pointName"
+        label="评审要点内容"
+        align="center"
+        :show-overflow-tooltip="cellOverflow"
+      />
+
+    </el-table>
+    <el-row>
+      <el-col :span="1">
+        <el-switch
+          v-model="cellOverflow"
+          style="margin: 26px 0px"
+        />
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          style="margin: 26px 0 0 0"
+          :current-page="val.pageIndex"
+          :page-sizes="[10, 15, 20, 30, 50, 100]"
+          :page-size="val.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="val.total"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+
+    <el-dialog
+      :title="dialogTitle + ' : ' + CatalogCode"
+      :width="device === 'desktop' ? '50%' : '100%'"
+      :close-on-click-modal="false"
+      :visible.sync="dialogVisible"
+      @opened="opened"
+      @close="cancel"
+    >
+      <el-tabs v-model="activeName">
+        <el-tab-pane
+          label="基本信息"
+          name="first"
+        >
+          <el-form
+            ref="listQuery"
+            :rules="rules"
+            size="mini"
+            :model="listQuery"
+            :inline="true"
+            label-width="80px"
+          >
+            <div style="display: flex; flex-wrap: wrap">
+              <el-form-item
+                label="资料标题"
+                prop="Title"
+              >
+                <el-input
+                  v-model="listQuery.Title"
+                  style="width: 300px"
+                />
               </el-form-item>
-              <!-- <el-form-item>
+              <el-form-item
+                label="资料分类"
+                prop="GroupID"
+              >
+                <articlegroup
+                  style="width: 140px"
+                  :value="listQuery.GroupID"
+                  @getSelectAllArticleGroupValue="
+                    getSelectAllArticleGroupValue
+                  "
+                />
+              </el-form-item>
+              <el-form-item
+                label="版本号"
+                prop="VersionNumber"
+              >
+                <el-input v-model="listQuery.VersionNumber" />
+              </el-form-item>
+            </div>
+            <el-form-item label="附件上传">
+              <el-upload
+                :multiple="true"
+                :show-file-list="true"
+                :on-success="handleSuccess"
+                :on-change="handleChange"
+                :on-remove="handleRemove"
+                class="editor-slide-upload"
+                :file-list="fileList"
+                :disabled="uploadEnd"
+                action="/api/Article/UploadFile"
+              >
+                <el-button
+                  size="mini"
+                  type="primary"
+                  :disabled="uploadEnd"
+                >选择本地文件
+                </el-button>
+              </el-upload>
+            </el-form-item>
+            <!-- <el-form-item>
                 <el-button
                   type="primary"
                   @click="openNetworkDisk"
@@ -296,191 +308,191 @@
                   <i class="el-icon-upload el-icon--right" />
                 </el-button>
               </el-form-item> -->
-              <filePreview :preview-data="listQuery.File_list" />
-              <tinymce ref="tinymceRef" />
-            </el-form>
-          </el-tab-pane>
-          <el-tab-pane
-            label="指定可见人"
-            name="second"
-          >
-            <h3 style="padding: 0px; margin: 0px; color: red">
-              注意：不选则所有人可见
-            </h3>
-            <select-deptor-user
-              ref="userTree"
-              @getSelectDeptorUser="getSelectDeptorUser"
-            />
-          </el-tab-pane>
-        </el-tabs>
-        <div
-          slot="footer"
-          class="dialog-footer"
+            <filePreview :preview-data="listQuery.File_list" />
+            <tinymce ref="tinymceRef" />
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane
+          label="指定可见人"
+          name="second"
         >
-          <el-button
-            size="small"
-            @click="dialogVisible = false"
-          >关闭
-          </el-button>
-          <el-button
-            type="primary"
-            size="small"
-            :loading="uploadEnd"
-            @click="InsertArticle('listQuery')"
-          >提交
-          </el-button>
-        </div>
-      </el-dialog>
-      <el-dialog
-        title="资料数量"
-        :width="device === 'desktop' ? '20%' : '100%'"
-        :close-on-click-modal="false"
-        :visible.sync="dialogDetails"
+          <h3 style="padding: 0px; margin: 0px; color: red">
+            注意：不选则所有人可见
+          </h3>
+          <select-deptor-user
+            ref="userTree"
+            @getSelectDeptorUser="getSelectDeptorUser"
+          />
+        </el-tab-pane>
+      </el-tabs>
+      <div
+        slot="footer"
+        class="dialog-footer"
       >
-        <el-form
-          ref="form"
-          label-position="left"
-          class="fromDetails"
-          :model="historyData"
-          label-width="80px"
-        >
-          <el-form-item label="标准">
-            <el-input
-              v-model="historyData.catalogCode"
-              size="mini"
-            />
-          </el-form-item>
-          <el-form-item label="未审核资料数量:">
-            <el-input
-              v-model="historyData.UnReviewCount"
-              size="mini"
-            />
-          </el-form-item>
-          <el-form-item label="已审核资料数量:">
-            <el-input
-              v-model="historyData.ReviewCount"
-              size="mini"
-            />
-          </el-form-item>
-          <el-form-item label="已退回资料数量:">
-            <el-input
-              v-model="historyData.BackCount"
-              size="mini"
-            />
-          </el-form-item>
-          <el-form-item label="资料总数量:">
-            <el-input
-              v-model="historyData.ArticleCount"
-              size="mini"
-            />
-          </el-form-item>
-        </el-form>
-        <div
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            type="primary"
+        <el-button
+          size="small"
+          @click="dialogVisible = false"
+        >关闭
+        </el-button>
+        <el-button
+          type="primary"
+          size="small"
+          :loading="uploadEnd"
+          @click="InsertArticle('listQuery')"
+        >提交
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="资料数量"
+      :width="device === 'desktop' ? '20%' : '100%'"
+      :close-on-click-modal="false"
+      :visible.sync="dialogDetails"
+    >
+      <el-form
+        ref="form"
+        label-position="left"
+        class="fromDetails"
+        :model="historyData"
+        label-width="80px"
+      >
+        <el-form-item label="标准">
+          <el-input
+            v-model="historyData.catalogCode"
             size="mini"
-            @click="dialogDetails = false"
-          >关闭
-          </el-button>
-        </div>
-      </el-dialog>
-      <el-dialog
-        title="我的云盘"
-        :width="device === 'desktop' ? '70%' : '100%'"
-        :close-on-click-modal="false"
-        :visible.sync="dialogNetworkDisk"
-      >
-        <networkDisk @select="select" />
-        <div
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            type="primary"
+          />
+        </el-form-item>
+        <el-form-item label="未审核资料数量:">
+          <el-input
+            v-model="historyData.UnReviewCount"
             size="mini"
-            @click="SelectMeanFile"
-          >确定
-          </el-button>
-        </div>
-      </el-dialog>
-      <el-dialog
-        title="考评办法"
-        :visible.sync="dialogVisibleKaoPing"
-        width="50%"
+          />
+        </el-form-item>
+        <el-form-item label="已审核资料数量:">
+          <el-input
+            v-model="historyData.ReviewCount"
+            size="mini"
+          />
+        </el-form-item>
+        <el-form-item label="已退回资料数量:">
+          <el-input
+            v-model="historyData.BackCount"
+            size="mini"
+          />
+        </el-form-item>
+        <el-form-item label="资料总数量:">
+          <el-input
+            v-model="historyData.ArticleCount"
+            size="mini"
+          />
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
       >
-        <el-table
-          v-loading="midLoading"
-          class="middleBodyTb"
-          :data="ResortName"
-          border
+        <el-button
+          type="primary"
           size="mini"
-          style="width: 100%"
-          highlight-current-row
-          min-height="50px"
-        >
-          <el-table-column
-            prop="ResortID"
-            label="编码"
-            width="60"
-          />
-          <el-table-column
-            prop="ResortName"
-            label="内容"
-          />
-          <el-table-column
-            label="查看附件"
-            align="center"
-          >
-            <template slot-scope="scope">
-              <el-button
-                size="mini"
-                circle
-                type="primary"
-                icon="el-icon-view"
-                @click="seeUpload(scope.row)"
-              />
-            </template>
-          </el-table-column>
-        </el-table>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisibleKaoPing = false">取 消</el-button>
-
-        </span>
-
-        <!--      考评办法对话框里面的分页-->
-        <!--        <el-pagination-->
-        <!--          style="margin: 6px 0 0 0"-->
-        <!--          background-->
-        <!--          :current-page="midpagination.pageIndex"-->
-        <!--          :page-size="midpagination.pageSize"-->
-        <!--          :page-sizes="midpagination.pageSizes"-->
-        <!--          :total="midpagination.total"-->
-        <!--          layout="total, sizes, prev, pager, next, jumper"-->
-        <!--          @size-change="midPgSizeChange"-->
-        <!--          @current-change="midPgChange"-->
-        <!--        />-->
-
-      </el-dialog>
-      <!--        考评办法附件查看框-->
-      <el-dialog
-        title="提示"
-        :visible.sync="kaoPinBanFaKaoPinFuJian"
-        width="50%"
+          @click="dialogDetails = false"
+        >关闭
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="我的云盘"
+      :width="device === 'desktop' ? '70%' : '100%'"
+      :close-on-click-modal="false"
+      :visible.sync="dialogNetworkDisk"
+    >
+      <networkDisk @select="select" />
+      <div
+        slot="footer"
+        class="dialog-footer"
       >
-        <file-preview3
-          ref="filePreview3"
-          :preview-data="fileListKaoPinFuJian"
-          :delete-show-file="true"
+        <el-button
+          type="primary"
+          size="mini"
+          @click="SelectMeanFile"
+        >确定
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="考评办法"
+      :visible.sync="dialogVisibleKaoPing"
+      width="50%"
+    >
+      <el-table
+        v-loading="midLoading"
+        class="middleBodyTb"
+        :data="ResortName"
+        border
+        size="mini"
+        style="width: 100%"
+        highlight-current-row
+        min-height="50px"
+      >
+        <el-table-column
+          prop="ResortID"
+          label="编码"
+          width="60"
         />
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="kaoPinBanFaKaoPinFuJian = false">取 消</el-button>
-        </span>
-      </el-dialog>
-    </el-main>
-  </el-container>
+        <el-table-column
+          prop="ResortName"
+          label="内容"
+        />
+        <el-table-column
+          label="查看附件"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              circle
+              type="primary"
+              icon="el-icon-view"
+              @click="seeUpload(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisibleKaoPing = false">取 消</el-button>
+
+      </span>
+
+      <!--      考评办法对话框里面的分页-->
+      <!--        <el-pagination-->
+      <!--          style="margin: 6px 0 0 0"-->
+      <!--          background-->
+      <!--          :current-page="midpagination.pageIndex"-->
+      <!--          :page-size="midpagination.pageSize"-->
+      <!--          :page-sizes="midpagination.pageSizes"-->
+      <!--          :total="midpagination.total"-->
+      <!--          layout="total, sizes, prev, pager, next, jumper"-->
+      <!--          @size-change="midPgSizeChange"-->
+      <!--          @current-change="midPgChange"-->
+      <!--        />-->
+
+    </el-dialog>
+    <!--        考评办法附件查看框-->
+    <el-dialog
+      title="提示"
+      :visible.sync="kaoPinBanFaKaoPinFuJian"
+      width="50%"
+    >
+      <file-preview3
+        ref="filePreview3"
+        :preview-data="fileListKaoPinFuJian"
+        :delete-show-file="true"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="kaoPinBanFaKaoPinFuJian = false">取 消</el-button>
+      </span>
+    </el-dialog>
+
+  </el-card>
 </template>
 
 <script>
@@ -868,95 +880,5 @@ export default {
 };
 </script>
 <style lang="scss">
-.article_Table {
-  .el-header,
-  .el-main,
-  .el-footer {
-    padding: 0;
-    margin: 0;
-  }
 
-  .el-header {
-    height: 30px !important;
-  }
-
-  .fromDetails {
-    .el-form-item__label {
-      width: 120px !important;
-    }
-
-    .el-input {
-      width: 60%;
-    }
-  }
-
-  .el-loading-spinner {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    -webkit-animation: typing 1s linear infinite alternate;
-    -moz-animation: Typing 1s linear infinite alternate;
-    animation: typing 1s linear infinite alternate;
-    margin: 0px auto; /* Not necessary- its only for layouting*/
-    position: relative;
-    left: -40px;
-  }
-
-  @-webkit-keyframes typing {
-    0% {
-      background-color: rgba(247, 111, 73, 1);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    25% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    75% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 1);
-    }
-  }
-
-  @-moz-keyframes typing {
-    0% {
-      background-color: rgba(247, 111, 73, 1);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    25% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    75% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 1);
-    }
-  }
-  @keyframes typing {
-    0% {
-      background-color: rgba(247, 111, 73, 1);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    25% {
-      background-color: rgba(247, 111, 73, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
-    }
-    75% {
-      background-color: rgba(0, 184, 220, 0.4);
-      box-shadow: 40px 0px 0px 0px rgba(249, 54, 0, 0.2),
-      80px 0px 0px 0px rgb(2, 243, 130);
-    }
-  }
-
-  .el-loading-spinner .circular {
-    display: none; //隐藏之前element-ui默认的loading动画
-  }
-}
 </style>

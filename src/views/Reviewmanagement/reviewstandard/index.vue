@@ -1,6 +1,6 @@
 <template>
   <div class="evaluation_not_validated">
-    <split-pane split="horizontal"  :default-percent="60">
+    <split-pane split="horizontal" :default-percent="60">
 
       <template slot="paneL">
         <el-card
@@ -13,31 +13,33 @@
                 label-position="left"
                 :inline="true"
               >
-                <el-form-item>
-                  <el-button
-                    type="primary"
-                    icon="el-icon-circle-plus"
-                    size="mini"
-                    @click="addCatalogs"
-                  >增加
-                  </el-button>
-                </el-form-item>
-                <el-form-item>
-                  <el-button
-                    type="success"
-                    icon="el-icon-refresh"
-                    :disabled="disabled"
-                    size="mini"
-                    @click="refreshRoot()"
-                  />
-                </el-form-item>
+                <el-tag type="info" style="width: 100%">
+                  <el-form-item>
+                    <el-button
+                      type="primary"
+                      icon="el-icon-circle-plus"
+                      size="mini"
+                      @click="addCatalogs"
+                    >增加
+                    </el-button>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button
+                      type="success"
+                      icon="el-icon-refresh"
+                      :disabled="disabled"
+                      size="mini"
+                      @click="refreshRoot()"
+                    />
+                  </el-form-item>
+                  <el-form-item>
+                    <span>{{ catalogTitle || '当前栏目下不能添加资料，请选择子级栏目' }}</span>
+                  </el-form-item>
+                </el-tag>
+
               </el-form>
             </div>
-            <el-alert
-              :title="catalogTitle || '当前栏目下不能添加资料，请选择子级栏目'"
-              type="info"
-              :closable="false"
-            />
+
             <div class="top-container-body">
               <el-table
                 ref="tableData"
@@ -125,7 +127,7 @@
       </template>
 
       <!-- <div style="display:flex;"> -->
-      <template slot="paneR"  >
+      <template slot="paneR">
         <el-card
           style="margin: 0px"
         >
@@ -192,7 +194,7 @@
                       min-width="300"
                     >
                       <template slot-scope="{row}">
-                        <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '"/>
+                        <p v-html="row.ResortName.replace(/\n/g, '<br/>') || ' '" />
                       </template>
                     </el-table-column>
                     <el-table-column
@@ -349,7 +351,7 @@
               label="分值"
               prop="Fraction"
             >
-              <el-input v-model="ExpertHandbooks.Fraction"/>
+              <el-input v-model="ExpertHandbooks.Fraction" />
             </el-form-item>
             <el-form-item
               label="扣分原因"
@@ -532,10 +534,10 @@
         </el-form-item>
 
         <el-form-item label="评审标准">
-          <el-checkbox v-model="installFormCatalog.IsCriterion"/>
+          <el-checkbox v-model="installFormCatalog.IsCriterion" />
         </el-form-item>
         <el-form-item label="核心条款">
-          <el-checkbox v-model="installFormCatalog.IsPoint"/>
+          <el-checkbox v-model="installFormCatalog.IsPoint" />
         </el-form-item>
       </el-form>
       <div
@@ -574,7 +576,7 @@
           />
         </el-form-item>
         <el-form-item label="条款编号">
-          <el-input v-model="updateFormCatalog.CatalogCode"/>
+          <el-input v-model="updateFormCatalog.CatalogCode" />
         </el-form-item>
         <el-form-item
           label="章节内容"
@@ -626,10 +628,10 @@
         </el-form-item>
 
         <el-form-item label="评审标准">
-          <el-checkbox v-model="updateFormCatalog.IsCriterion"/>
+          <el-checkbox v-model="updateFormCatalog.IsCriterion" />
         </el-form-item>
         <el-form-item label="核心条款">
-          <el-checkbox v-model="updateFormCatalog.IsPoint"/>
+          <el-checkbox v-model="updateFormCatalog.IsPoint" />
         </el-form-item>
       </el-form>
       <div
@@ -831,7 +833,7 @@
           />
         </el-form-item>
         <el-form-item label="扣分分数">
-          <el-input v-model="PenaltiesFrom.PenaltiesFraction"/>
+          <el-input v-model="PenaltiesFrom.PenaltiesFraction" />
         </el-form-item>
       </el-form>
       <div

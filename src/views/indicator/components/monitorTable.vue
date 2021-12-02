@@ -24,7 +24,7 @@
                 <el-link v-if="row.para===1||row.type===1" type="primary" @click="indexClick(row)">
                   {{ row.name }}
                 </el-link>
-                <span v-else >{{ row.name }}</span>
+                <span v-else>{{ row.name }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="number" label="数量" width="60" align="center"/>
@@ -258,7 +258,17 @@ export default {
               align: 'center',
               fontSize: 10,
               fontWeight: 'bolder',
-
+              axisTick: {
+                alignWithLabel: true, //---坐标轴 刻度
+                show: true,                  //---是否显示
+                inside: true,                //---是否朝内
+                length: 3,                    //---长度
+                lineStyle: {
+                  //color:'red',          //---默认取轴线的颜色
+                  width: 1,
+                  type: 'solid'
+                }
+              },
               margin: 20 // 刻度标签与轴线之间的距离,
             }
 
@@ -317,6 +327,7 @@ export default {
 <style lang="scss" scoped>
 // 导出等待条样式
 @import "src/styles/loading.scss";
+
 .el-header {
   height: 35px !important;
 }

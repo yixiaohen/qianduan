@@ -1,7 +1,20 @@
 <template>
-  <el-container>
-    <el-header style="height: 40px">
-      <el-form :inline="true" class="demo-form-inline">
+  <el-card
+    style="margin: 10px;
+    height: 87vh;
+    overflow: auto;
+"
+
+  >
+
+    <div
+      style="width: 100%;
+          background-color:#f4f4f5;
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;"
+    >
+      <el-form :inline="true" >
         <el-form-item>
           <el-radio-group v-model="radio1" size="mini" @change="RadioGroup">
             <el-radio-button label="鱼骨图表格" />
@@ -16,205 +29,219 @@
             icon="el-icon-plus"
             plain
             @click="add"
-          >新增</el-button>
+          >新增
+          </el-button>
         </el-form-item>
         <el-form-item v-if="radio1 != '鱼骨图表格'">
           <span>当前鱼骨图名称：{{ FishBoneName }}</span>
         </el-form-item>
       </el-form>
-    </el-header>
-    <el-main style="height: calc(100vh - 170px)">
-      <fish v-if="radio1 === '鱼骨图'" :fishbone-data="fishboneData" />
-      <div v-show="radio1 === '数据配置'" class="custom-tree-container">
-        <div class="block">
-          <el-tree
-            class="tree-line"
-            :data="treeData"
-            :props="{
-              children: 'children',
-              label: 'name',
-            }"
-            node-key="id"
-            accordion
-            :expand-on-click-node="false"
-            :default-expanded-keys="[defaultExpandedId]"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span>{{ data.name }}</span>
-              <el-input
-                v-if="data.id == beforeId"
-                v-model="editorText"
-                placeholder="修改"
+    </div>
+
+    <div style="margin-top: 10px">
+
+
+    <fish v-if="radio1 === '鱼骨图'" :fishbone-data="fishboneData" />
+    </div>
+    <div v-show="radio1 === '数据配置'" class="custom-tree-container">
+      <div class="block">
+        <el-tree
+          class="tree-line"
+          :data="treeData"
+          :props="{
+            children: 'children',
+            label: 'name',
+          }"
+          node-key="id"
+          accordion
+          :expand-on-click-node="false"
+          :default-expanded-keys="[defaultExpandedId]"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span>{{ data.name }}</span>
+            <el-input
+              v-if="data.id == beforeId"
+              v-model="editorText"
+              placeholder="修改"
+              size="mini"
+              style="width: 300px"
+              clearable
+              @keyup.enter.native="UpdateFishBone(data)"
+            />
+            <el-button
+              v-if="data.id == beforeId"
+              type="primary"
+              size="mini"
+              @click="UpdateFishBone(data)"
+            >确定</el-button>
+            <el-button
+              v-if="data.name == beforeId"
+              type="primary"
+              size="mini"
+              @click="beforeId = ''"
+            >放弃</el-button>
+            <span>
+              <el-button
+                type="text"
                 size="mini"
-                style="width: 300px"
+                icon="el-icon-plus"
+                @click="() => append(data)"
+              />
+              <el-popconfirm
+                confirm-button-text="是"
+                cancel-button-text="否"
+                icon="el-icon-info"
+                icon-color="red"
+                title="确定删除吗？"
+                @confirm="() => remove(node, data)"
+              >
+                <el-button
+                  slot="reference"
+                  icon="el-icon-delete"
+                  type="text"
+                  size="mini"
+                />
+              </el-popconfirm>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-edit"
+                @click="() => editorNode(data)"
+              />
+            </span>
+            <el-form ref="form">
+              <el-input
+                v-if="data.id == inputText"
+                v-model="addText"
+                placeholder="请输入子级内容"
+                size="mini"
+                width="300px"
                 clearable
-                @keyup.enter.native="UpdateFishBone(data)"
+                @keyup.enter.native="InsertFishBone(data)"
               />
               <el-button
-                v-if="data.id == beforeId"
+                v-if="data.id == inputText"
                 type="primary"
                 size="mini"
-                @click="UpdateFishBone(data)"
+                @click="InsertFishBone(data)"
               >确定</el-button>
               <el-button
-                v-if="data.name == beforeId"
+                v-if="data.name == inputText"
                 type="primary"
                 size="mini"
-                @click="beforeId = ''"
+                @click="inputText = ''"
               >放弃</el-button>
-              <span>
-                <el-button
-                  type="text"
-                  size="mini"
-                  icon="el-icon-plus"
-                  @click="() => append(data)"
-                />
-                <el-popconfirm
-                  confirm-button-text="是"
-                  cancel-button-text="否"
-                  icon="el-icon-info"
-                  icon-color="red"
-                  title="确定删除吗？"
-                  @confirm="() => remove(node, data)"
-                >
-                  <el-button
-                    slot="reference"
-                    icon="el-icon-delete"
-                    type="text"
-                    size="mini"
-                  />
-                </el-popconfirm>
-                <el-button
-                  type="text"
-                  size="mini"
-                  icon="el-icon-edit"
-                  @click="() => editorNode(data)"
-                />
-              </span>
-              <el-form ref="form">
-                <el-input
-                  v-if="data.id == inputText"
-                  v-model="addText"
-                  placeholder="请输入子级内容"
-                  size="mini"
-                  width="300px"
-                  clearable
-                  @keyup.enter.native="InsertFishBone(data)"
-                />
-                <el-button
-                  v-if="data.id == inputText"
-                  type="primary"
-                  size="mini"
-                  @click="InsertFishBone(data)"
-                >确定</el-button>
-                <el-button
-                  v-if="data.name == inputText"
-                  type="primary"
-                  size="mini"
-                  @click="inputText = ''"
-                >放弃</el-button>
-              </el-form>
-            </span>
-          </el-tree>
-        </div>
+            </el-form>
+          </span>
+        </el-tree>
       </div>
-      <el-table
-        v-if="radio1 === '鱼骨图表格'"
-        v-loading="tableloading"
-        :data="tableData"
-        border
-        style="width: 100%"
-        size="mini"
-        height="calc(100vh - 200px)"
-      >
-        <el-table-column width="50" align="center" label="序号" type="index" />
-        <el-table-column align="center" label="鱼骨图名称" width="300">
-          <template slot-scope="{ row, $index }">
-            <el-input
-              v-if="currentEdit === $index"
-              v-model="row.FishBoneName"
-              size="small"
-              @keyup.enter.native="finishEditClick(row)"
-            />
-            <span v-else>{{ row.FishBoneName }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="查看" width="50">
-          <template slot-scope="{ row }">
-            <el-button
-              icon="el-icon-search"
-              circle
-              size="mini"
-              @click="SelectFishBone(row, '鱼骨图')"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="配置鱼骨图" width="90">
-          <template slot-scope="{ row }">
-            <el-button
-              icon="el-icon-setting"
-              circle
-              size="mini"
-              @click="SelectFishBone(row, '配置鱼骨图')"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="200" align="center">
-          <template slot-scope="scope">
-            <el-button
-              v-if="currentEdit === scope.$index"
-              type="text"
-              size="small"
-              @click="finishEditClick(scope.row)"
-            >完成</el-button>
-            <el-button
-              v-else
-              type="text"
-              size="small"
-              @click="EditClick(scope)"
-            >修改</el-button>
-            <el-button
-              v-if="currentEdit === scope.$index"
-              type="text"
-              size="small"
-              @click="currentEdit = -1"
-            >放弃</el-button>
-            <el-popconfirm
-              v-else
-              onfirm-button-text="是"
-              cancel-button-text="否"
-              icon="el-icon-info"
-              icon-color="red"
-              title="确定删除吗？"
-              @confirm="DeleteFishBoneName(scope)"
-            >
-              <el-button
-                slot="reference"
-                type="text"
-                size="small"
-              >删除</el-button>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-row v-if="radio1 === '鱼骨图表格'">
-        <el-col :span="1">
-          <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            :current-page="SelectFishBoneNameVal.pageIndex"
-            :page-sizes="[10, 15, 20, 30, 50, 100]"
-            :page-size="SelectFishBoneNameVal.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="SelectFishBoneNameVal.total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+    </div>
+    <el-table
+      v-if="radio1 === '鱼骨图表格'"
+      v-loading="tableloading"
+      :data="tableData"
+      border
+      stripe
+      highlight-current-row
+      style="width: 100%;
+      margin-top: 10px;
+"
+      size="mini"
+      height="calc(100vh - 240px)"
+    >
+      <el-table-column width="50" align="center" label="序号" type="index" />
+      <el-table-column align="center" label="鱼骨图名称" >
+        <template slot-scope="{ row, $index }">
+          <el-input
+            v-if="currentEdit === $index"
+            v-model="row.FishBoneName"
+            size="small"
+            @keyup.enter.native="finishEditClick(row)"
           />
-        </el-col>
-      </el-row>
-    </el-main>
-  </el-container>
+          <span v-else>{{ row.FishBoneName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="查看" width="150">
+        <template slot-scope="{ row }">
+          <el-button
+            icon="el-icon-search"
+            circle
+            size="mini"
+            @click="SelectFishBone(row, '鱼骨图')"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="配置鱼骨图" width="150">
+        <template slot-scope="{ row }">
+          <el-button
+            icon="el-icon-setting"
+            circle
+            size="mini"
+            @click="SelectFishBone(row, '配置鱼骨图')"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="200" align="center">
+        <template slot-scope="scope">
+          <el-button
+            v-if="currentEdit === scope.$index"
+            type="text"
+            size="small"
+            @click="finishEditClick(scope.row)"
+          >完成
+          </el-button>
+          <el-button
+            v-else
+            type="text"
+            size="small"
+            @click="EditClick(scope)"
+          >修改
+          </el-button>
+          <el-button
+            v-if="currentEdit === scope.$index"
+            type="text"
+            size="small"
+            @click="currentEdit = -1"
+          >放弃
+          </el-button>
+          <el-popconfirm
+            v-else
+            onfirm-button-text="是"
+            cancel-button-text="否"
+            icon="el-icon-info"
+            icon-color="red"
+            title="确定删除吗？"
+            @confirm="DeleteFishBoneName(scope)"
+          >
+            <el-button
+              slot="reference"
+              type="text"
+              size="small"
+            >删除
+            </el-button>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-row v-if="radio1 === '鱼骨图表格'">
+      <el-col :span="1">
+        <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          style="margin-top: 10px"
+          background
+          :current-page="SelectFishBoneNameVal.pageIndex"
+          :page-sizes="[10, 15, 20, 30, 50, 100]"
+          :page-size="SelectFishBoneNameVal.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="SelectFishBoneNameVal.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+  </el-card>
 </template>
 
 <script>
@@ -374,7 +401,8 @@ export default {
         this.defaultExpandedId = data[0].id;
         this.FishBoneName = row.FishBoneName;
         this.radio1 = type === '鱼骨图' ? '鱼骨图' : '数据配置';
-      } catch (error) {}
+      } catch (error) {
+      }
     },
     async InsertFishBone(val) {
       const { data, code } = await InsertFishBone({
@@ -416,11 +444,13 @@ export default {
   padding: 0px;
   margin: 0px;
 }
+
 .tree-line {
   .el-tree-node {
     position: relative;
     padding-left: 16px; // 缩进量
   }
+
   .el-tree-node__children {
     padding-left: 16px; // 缩进量
   }
@@ -436,6 +466,7 @@ export default {
     border-width: 1px;
     border-left: 1px dashed #52627c;
   }
+
   // 当前层最后一个节点的竖线高度固定
   .el-tree-node:last-child::before {
     height: 38px; // 可以自己调节到合适数值
@@ -457,6 +488,7 @@ export default {
   & > .el-tree-node::after {
     border-top: none;
   }
+
   & > .el-tree-node::before {
     border-left: none;
   }
@@ -471,6 +503,7 @@ export default {
     }
   }
 }
+
 .custom-tree-node {
   flex: 1;
   display: flex;

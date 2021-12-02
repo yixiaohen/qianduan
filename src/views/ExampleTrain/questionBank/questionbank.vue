@@ -149,7 +149,7 @@
             <el-button
               size="mini"
               circle
-              type="primary"
+              type="info"
               icon="el-icon-edit"
               @click="UpdateTopic(row)"
             />

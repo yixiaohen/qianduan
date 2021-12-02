@@ -129,320 +129,338 @@
             </div>
 
             <transition name="el-zoom-in-center">
-            <el-table
-              v-if="isShowParaTab"
-              :loading="listLoading"
-              :data="parameterData"
-              height="calc(100vh - 500px)"
-              border
-              style="overflow: scroll;"
-              highlight-current-row
-              :row-key="getRowKeys"
-              :expand-row-keys="expand"
-              size="mini"
-              @selection-change="handleSelectionChange"
-              @current-change="test1"
-              @expand-change="unfoldTable"
-            >
-              <el-table-column
-                type="index"
-                width="50"
-                label="序号"
-                align="center"
-              />
-              <el-table-column
-                label="数据库类型"
-                align="center"
-                width="150"
+              <el-table
+                v-if="isShowParaTab"
+                :loading="listLoading"
+                :data="parameterData"
+                height="calc(100vh - 500px)"
+                border
+                style="overflow: scroll;"
+                highlight-current-row
+                :row-key="getRowKeys"
+                :expand-row-keys="expand"
+                size="mini"
+                @selection-change="handleSelectionChange"
+                @current-change="test1"
+                @expand-change="unfoldTable"
               >
-                <template slot-scope="{row,$index}">
-                  <!--                  已知conn_id，又知-->
-                  <span
-                    v-for="item in sourceData"
-                    v-show="currentEdit!== $index "
-                  >
-                    {{ row.conn_id === item.conn_id ? item.type : '' }}</span>
-                  <el-select
-                    v-show="currentEdit === $index "
-                    v-model="row.conn_id"
-                    placeholder="请选择"
-                    size="mini"
-                    style="width: 350px"
-                    clearable
-                    filterable
-                    @focus="offLoading"
-                  >
-
-                    <el-option
-                      v-for="item in sourceData"
-                      :key="item.conn_id"
-                      :label="item.type"
-                      :value="item.conn_id"
-                    >
-                      <span style="float: left">{{ item.type }}</span>
-                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.remarks.slice(0, 12) }}</span>
-                    </el-option>
-                  </el-select>
-
-                </template>
-
-              </el-table-column>
-              <!--              <el-table-column-->
-              <!--                width="150"-->
-              <!--                prop="type"-->
-              <!--                align="center"-->
-              <!--                label="数据库类型"-->
-              <!--              >-->
-
-              <!--              </el-table-column>-->
-              <el-table-column
-
-                label="数据库备注"
-                align="center"
-              >
-                <template slot-scope="{row,$index}">
-                  <span
-                    v-for="item in sourceData"
-                    v-show="currentEdit!== $index "
-                  >
-                    {{ row.conn_id === item.conn_id ? item.remarks : '' }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="name"
-                label="参数名称"
-                align="center"
-              >
-                <template slot-scope="{ row, $index }">
-                  <el-input v-show="currentEdit === $index " v-model="row.name" size="mini" />
-                  <span v-show="currentEdit !== $index">
-                    {{ row.name }}
-                  </span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="para_value"
-                align="center"
-                width="100"
-                label="参数数值"
-              >
-                <template slot-scope="{ row, $index }">
-                  <el-input v-show="currentEdit === $index " v-model="row.para_value" size="mini" />
-                  <span v-show="currentEdit !== $index">
-                    {{ row.para_value }}
-                  </span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="操作"
-                width="130"
-                align="center"
-              >
-                <template slot-scope="{ row, $index }">
-                  <!--                  如果没有选中当前行-->
-                  <!--                  出现编辑和删除按钮-->
-                  <el-button
-                    v-show="currentEdit !== $index"
-                    size="mini"
-                    circle
-                    type="success"
-                    icon="el-icon-edit"
-                    @click="editParams($index)"
-                  />
-                  <el-button
-                    v-show="currentEdit !== $index"
-                    size="mini"
-                    circle
-                    type="primary"
-                    icon="el-icon-thumb"
-                    @click="openSql(row)"
-                  />
-
-                  <el-popconfirm
-                    v-show="currentEdit !== $index"
-                    class="custom-tree-node-link"
-                    icon-color="red"
-                    :title="'确定删除：' + row.name"
-                    @confirm="deleteParams(row)"
-                  >
-                    <el-button
-                      slot="reference"
-                      size="mini"
-                      type="danger"
-                      circle
-                      :loading="deleteParamsLoading"
-                      icon="el-icon-delete"
-                    />
-                  </el-popconfirm>
-
-
-                  <!--                  <el-button-->
-                  <!--                    v-show="currentEdit !== $index"-->
-                  <!--                    size="mini"-->
-                  <!--                    circle-->
-                  <!--                    type="danger"-->
-                  <!--                    icon="el-icon-delete"-->
-                  <!--                    @click="deleteParams(row)"-->
-                  <!--                  />-->
-                  <!--                  如果选中当前行-->
-                  <!--                  出现新增完成，编辑完成和放弃按钮-->
-                  <el-button
-                    v-show="currentEdit === $index"
-                    size="mini"
-                    circle
-                    type="primary"
-                    :loading="finishParaLoading"
-                    icon="el-icon-circle-check"
-                    @click="finishPara(row)"
-                  />
-
-                  <el-button
-                    v-show="currentEdit === $index"
-                    size="mini"
-                    circle
-                    type="warning"
-                    icon="el-icon-circle-close"
-                    @click="giveUp(row,$index)"
-                  />
-                </template>
-              </el-table-column>
-            </el-table>
-            </transition>
-            <transition name="el-zoom-in-center">
-            <div   v-if="!isShowParaTab">
-              <div style="width: 100%;text-align: right">
-                <el-button type="success" @click="backParamList">返回</el-button>
-              </div>
-              <el-form
-                ref="dynamicValidateForm"
-                label-position="left"
-                label-width="50px"
-                class="demo-table-expand"
-              >
-                <el-form-item
-                  v-for="(item, index) in paraDynamicValidateForm"
-                  :key="index"
-                  :label="(index+1)+'、'"
+                <el-table-column
+                  type="index"
+                  width="50"
+                  label="序号"
+                  align="center"
+                />
+                <el-table-column
+                  label="数据库类型"
+                  align="center"
+                  width="150"
                 >
-                  <div style="border-bottom:1px solid #d0f5e0;border-top:2px solid #d0f5e0;">
-                    <span>周期：</span>
+                  <template slot-scope="{row,$index}">
+                    <!--                  已知conn_id，又知-->
+                    <span
+                      v-for="item in sourceData"
+                      v-show="currentEdit!== $index "
+                    >
+                      {{ row.conn_id === item.conn_id ? item.type : '' }}</span>
                     <el-select
-                      v-model="item.cycle_id"
-                      :disabled="sqlCurrentEdit!==index"
+                      v-show="currentEdit === $index "
+                      v-model="row.conn_id"
                       placeholder="请选择"
                       size="mini"
-                      style="width: 70%"
+                      style="width: 350px"
+                      clearable
+                      filterable
+                      @focus="offLoading"
                     >
+
                       <el-option
-                        v-for="item2 in cycle"
-                        :key="item2.Cycleid"
-                        :value="item2.Cycleid"
-                        :label="
-                          item2.Starway === 0 ? item2.Type+' | '+'结束日期往前' +
-                            ' | '+
-                            item2.Cycle +
-                            ' | '+
-                            item2.Num : item2.Starway === 10 ?item2.Type+ ' | '+'当年' +
-                            ' | '+
-                            item2.Cycle +
-                            ' | '+
-                            item2.Num : item2.Starway === 11 ?item2.Type+ ' | '+'当季' +
-                              ' | '+
-                              item2.Cycle +
-                              ' | '+
-                              item2.Num : item2.Starway === 12 ? item2.Type+' | '+'当月' +
-                                ' | '+
-                                item2.Cycle +
-                                ' | '+
-                                item2.Num : item2.Starway
-                        "
+                        v-for="item in sourceData"
+                        :key="item.conn_id"
+                        :label="item.type"
+                        :value="item.conn_id"
                       >
-                        <span style="float: left">{{ item2.Type }}</span>
-                        <span
-                          style="float: right; color: #8492a6; font-size: 13px"
-                        >{{
-                          item2.Starway === 0 ? '结束日期往前' : item2.Starway === 10 ? '当年' : item2.Starway === 11 ? '当季' : item2.Starway === 12 ? '当月' : item2.Starway
-                        }}{{ ' | ' + item2.Cycle + ' | ' + item2.Num }}</span></el-option>
+                        <span style="float: left">{{ item.type }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.remarks.slice(0, 12) }}</span>
+                      </el-option>
                     </el-select>
-                    <br>
-                    <span>sql语句: </span>
-                    <el-tag v-if="sqlCurrentEdit!==index" type="success">
-                      {{ item.sqlsen || '暂无' }}
-                    </el-tag>
-                    <el-input
-                      v-else
-                      v-model="item.sqlsen"
-                      size="mini"
-                      type="textarea"
-                      :rows="10"
-                      style="width: 600px;"
-                    />
-                    <br>
-                    <span>描述说明：</span>
-                    <el-tag v-if="sqlCurrentEdit!==index">
-                      {{ item.remarks || '暂无' }}
-                    </el-tag>
-                    <el-input
-                      v-else
-                      v-model="item.remarks"
-                      size="mini"
-                      style="width: 600px"
-                    />
-                    <br>
+
+                  </template>
+
+                </el-table-column>
+                <!--              <el-table-column-->
+                <!--                width="150"-->
+                <!--                prop="type"-->
+                <!--                align="center"-->
+                <!--                label="数据库类型"-->
+                <!--              >-->
+
+                <!--              </el-table-column>-->
+                <el-table-column
+
+                  label="数据库备注"
+                  align="center"
+                >
+                  <template slot-scope="{row,$index}">
+                    <span
+                      v-for="item in sourceData"
+                      v-show="currentEdit!== $index "
+                    >
+                      {{ row.conn_id === item.conn_id ? item.remarks : '' }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="name"
+                  label="参数名称"
+                  align="center"
+                >
+                  <template slot-scope="{ row, $index }">
+                    <el-input v-show="currentEdit === $index " v-model="row.name" size="mini" />
+                    <span v-show="currentEdit !== $index">
+                      {{ row.name }}
+                    </span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="para_value"
+                  align="center"
+                  width="100"
+                  label="参数数值"
+                >
+                  <template slot-scope="{ row, $index }">
+                    <el-input v-show="currentEdit === $index " v-model="row.para_value" size="mini" />
+                    <span v-show="currentEdit !== $index">
+                      {{ row.para_value }}
+                    </span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作"
+                  width="130"
+                  align="center"
+                >
+                  <template slot-scope="{ row, $index }">
+                    <!--                  如果没有选中当前行-->
+                    <!--                  出现编辑和删除按钮-->
                     <el-button
-                      v-if="sqlCurrentEdit!==index"
+                      v-show="currentEdit !== $index"
                       size="mini"
-                      type="info"
-                      icon="el-icon-top"
                       circle
-                      @click="upRow(item)"
+                      type="success"
+                      icon="el-icon-edit"
+                      @click="editParams($index)"
                     />
                     <el-button
-                      v-if="sqlCurrentEdit!==index"
+                      v-show="currentEdit !== $index"
                       size="mini"
-                      type="info"
-                      icon="el-icon-bottom"
                       circle
-                      @click="downRow(item)"
+                      type="primary"
+                      icon="el-icon-thumb"
+                      @click="openSql(row)"
                     />
 
-
-                    <el-button v-if="sqlCurrentEdit!==index" size="mini" type="success" @click="editSql(index,item)">
-                      编辑
-                    </el-button>
-                    <el-button v-else size="mini" type="primary" @click="submitForm(index,item)">保存
-                    </el-button>
                     <el-popconfirm
+                      v-show="currentEdit !== $index"
                       class="custom-tree-node-link"
                       icon-color="red"
-                      title="确定删除此sql语句？"
-                      @confirm="removeDomain(item,index)"
+                      :title="'确定删除：' + row.name"
+                      @confirm="deleteParams(row)"
                     >
                       <el-button
                         slot="reference"
                         size="mini"
                         type="danger"
-                      >删除
-                      </el-button>
-                      <el-button
+                        circle
+                        :loading="deleteParamsLoading"
+                        icon="el-icon-delete"
+                      />
+                    </el-popconfirm>
+
+
+                    <!--                  <el-button-->
+                    <!--                    v-show="currentEdit !== $index"-->
+                    <!--                    size="mini"-->
+                    <!--                    circle-->
+                    <!--                    type="danger"-->
+                    <!--                    icon="el-icon-delete"-->
+                    <!--                    @click="deleteParams(row)"-->
+                    <!--                  />-->
+                    <!--                  如果选中当前行-->
+                    <!--                  出现新增完成，编辑完成和放弃按钮-->
+                    <el-button
+                      v-show="currentEdit === $index"
+                      size="mini"
+                      circle
+                      type="primary"
+                      :loading="finishParaLoading"
+                      icon="el-icon-circle-check"
+                      @click="finishPara(row)"
+                    />
+
+                    <el-button
+                      v-show="currentEdit === $index"
+                      size="mini"
+                      circle
+                      type="warning"
+                      icon="el-icon-circle-close"
+                      @click="giveUp(row,$index)"
+                    />
+                  </template>
+                </el-table-column>
+              </el-table>
+            </transition>
+            <transition name="el-zoom-in-center">
+              <div v-if="!isShowParaTab">
+                <div style="width: 100%;text-align: right">
+                  <el-button type="success" @click="backParamList">返回</el-button>
+                </div>
+                <el-form
+                  ref="dynamicValidateForm"
+                  label-position="left"
+                  label-width="50px"
+                  class="demo-table-expand"
+                >
+                  <el-form-item
+                    v-for="(item, index) in paraDynamicValidateForm"
+                    :key="index"
+                    :label="(index+1)+'、'"
+                  >
+                    <div style="border-bottom:1px solid #d0f5e0;border-top:2px solid #d0f5e0;">
+                      <span>周期：</span>
+                      <el-tag
+                        v-for="items in cycle"
+                        v-show="items.Cycleid===item.cycle_id&&sqlCurrentEdit!==index"
+                        type="warning"
+                      >
+                        {{ items.Cycleid===item.cycle_id?
+                          items.Starway === 0 ? items.Type+' | '+'结束日期往前' +' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 10 ?
+                            items.Type+' | '+ '今年' +' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 11 ?
+                              items.Type+' | '+''+'当季' +' | ' + items.Cycle + ' | ' + items.Num: items.Starway === 12 ?
+                                items.Type+' | '+'当月' +' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 20 ?
+                                  items.Type+' | '+'去年' +' | ' + items.Cycle + ' | ' + items.Num:'':''
+                        }}
+                      </el-tag>
+                      <el-select
                         v-if="sqlCurrentEdit===index"
-                        slot="reference"
+                        v-model="item.cycle_id"
+                        placeholder="请选择"
+                        size="mini"
+                        clearable
+                        style="width: 70%"
+                      >
+                        <el-option
+                          v-for="item2 in cycle"
+                          :key="item2.Cycleid"
+                          :value="item2.Cycleid"
+                          :label="
+                            item2.Starway === 0 ? item2.Type+' | '+'结束日期往前' +
+                              ' | '+
+                              item2.Cycle +
+                              ' | '+
+                              item2.Num : item2.Starway === 10 ?item2.Type+ ' | '+'今年' +
+                              ' | '+
+                              item2.Cycle +
+                              ' | '+
+                              item2.Num : item2.Starway === 11 ?item2.Type+ ' | '+'当季' +
+                                ' | '+
+                                item2.Cycle +
+                                ' | '+
+                                item2.Num : item2.Starway === 12 ? item2.Type+' | '+'当月' +
+                                  ' | '+
+                                  item2.Cycle +
+                                  ' | '+
+                                  item2.Num : item2.Starway === 20 ? item2.Type+' | '+'去年' +
+                                    ' | '+
+                                    item2.Cycle +
+                                    ' | '+
+                                    item2.Num : item2.Starway
+                          "
+                        >
+                          <span style="float: left">{{ item2.Type }}</span>
+                          <span
+                            style="float: right; color: #8492a6; font-size: 13px"
+                          >{{
+                            item2.Starway === 0 ? '结束日期往前' : item2.Starway === 10 ? '今年' : item2.Starway === 11 ? '当季' : item2.Starway === 12 ? '当月' : item2.Starway === 20 ? '去年': item2.Starway
+                          }}{{ ' | ' + item2.Cycle + ' | ' + item2.Num }}</span></el-option>
+                      </el-select>
+                      <br>
+                      <span>sql语句: </span>
+                      <el-tag v-if="sqlCurrentEdit!==index" type="success">
+                        {{ item.sqlsen || '暂无'}}
+                      </el-tag>
+                      <el-input
+                        v-else
+                        v-model="item.sqlsen"
+                        size="mini"
+                        type="textarea"
+                        :rows="10"
+                        style="width: 600px;"
+                      />
+                      <br>
+                      <span>描述说明：</span>
+                      <el-tag v-if="sqlCurrentEdit!==index">
+                        {{ item.remarks || '暂无'}}
+                      </el-tag>
+                      <el-input
+                        v-else
+                        v-model="item.remarks"
+                        size="mini"
+                        style="width: 600px"
+                      />
+                      <br>
+                      <el-button
+                        v-if="sqlCurrentEdit!==index"
                         size="mini"
                         type="info"
-                        @click="offEdit"
-                      >取消
+                        icon="el-icon-top"
+                        circle
+                        @click="upRow(item)"
+                      />
+                      <el-button
+                        v-if="sqlCurrentEdit!==index"
+                        size="mini"
+                        type="info"
+                        icon="el-icon-bottom"
+                        circle
+                        @click="downRow(item)"
+                      />
+
+
+                      <el-button v-if="sqlCurrentEdit!==index" size="mini" type="success" @click="editSql(index,item)">
+                        编辑
                       </el-button>
-                    </el-popconfirm>
-                  </div>
-                </el-form-item>
-                <el-form-item>
-                  <div style="border-top:1px solid #d0f5e0;">
-                    <el-button :disabled="isShowBtn" size="mini" type="primary" @click="addDomain">新增sql语句
-                    </el-button>
-                  </div>
-                </el-form-item>
-              </el-form>
-            </div>
+                      <el-button v-else size="mini" type="primary" @click="submitForm(index,item)">保存
+                      </el-button>
+                      <el-popconfirm
+                        class="custom-tree-node-link"
+                        icon-color="red"
+                        title="确定删除此sql语句？"
+                        @confirm="removeDomain(item,index)"
+                      >
+                        <el-button
+                          slot="reference"
+                          size="mini"
+                          type="danger"
+                        >删除
+                        </el-button>
+                        <el-button
+                          v-if="sqlCurrentEdit===index"
+                          slot="reference"
+                          size="mini"
+                          type="info"
+                          @click="offEdit"
+                        >取消
+                        </el-button>
+                      </el-popconfirm>
+                    </div>
+                  </el-form-item>
+                  <el-form-item>
+                    <div style="border-top:1px solid #d0f5e0;">
+                      <el-button :disabled="isShowBtn" size="mini" type="primary" @click="addDomain">新增sql语句
+                      </el-button>
+                    </div>
+                  </el-form-item>
+                </el-form>
+              </div>
             </transition>
             <el-divider content-position="left">指标描述</el-divider>
             <el-table
@@ -762,7 +780,7 @@ export default {
         }
       ], // 参数取值数据如sql
       isEdit: 1, // 标识是否正在编辑参数,1为不在编辑
-      isExpandAll: true, // 是否展开指标导航树
+      isExpandAll: false, // 是否展开指标导航树
       defaultKey: [2], // 指标导航树选中节点id
       finishParaLoading: false, // 参数编辑完成按钮等待圈
       deleteParamsLoading: false, // 参数删除按钮等待圈

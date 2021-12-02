@@ -1,403 +1,421 @@
 <template>
-  <el-container class="reviewstatic">
-    <el-header>
-      <el-form :inline="true" class="demo-form-inline" size="mini">
-        <el-form-item>
-          <el-radio-group v-model="activeName" size="mini" @change="radioGroup">
-            <el-radio-button
-              v-if="checkEvaluateStatus === 1"
-              label="等级ABCDE统计"
-            >等级ABCDE统计（等级制）
-            </el-radio-button>
-            <el-radio-button
-              v-else
-              label="等级ABCDE统计"
-            >等级ABCDE统计（分数制）
-            </el-radio-button>
-            <el-radio-button label="PDCA统计">PDCA统计</el-radio-button>
-            <el-radio-button
-              label="科室部门PDCA统计"
-            >科室部门PDCA统计
-            </el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="formData.value1" placeholder="批次">
-            <el-option
-              v-for="(itemFrom, indexFrom) in formData.valueArr"
-              :key="indexFrom"
-              :label="itemFrom.PeriodName"
-              :value="itemFrom.PeriodID"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="formData.value2" placeholder="批次">
-            <el-option
-              v-for="(itemFrom, indexFrom) in formData.valueArr"
-              :key="indexFrom"
-              :label="itemFrom.PeriodName"
-              :value="itemFrom.PeriodID"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <!--          :disabled="listLoading"-->
-          <el-button
-            :loading="downloadLoading"
-            type="success"
-            icon="el-icon-download"
-
-            size="mini"
-            @click="handleDownload"
-          >导出(自评报告)
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-header>
-    <el-main>
-      <transition name="el-zoom-in-center">
+  <el-card
+    style="margin: 10px;
+    height: 87vh;
+    overflow: auto;
+"
+  >
+    <el-container class="reviewstatic">
+      <el-header>
         <div
-          v-show="activeName === '等级ABCDE统计'"
-          style="display: flex; height: 100%; flex-direction: column;"
+          style="width: 100%;
+  background-color:#f4f4f5;
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;"
         >
-          <div ref="echatsData" style="flex: 1;margin-top: 30px"/>
+          <el-form :inline="true" class="demo-form-inline" size="mini">
+            <el-form-item>
+              <el-radio-group v-model="activeName" size="mini" @change="radioGroup">
+                <el-radio-button
+                  v-if="checkEvaluateStatus === 1"
+                  label="等级ABCDE统计"
+                >等级ABCDE统计（等级制）
+                </el-radio-button>
+                <el-radio-button
+                  v-else
+                  label="等级ABCDE统计"
+                >等级ABCDE统计（分数制）
+                </el-radio-button>
+                <el-radio-button label="PDCA统计">PDCA统计</el-radio-button>
+                <el-radio-button
+                  label="科室部门PDCA统计"
+                >科室部门PDCA统计
+                </el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item>
+              <el-select v-model="formData.value1" clearable placeholder="批次">
+                <el-option
+                  v-for="(itemFrom, indexFrom) in formData.valueArr"
+                  :key="indexFrom"
+                  :label="itemFrom.PeriodName"
+                  :value="itemFrom.PeriodID"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="formData.value2" clearable placeholder="批次">
+                <el-option
+                  v-for="(itemFrom, indexFrom) in formData.valueArr"
+                  :key="indexFrom"
+                  :label="itemFrom.PeriodName"
+                  :value="itemFrom.PeriodID"
+                />
+              </el-select>
+            </el-form-item>
+            <el-divider direction="vertical" />
+            <el-form-item>
+              <!--          :disabled="listLoading"-->
+              <el-button
+                :loading="downloadLoading"
+                type="success"
+                icon="el-icon-download"
+
+                size="mini"
+                @click="handleDownload"
+              >导出(自评报告)
+              </el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-header>
+      <el-main>
+        <transition name="el-zoom-in-center">
+          <div
+            v-show="activeName === '等级ABCDE统计'"
+            style="display: flex; height: 100%; flex-direction: column;"
+          >
+            <div ref="echatsData" style="flex: 1;margin-top: 30px" />
+            <div>
+              <el-table
+                :data="Abcde"
+                style="width: 100%; height: 250px !important"
+                border
+                size="mini"
+                class="table_P"
+              >
+                <el-table-column
+                  label="自评人员审核"
+                  align="center"
+                  prop="GradeA"
+                >
+                  <el-table-column
+                    label="A级"
+                    align="center"
+                    prop="GradeA"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('A', iniPara.menu_one)"
+                      >
+                        {{ row.Step1GradeA }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="B级"
+                    align="center"
+                    prop="GradeA"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('B', iniPara.menu_one)"
+                      >
+                        {{ row.Step1GradeB }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="C级"
+                    align="center"
+                    prop="GradeA"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('C', iniPara.menu_one)"
+                      >
+                        {{ row.Step1GradeC }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="D级"
+                    align="center"
+                    prop="GradeA"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('D', iniPara.menu_one)"
+                      >
+                        {{ row.Step1GradeD }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="E级"
+                    align="center"
+                    prop="GradeA"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('E', iniPara.menu_one)"
+                      >
+                        {{ row.Step1GradeE }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                </el-table-column>
+
+                <el-table-column
+                  label="主管人员审核"
+                  align="center"
+                  prop="GradeA"
+                >
+                  <el-table-column
+                    label="A级"
+                    prop="GradeB"
+                    align="center"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('A', iniPara.menu_two)"
+                      >
+                        {{ row.Step2GradeA }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="B级"
+                    prop="GradeB"
+                    align="center"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('B', iniPara.menu_two)"
+                      >
+                        {{ row.Step2GradeB }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="C级"
+                    prop="GradeB"
+                    align="center"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('C', iniPara.menu_two)"
+                      >
+                        {{ row.Step2GradeC }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="D级"
+                    prop="GradeB"
+                    align="center"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('D', iniPara.menu_two)"
+                      >
+                        {{ row.Step2GradeB }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="E级"
+                    prop="GradeB"
+                    align="center"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('E', iniPara.menu_two)"
+                      >
+                        {{ row.Step2GradeE }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                </el-table-column>
+
+                <el-table-column
+                  label="监管人员审核"
+                  align="center"
+                  prop="GradeA"
+                >
+                  <el-table-column
+                    label="A级"
+                    prop="GradeC"
+                    align="center"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('A', iniPara.menu_three)"
+                      >
+                        {{ row.Step3GradeA }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="B级"
+                    prop="GradeC"
+                    align="center"
+                    min-width="65"
+                  >
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('B', iniPara.menu_three)"
+                      >
+                        {{ row.Step3GradeB }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="C级" align="center" min-width="65">
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('C', iniPara.menu_three)"
+                      >
+                        {{ row.Step3GradeC }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="D级" align="center" min-width="65">
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('D', iniPara.menu_three)"
+                      >
+                        {{ row.Step3GradeD }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="E级" align="center" min-width="65">
+                    <template slot-scope="{ row }">
+                      <p
+                        style="cursor: pointer"
+                        @click="getABCDdata('E', iniPara.menu_three)"
+                      >
+                        {{ row.Step3GradeE }}
+                      </p>
+                    </template>
+                  </el-table-column>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
+        </transition>
+        <div
+          v-if="activeName === 'PDCA统计'"
+          style="display: flex; height: 100%; flex-direction: column"
+        >
+          <div style="display: flex; height: 100%; flex: 1">
+            <div ref="echatsDataPDCA2" style="flex: 1" />
+            <div ref="echatsDataPDCA" style="flex: 1" />
+          </div>
           <div>
             <el-table
-              :data="Abcde"
-              style="width: 100%; height: 250px !important"
+              :data="pdcaData1.pdcaListData"
+              style="width: 100%; height: 180px !important"
               border
               size="mini"
               class="table_P"
             >
-              <el-table-column
-                label="自评人员审核"
-                align="center"
-                prop="GradeA"
-              >
-                <el-table-column
-                  label="A级"
-                  align="center"
-                  prop="GradeA"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('A', iniPara.menu_one)"
-                    >
-                      {{ row.Step1GradeA }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="B级"
-                  align="center"
-                  prop="GradeA"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('B', iniPara.menu_one)"
-                    >
-                      {{ row.Step1GradeB }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="C级"
-                  align="center"
-                  prop="GradeA"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('C', iniPara.menu_one)"
-                    >
-                      {{ row.Step1GradeC }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="D级"
-                  align="center"
-                  prop="GradeA"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('D', iniPara.menu_one)"
-                    >
-                      {{ row.Step1GradeD }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="E级"
-                  align="center"
-                  prop="GradeA"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('E', iniPara.menu_one)"
-                    >
-                      {{ row.Step1GradeE }}
-                    </p>
-                  </template>
-                </el-table-column>
+              <el-table-column label="PDCA等级" align="center">
+                <template slot-scope="{ row }">
+                  {{
+                    row.ItemName == '自评人员未审核'
+                      ? 'P' + ' ( ' + row.ItemName + ' ) '
+                      : row.ItemName == '自评人员自通过'
+                        ? 'PD' + ' ( ' + row.ItemName + ' ) '
+                        : row.ItemName == '主管人员通过'
+                          ? 'PDC' + ' ( ' + row.ItemName + ' ) '
+                          : 'PDCA' + ' ( ' + row.ItemName + ' ) '
+                  }}
+                </template>
               </el-table-column>
-
-              <el-table-column
-                label="主管人员审核"
-                align="center"
-                prop="GradeA"
-              >
-                <el-table-column
-                  label="A级"
-                  prop="GradeB"
-                  align="center"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('A', iniPara.menu_two)"
-                    >
-                      {{ row.Step2GradeA }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="B级"
-                  prop="GradeB"
-                  align="center"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('B', iniPara.menu_two)"
-                    >
-                      {{ row.Step2GradeB }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="C级"
-                  prop="GradeB"
-                  align="center"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('C', iniPara.menu_two)"
-                    >
-                      {{ row.Step2GradeC }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="D级"
-                  prop="GradeB"
-                  align="center"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('D', iniPara.menu_two)"
-                    >
-                      {{ row.Step2GradeB }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="E级"
-                  prop="GradeB"
-                  align="center"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('E', iniPara.menu_two)"
-                    >
-                      {{ row.Step2GradeE }}
-                    </p>
-                  </template>
-                </el-table-column>
-              </el-table-column>
-
-              <el-table-column
-                label="监管人员审核"
-                align="center"
-                prop="GradeA"
-              >
-                <el-table-column
-                  label="A级"
-                  prop="GradeC"
-                  align="center"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('A', iniPara.menu_three)"
-                    >
-                      {{ row.Step3GradeA }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="B级"
-                  prop="GradeC"
-                  align="center"
-                  min-width="65"
-                >
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('B', iniPara.menu_three)"
-                    >
-                      {{ row.Step3GradeB }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column label="C级" align="center" min-width="65">
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('C', iniPara.menu_three)"
-                    >
-                      {{ row.Step3GradeC }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column label="D级" align="center" min-width="65">
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('D', iniPara.menu_three)"
-                    >
-                      {{ row.Step3GradeD }}
-                    </p>
-                  </template>
-                </el-table-column>
-                <el-table-column label="E级" align="center" min-width="65">
-                  <template slot-scope="{ row }">
-                    <p
-                      style="cursor: pointer"
-                      @click="getABCDdata('E', iniPara.menu_three)"
-                    >
-                      {{ row.Step3GradeE }}
-                    </p>
-                  </template>
-                </el-table-column>
-              </el-table-column>
-            </el-table>
-          </div>
-        </div>
-      </transition>
-      <div
-        v-if="activeName === 'PDCA统计'"
-        style="display: flex; height: 100%; flex-direction: column"
-      >
-        <div style="display: flex; height: 100%; flex: 1">
-          <div ref="echatsDataPDCA2" style="flex: 1"/>
-          <div ref="echatsDataPDCA" style="flex: 1"/>
-        </div>
-        <div>
-          <el-table
-            :data="pdcaData1.pdcaListData"
-            style="width: 100%; height: 180px !important"
-            border
-            size="mini"
-            class="table_P"
-          >
-            <el-table-column label="PDCA等级" align="center">
-              <template slot-scope="{ row }">
-                {{
-                  row.ItemName == '自评人员未审核'
-                    ? 'P' + ' ( ' + row.ItemName + ' ) '
-                    : row.ItemName == '自评人员自通过'
-                      ? 'PD' + ' ( ' + row.ItemName + ' ) '
-                      : row.ItemName == '主管人员通过'
-                        ? 'PDC' + ' ( ' + row.ItemName + ' ) '
-                        : 'PDCA' + ' ( ' + row.ItemName + ' ) '
-                }}
-              </template>
-            </el-table-column>
-            <el-table-column label="数量" align="center">
-              <template slot-scope="{ row }">
-                <p
-                  style="cursor: pointer"
-                  @click="
-                    getPDCAdata(
-                      row.ItemName == '自评人员未审核'
-                        ? row.ItemName
-                        : row.ItemName == '自评人员自通过'
+              <el-table-column label="数量" align="center">
+                <template slot-scope="{ row }">
+                  <p
+                    style="cursor: pointer"
+                    @click="
+                      getPDCAdata(
+                        row.ItemName == '自评人员未审核'
                           ? row.ItemName
-                          : row.ItemName == '主管人员通过'
+                          : row.ItemName == '自评人员自通过'
                             ? row.ItemName
-                            : row.ItemName
-                    )
-                  "
-                >
-                  {{ row.Count }}
-                </p>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </div>
-      <transition name="el-zoom-in-center">
-        <div
-          v-if="activeName === '科室部门PDCA统计'"
-          style="display: flex; height: 100%; width: 100%"
-        >
-          <div>
-            <el-table
-              v-loading="deptPDCALoading"
-              border
-              size="mini"
-              style="width: 100%"
-              :data="deptPDCATable"
-              height="95%"
-              stripe
-            >
-              <el-table-column
-                type="index"
-                label="序号"
-                align="center"
-                width="50"
-              />
-              <el-table-column prop="DeptName" label="部门名称" width="200"/>
-              <el-table-column prop="P" label="P" align="center"/>
-              <el-table-column prop="D" label="D" align="center"/>
-              <el-table-column prop="C" label="C" align="center"/>
-              <el-table-column prop="A" label="A" align="center"/>
+                            : row.ItemName == '主管人员通过'
+                              ? row.ItemName
+                              : row.ItemName
+                      )
+                    "
+                  >
+                    {{ row.Count }}
+                  </p>
+                </template>
+              </el-table-column>
             </el-table>
-            <el-pagination
-              :current-page.sync="deptPDCApagination.pageIndex"
-              :page-sizes="[15, 20, 30, 40, 50]"
-              :page-size="deptPDCApagination.pageSize"
-              layout="sizes, prev, pager, next"
-              :total="deptPDCApagination.total"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
           </div>
-          <div ref="echatsData2" style="flex: 1"/>
         </div>
-      </transition>
-    </el-main>
-  </el-container>
+        <transition name="el-zoom-in-center">
+          <div
+            v-if="activeName === '科室部门PDCA统计'"
+            style="display: flex; height: 100%; width: 100%"
+          >
+            <div>
+              <el-table
+                v-loading="deptPDCALoading"
+                border
+                size="mini"
+                style="width: 100%"
+                :data="deptPDCATable"
+                height="95%"
+                stripe
+              >
+                <el-table-column
+                  type="index"
+                  label="序号"
+                  align="center"
+                  width="50"
+                />
+                <el-table-column prop="DeptName" label="部门名称" width="200" />
+                <el-table-column prop="P" label="P" align="center" />
+                <el-table-column prop="D" label="D" align="center" />
+                <el-table-column prop="C" label="C" align="center" />
+                <el-table-column prop="A" label="A" align="center" />
+              </el-table>
+              <el-pagination
+                :current-page.sync="deptPDCApagination.pageIndex"
+                :page-sizes="[15, 20, 30, 40, 50]"
+                background
+                :page-size="deptPDCApagination.pageSize"
+                layout="sizes, prev, pager, next"
+                :total="deptPDCApagination.total"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
+            </div>
+            <div ref="echatsData2" style="flex: 1" />
+          </div>
+        </transition>
+      </el-main>
+    </el-container>
+  </el-card>
 </template>
 <script>
 import { GetAlgoPieCharts, SelectPDCAGradeCount } from '@/api/reviewstatic';
@@ -438,7 +456,6 @@ export default {
     this.chaKan();
     this.SelectPDCAGradeCount();
     this.SelectPeriod();
-
   },
   mounted() {
   },

@@ -19,7 +19,7 @@
         <el-table-column prop="Num" label="单位数" align="center" />
         <el-table-column prop="Starway" label="开始方式" align="center">
           <template slot-scope="{ row }">
-            {{ row.Starway === 0 ? '结束日期往前' : row.Starway === 10 ? '当年' : row.Starway === 11 ? '当季' : row.Starway === 12 ? '当月' : row.Starway }}
+            {{ row.Starway === 0 ? '结束日期往前' : row.Starway === 10 ? '今年': row.Starway === 20 ? '去年': row.Starway === 11 ? '本季' : row.Starway === 12 ? '本月' : row.Starway }}
           </template>
         </el-table-column>
 
@@ -101,9 +101,10 @@
               <el-option
                 v-for="(item, index) in [
                   { label: '结束日期往前', value: 0 },
-                  { label: '当年', value: 10 },
-                  { label: '当季', value: 11 },
-                  { label: '当月', value: 12 },
+                  { label: '今年', value: 10 },
+                  { label: '本季', value: 11 },
+                  { label: '本月', value: 12 },
+                  { label: '去年', value: 20 },
                 ]"
                 :key="index"
                 :label="item.label"

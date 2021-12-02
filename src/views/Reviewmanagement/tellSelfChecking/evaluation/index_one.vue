@@ -1,24 +1,19 @@
 <template>
-  <el-container class="index_one">
-    <el-header
-      :style="{ height: clearfixHeight + 'px' }"
-      class="clearfix"
+  <el-card style="width: 98%;margin: 10px;height: 87vh;overflow:auto;">
+    <div
+      style="width: 100%;
+      background-color:#f4f4f5;
+      display: inline-block;
+      height: 32px;
+      margin: -10px !important;
+      line-height: 32px;"
+
     >
       <el-form
         :inline="true"
         :model="EvaluationForm"
         size="mini"
       >
-        <el-form-item>
-          <el-button
-            :class="
-              clearfixHeight == 30
-                ? 'el-icon-arrow-right'
-                : 'el-icon-arrow-down'
-            "
-            @click="unfold"
-          />
-        </el-form-item>
         <el-form-item>
           <el-input
             v-model="EvaluationForm.CatalogCode"
@@ -29,9 +24,44 @@
             @keyup.enter.native="clickSelectEvaluation()"
           />
         </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item>
           <cascaderFilter @getDeptorUser="getDeptorUser"/>
         </el-form-item>
+        <el-divider direction="vertical"/>
+        <el-form-item>
+          <period @getPeriodValue="getPeriodValue"/>
+        </el-form-item>
+        <el-divider direction="vertical"/>
+        <el-form-item>
+          <el-select
+            v-model="EvaluationForm.Progress"
+            clearable
+            placeholder="进度"
+            size="mini"
+            style="width: 120px"
+            @keyup.enter.native="clickSelectEvaluation()"
+          >
+            <el-option
+              v-for="item in schedule"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-divider direction="vertical"/>
+        <el-form-item>
+          <el-input
+            v-model="EvaluationForm.Grade"
+            clearable
+            placeholder="最终评审结果"
+            size="mini"
+            style="width: 120px"
+            @keyup.enter.native="clickSelectEvaluation()"
+          />
+        </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-select
             v-model="EvaluationForm.StepValue"
@@ -65,6 +95,7 @@
             @keyup.enter.native="clickSelectEvaluation()"
           />
         </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-select
             v-model="EvaluationForm.UploadStatus"
@@ -84,6 +115,7 @@
             />
           </el-select>
         </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-select
             v-model="status"
@@ -102,9 +134,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item>
-          <period @getPeriodValue="getPeriodValue"/>
-        </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-select
             v-model="EvaluationForm.CurrentStatus"
@@ -131,33 +161,15 @@
             />
           </el-select>
         </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item>
-          <el-select
-            v-model="EvaluationForm.Progress"
-            clearable
-            placeholder="进度"
-            size="mini"
-            style="width: 120px"
-            @keyup.enter.native="clickSelectEvaluation()"
-          >
-            <el-option
-              v-for="item in schedule"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+          <el-checkbox
+            v-model="EvaluationForm.UnReview"
+            @change="UnReviewChange"
+          >未审资料
+          </el-checkbox>
         </el-form-item>
-        <el-form-item>
-          <el-input
-            v-model="EvaluationForm.Grade"
-            clearable
-            placeholder="最终评审结果"
-            size="mini"
-            style="width: 120px"
-            @keyup.enter.native="clickSelectEvaluation()"
-          />
-        </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-button
             :loading="listLoading"
@@ -168,6 +180,7 @@
           >搜索
           </el-button>
         </el-form-item>
+        <el-divider direction="vertical"/>
         <el-form-item style="width: 150px">
           <el-select
             v-model="downloadValue"
@@ -206,26 +219,19 @@
           >导出
           </el-button>
         </el-form-item>
-        <el-form-item>
-          <el-checkbox
-            v-model="EvaluationForm.UnReview"
-            @change="UnReviewChange"
-          >未审资料
-          </el-checkbox>
-        </el-form-item>
+
       </el-form>
-    </el-header>
-    <el-main>
+    </div>
       <el-table
         v-loading="listLoading"
         :data="tableData"
         :row-class-name="tableRowClassName"
         border
-        height="calc(100vh - 200px)"
+        style="margin-top: 10px"
+        height="calc(100vh - 260px)"
         size="mini"
         stripe
         highlight-current-row
-        style="width: 100%"
       >
         <el-table-column
           label="详情"
@@ -470,703 +476,706 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-dialog
-        :close-on-click-modal="false"
-        :fullscreen="fullscreen"
-        :visible.sync="dialogTableVisibleCatalog"
-        :width="device === 'desktop' ? '50%' : '100%'"
-        append-to-body
-        title="评审标准审核"
-        @close="clearFormData"
-        @resize="resize"
+
+    <el-dialog
+      :close-on-click-modal="false"
+      :fullscreen="fullscreen"
+      :visible.sync="dialogTableVisibleCatalog"
+      :width="device === 'desktop' ? '50%' : '100%'"
+      append-to-body
+      title="评审标准审核"
+      @close="clearFormData"
+      @resize="resize"
+    >
+      <el-tabs
+        v-model="activeName"
+        type="card"
       >
-        <el-tabs
-          v-model="activeName"
-          type="card"
+        <el-tab-pane
+          label="考评办法"
+          name="three"
         >
-          <el-tab-pane
-            label="考评办法"
-            name="three"
+          <el-table
+            :data="ResortName"
+            :height="isFullscreen ? isFullscreenHeight - 150 : 400"
+            border
+            highlight-current-row
+            size="mini"
+            style="width: 100%"
           >
-            <el-table
-              :data="ResortName"
-              :height="isFullscreen ? isFullscreenHeight - 150 : 400"
-              border
-              highlight-current-row
-              size="mini"
-              style="width: 100%"
+            <el-table-column
+              label="序号"
+              prop="ResortID"
+              width="60"
+            />
+            <el-table-column
+              label="条款"
+              prop="CatalogCodePath"
+              width="120"
+            />
+            <el-table-column
+              label="内容"
+              prop="ResortName"
+            />
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane
+          :style="{ height: '450px' }"
+          label="材料审核"
+          name="first"
+        >
+          <el-form
+            :inline="true"
+            class="demo-form-inline"
+            size="mini"
+          >
+            <el-form-item>
+              <el-input
+                v-model="MaterialForm.AuthorName"
+                clearable
+                placeholder="请输入上传人"
+                @keyup.enter.native="SelectArticle('搜索')"
+              />
+            </el-form-item>
+            <!--              <el-form-item>-->
+            <!--                <el-select-->
+            <!--                  v-model="MaterialForm.UploadState"-->
+            <!--                  placeholder="资料上传状态"-->
+            <!--                  clearable-->
+            <!--                  @change="elSelementAuditStatus"-->
+            <!--                >-->
+            <!--                  <el-option-->
+            <!--                    v-for="item in FileStatus"-->
+            <!--                    :key="item.value"-->
+            <!--                    :label="item.label"-->
+            <!--                    :value="item.value"-->
+            <!--                  />-->
+            <!--                </el-select>-->
+            <!--              </el-form-item>-->
+            <el-form-item>
+              <el-select
+                v-model="MaterialForm.AuditStatus"
+                clearable
+                placeholder="审核状态"
+                size="mini"
+                style="width: 140px"
+                @change="elSelementAuditStatus"
+              >
+                <el-option
+                  label="全部"
+                  value=""
+                />
+                <el-option
+                  label="未审核"
+                  value="0"
+                />
+                <el-option
+                  label="通过"
+                  value="1"
+                />
+                <el-option
+                  label="退回"
+                  value="2"
+                />
+                <el-option
+                  label="退回已修改"
+                  value="3"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                icon="el-icon-search"
+                type="primary"
+                @click="SelectArticle('搜索')"
+              >搜索
+              </el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-select
+                v-model="MaterialForm.SortField"
+                clearable
+                placeholder="按照字段排序"
+                size="mini"
+                style="width: 140px"
+                @change="sortOrderField"
+              >
+                <el-option
+                  v-for="(itemTH, indexTH) in materialDataTh"
+                  :key="indexTH"
+                  :label="itemTH.vcName"
+                  :value="itemTH.vcItemID"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-tooltip
+                class="item"
+                content="升序"
+                effect="dark"
+                placement="top"
+              >
+                <el-button
+                  circle
+                  icon="el-icon-arrow-up"
+                  @click="sortOrder('asc')"
+                />
+              </el-tooltip>
+              <el-tooltip
+                class="item"
+                content="降序"
+                effect="dark"
+                placement="bottom"
+              >
+                <el-button
+                  circle
+                  icon="el-icon-arrow-down"
+                  @click="sortOrder('desc')"
+                />
+              </el-tooltip>
+            </el-form-item>
+          </el-form>
+          <el-table
+            :data="materialData"
+            :height="isFullscreen ? isFullscreenHeight - 200 : 400"
+            border
+            highlight-current-row
+            size="mini"
+            style="width: 100%"
+          >
+            <el-table-column
+              align="center"
+              label="序号"
+              type="index"
+              width="50"
+            />
+            <el-table-column
+              :show-overflow-tooltip="cellOverflow"
+              label="条款"
+              prop="CatalogCode"
+            />
+            <el-table-column
+              :show-overflow-tooltip="cellOverflow"
+              label="评审要点"
+              prop="CatalogName"
+              width="300"
+            />
+            <el-table-column
+              :show-overflow-tooltip="cellOverflow"
+              label="材料标题"
+              prop="Title"
+              width="200"
+            />
+            <el-table-column
+              :show-overflow-tooltip="cellOverflow"
+              align="center"
+              label="状态"
+              prop="address"
+              width="100"
             >
-              <el-table-column
-                label="序号"
-                prop="ResortID"
-                width="60"
+              <template slot-scope="scope">
+                <el-tag
+                  :type="
+                    scope.row.AuditStatus === 0
+                      ? 'info'
+                      : scope.row.AuditStatus === 1
+                        ? 'success'
+                        : scope.row.AuditStatus === 2
+                          ? 'danger'
+                          : 'warning'
+                  "
+                  round
+                  size="small"
+                >
+                  {{
+                    scope.row.AuditStatus === 0
+                      ? '未审核'
+                      : scope.row.AuditStatus === 1
+                        ? '通过'
+                        : scope.row.AuditStatus === 2
+                          ? '退回'
+                          : scope.row.AuditStatus === 4 ? '通过后修改' : '退回已修改'
+                  }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              :show-overflow-tooltip="cellOverflow"
+              label="评审意见"
+              prop="AuditContent"
+              width="300"
+            />
+            <el-table-column
+              v-if="ReviewRow.CatalogType != 1"
+              :show-overflow-tooltip="cellOverflow"
+              label="结果描述"
+              prop="CataLogdescription"
+              width="300"
+            />
+            <el-table-column
+              :show-overflow-tooltip="cellOverflow"
+              align="center"
+              label="上传时间"
+              prop="CreatDate"
+              width="200"
+            >
+              <template slot-scope="{ row }">{{
+                  row.CreatDate.replace('T', ' ')
+                                             }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              :show-overflow-tooltip="cellOverflow"
+              align="center"
+              label="上传人"
+              prop="AuthorName"
+              width="300"
+            />
+            <el-table-column
+              align="center"
+              fixed="right"
+              label="资料上传"
+              prop="IsUpload"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  :disabled="
+                    scope.row.IsUpload == 1 &&
+                      seeStatusViewForm.RoleName !== '系统管理员'
+                  "
+                  :style="{backgroundColor:( editRowIndex1===scope.$index?'#42b983':'#1890ff')}"
+                  icon="el-icon-upload"
+                  round
+                  size="mini"
+                  type="primary"
+                  @click="uploadViews(scope.row,scope.$index)"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column
+              align="center"
+              fixed="right"
+              label="上传编辑"
+              prop="IsUpload"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  :disabled="
+                    scope.row.IsUpload == 1 &&
+                      seeStatusViewForm.RoleName !== '系统管理员'
+                  "
+                  :style="{backgroundColor:( editRowIndex2===scope.$index?'#42b983':'#ffc833')}"
+                  icon="el-icon-upload"
+                  round
+                  size="mini"
+                  type="warning"
+                  @click="editRow(scope.row,scope.$index)"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column
+              align="center"
+              fixed="right"
+              label="审核"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  :style="{backgroundColor:( ReviewIndex2===scope.$index?'#42b983':'#1890ff')}"
+                  icon="el-icon-s-check"
+                  round
+                  size="mini"
+                  type="info"
+                  @click="statusViews(scope.row,scope.$index)"
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-row>
+            <el-col :span="2">
+              <el-switch
+                v-model="cellOverflow"
+                style="margin: 26px 0px"
               />
-              <el-table-column
-                label="条款"
-                prop="CatalogCodePath"
-                width="120"
-              />
-              <el-table-column
-                label="内容"
-                prop="ResortName"
-              />
-            </el-table>
-          </el-tab-pane>
-          <el-tab-pane
-            :style="{ height: '450px' }"
-            label="材料审核"
-            name="first"
+            </el-col>
+            <el-pagination
+              style="margin: 26px 0 0 0"
+              :current-page="MaterialForm.pageIndex"
+              :page-size="MaterialForm.pageSize"
+              :page-sizes="[10, 20, 30, 40, 50, 80]"
+              :total="MaterialForm.total"
+              background
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="handleSizeMaterialChange"
+              @current-change="handleCurrentMaterialChange"
+            />
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane
+          label="科室自评"
+          name="second"
+        >
+          <el-card
+            :style="{
+              height: isFullscreen ? 'calc(100vh - 150px)' : '400px',
+            }"
           >
             <el-form
-              :inline="true"
-              class="demo-form-inline"
+              ref="form1"
+              :model="MaterialReaultForm"
+              :rules="rules"
+              label-width="80px"
               size="mini"
             >
-              <el-form-item>
+              <el-form-item label="标准">
                 <el-input
-                  v-model="MaterialForm.AuthorName"
-                  clearable
-                  placeholder="请输入上传人"
-                  @keyup.enter.native="SelectArticle('搜索')"
+                  v-model="MaterialReaultForm.CatalogName"
+                  disabled
+                >
+                  <template slot="prepend">
+                    {{ MaterialReaultForm.CatalogCode }}
+                  </template>
+                </el-input>
+              </el-form-item>
+              <div style="display: flex">
+                <el-form-item label="评审人">
+                  <el-input
+                    v-model="MaterialReaultForm.CreateUserName"
+                    disabled
+                  />
+                </el-form-item>
+                <el-form-item label="评审日期">
+                  <el-input
+                    v-model="MaterialReaultForm.RectifyStartTime"
+                    disabled
+                  />
+                </el-form-item>
+              </div>
+              <div style="display: flex">
+                <el-form-item
+                  v-if="CurrentStatusL === 2"
+                  label="分数"
+                >
+                  <el-select
+                    v-model="MaterialReaultForm.Grade"
+                    allow-create
+                    clearable
+                    default-first-option
+                    filterable
+                    multiple
+                    placeholder="如无总分值和扣分原因，请在评审标准中的具体条款设置"
+                    size="mini"
+                    style="width: 400px"
+                    @change="grades"
+                    @clear="Grades = otherGrades"
+                  >
+                    <el-option
+                      v-for="item in DeductionData"
+                      :key="item.PenaltiesID"
+                      :label="item.PenaltiesContent"
+                      :value="`${item.PenaltiesContent}@@${item.PenaltiesFraction}`"
+                    />
+                  </el-select>
+                  <el-input
+                    v-model="Grades"
+                    disabled
+                    style="width: 400px"
+                  />
+                </el-form-item>
+                <el-form-item
+                  v-else
+                  label="自评等级"
+                >
+                  <el-select
+                    v-model="MaterialReaultForm.Grade"
+                    clearable
+                    placeholder="自评等级"
+                    size="mini"
+                    style="width: 120px"
+                  >
+                    <el-option
+                      v-for="item in selfResult"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+
+                <el-form-item
+                  label="是否达标"
+                >
+                  <el-radio-group v-model="MaterialReaultForm.Standard">
+                    <el-radio :label="1">是</el-radio>
+                    <el-radio :label="0">否</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+
+                <el-form-item
+                  label="进度"
+                  prop="Progress"
+                >
+                  <el-select
+                    v-model="MaterialReaultForm.Progress"
+                    clearable
+                    placeholder="进度"
+                    size="mini"
+                    style="width: 120px"
+                  >
+                    <el-option
+                      v-for="item in schedule"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </div>
+              <el-form-item label="历史问题">
+                <el-input
+                  v-model="Matters"
+                  autosize
+                  disabled
+                  type="textarea"
                 />
               </el-form-item>
-              <!--              <el-form-item>-->
-              <!--                <el-select-->
-              <!--                  v-model="MaterialForm.UploadState"-->
-              <!--                  placeholder="资料上传状态"-->
-              <!--                  clearable-->
-              <!--                  @change="elSelementAuditStatus"-->
-              <!--                >-->
-              <!--                  <el-option-->
-              <!--                    v-for="item in FileStatus"-->
-              <!--                    :key="item.value"-->
-              <!--                    :label="item.label"-->
-              <!--                    :value="item.value"-->
-              <!--                  />-->
-              <!--                </el-select>-->
-              <!--              </el-form-item>-->
-              <el-form-item>
-                <el-select
-                  v-model="MaterialForm.AuditStatus"
-                  clearable
-                  placeholder="审核状态"
+              <el-form-item
+                label="存在问题"
+                prop="Matter"
+              >
+                <el-input
+                  v-model="MaterialReaultForm.Matter"
+                  autosize
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item label="历史措施">
+                <el-input
+                  v-model="Solutions"
+                  autosize
+                  disabled
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item
+                label="采取措施"
+                prop="Solution"
+              >
+                <el-input
+                  v-model="MaterialReaultForm.Solution"
+                  autosize
+                  type="textarea"
+                />
+              </el-form-item>
+              <el-form-item
+                v-if="MaterialReaultForm.SMSStatus == 1"
+                label="短信提醒"
+              >
+                <el-checkbox-group
+                  v-model="MaterialReaultForm.SendSmS"
                   size="mini"
-                  style="width: 140px"
-                  @change="elSelementAuditStatus"
                 >
-                  <el-option
-                    label="全部"
-                    value=""
-                  />
-                  <el-option
-                    label="未审核"
-                    value="0"
-                  />
-                  <el-option
-                    label="通过"
-                    value="1"
-                  />
-                  <el-option
-                    label="退回"
-                    value="2"
-                  />
-                  <el-option
-                    label="退回已修改"
-                    value="3"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <el-button
-                  icon="el-icon-search"
-                  type="primary"
-                  @click="SelectArticle('搜索')"
-                >搜索
-                </el-button>
-              </el-form-item>
-              <el-form-item>
-                <el-select
-                  v-model="MaterialForm.SortField"
-                  clearable
-                  placeholder="按照字段排序"
-                  size="mini"
-                  style="width: 140px"
-                  @change="sortOrderField"
-                >
-                  <el-option
-                    v-for="(itemTH, indexTH) in materialDataTh"
-                    :key="indexTH"
-                    :label="itemTH.vcName"
-                    :value="itemTH.vcItemID"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <el-tooltip
-                  class="item"
-                  content="升序"
-                  effect="dark"
-                  placement="top"
-                >
-                  <el-button
-                    circle
-                    icon="el-icon-arrow-up"
-                    @click="sortOrder('asc')"
-                  />
-                </el-tooltip>
-                <el-tooltip
-                  class="item"
-                  content="降序"
-                  effect="dark"
-                  placement="bottom"
-                >
-                  <el-button
-                    circle
-                    icon="el-icon-arrow-down"
-                    @click="sortOrder('desc')"
-                  />
-                </el-tooltip>
+                  <el-checkbox
+                    :label="1"
+                    border
+                  >是
+                  </el-checkbox>
+                </el-checkbox-group>
               </el-form-item>
             </el-form>
-            <el-table
-              :data="materialData"
-              :height="isFullscreen ? isFullscreenHeight - 200 : 400"
-              border
-              highlight-current-row
+          </el-card>
+        </el-tab-pane>
+        <el-tab-pane
+          v-if="CatalogVersion != '中医院'"
+          label="评审要点"
+          name="third"
+        >
+          <el-table
+            :data="CatalogTable"
+            :height="isFullscreen ? isFullscreenHeight - 150 : 400"
+            border
+            highlight-current-row
+            style="width: 100%"
+          >
+            <el-table-column
+              label="评审标准"
+              prop="catalogCode"
+              width="180"
+            />
+            <el-table-column
+              label="评审等级"
+              prop="pointCode"
+              width="180"
+            >
+              <template slot-scope="{ row }">{{
+                  row.pointCode + row.pointItem
+                                             }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="评审要点内容"
+              prop="pointName"
+            />
+
+            <el-table-column
+              label="是否符合"
+            >
+
+              <!--                <el-radio-group v-model="radio">-->
+              <el-radio :label="1">符合</el-radio>
+              <el-radio :label="2">不符合</el-radio>
+              <!--                  <el-radio :label="3">备选项3</el-radio>-->
+              <!--                </el-radio-group>-->
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="small"
+          @click="dialogTableVisibleCatalog = false"
+        >取 消
+        </el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="InsertUpdateEvaluationProblem"
+        >通过审批
+        </el-button>
+        <!-- <el-button size="mini" type="primary" @click="innerVisibleFunction">退回整改</el-button> -->
+      </div>
+      <el-dialog
+        :close-on-click-modal="false"
+        :visible.sync="innerVisible"
+        append-to-body
+        title="整改时间"
+      >
+        <el-form
+          ref="form"
+          :model="MaterialReaultForm"
+          :rules="rules"
+          label-width="80px"
+          size="mini"
+        >
+          <el-form-item
+            label="整改时间"
+            prop="RectifyEndTime"
+          >
+            <el-date-picker
+              v-model="MaterialReaultForm.RectifyEndTime"
+              placeholder="选择日期"
               size="mini"
-              style="width: 100%"
-            >
-              <el-table-column
-                align="center"
-                label="序号"
-                type="index"
-                width="50"
-              />
-              <el-table-column
-                :show-overflow-tooltip="cellOverflow"
-                label="条款"
-                prop="CatalogCode"
-              />
-              <el-table-column
-                :show-overflow-tooltip="cellOverflow"
-                label="评审要点"
-                prop="CatalogName"
-                width="300"
-              />
-              <el-table-column
-                :show-overflow-tooltip="cellOverflow"
-                label="材料标题"
-                prop="Title"
-                width="200"
-              />
-              <el-table-column
-                :show-overflow-tooltip="cellOverflow"
-                align="center"
-                label="状态"
-                prop="address"
-                width="100"
-              >
-                <template slot-scope="scope">
-                  <el-tag
-                    :type="
-                      scope.row.AuditStatus === 0
-                        ? 'info'
-                        : scope.row.AuditStatus === 1
-                          ? 'success'
-                          : scope.row.AuditStatus === 2
-                            ? 'danger'
-                            : 'warning'
-                    "
-                    round
-                    size="small"
-                  >
-                    {{
-                      scope.row.AuditStatus === 0
-                        ? '未审核'
-                        : scope.row.AuditStatus === 1
-                          ? '通过'
-                          : scope.row.AuditStatus === 2
-                            ? '退回'
-                            : scope.row.AuditStatus === 4 ? '通过后修改' : '退回已修改'
-                    }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column
-                :show-overflow-tooltip="cellOverflow"
-                label="评审意见"
-                prop="AuditContent"
-                width="300"
-              />
-              <el-table-column
-                v-if="ReviewRow.CatalogType != 1"
-                :show-overflow-tooltip="cellOverflow"
-                label="结果描述"
-                prop="CataLogdescription"
-                width="300"
-              />
-              <el-table-column
-                :show-overflow-tooltip="cellOverflow"
-                align="center"
-                label="上传时间"
-                prop="CreatDate"
-                width="200"
-              >
-                <template slot-scope="{ row }">{{
-                    row.CreatDate.replace('T', ' ')
-                                               }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                :show-overflow-tooltip="cellOverflow"
-                align="center"
-                label="上传人"
-                prop="AuthorName"
-                width="300"
-              />
-              <el-table-column
-                align="center"
-                fixed="right"
-                label="资料上传"
-                prop="IsUpload"
-              >
-                <template slot-scope="scope">
-                  <el-button
-                    :disabled="
-                      scope.row.IsUpload == 1 &&
-                        seeStatusViewForm.RoleName !== '系统管理员'
-                    "
-                    :style="{backgroundColor:( editRowIndex1===scope.$index?'#42b983':'#1890ff')}"
-                    icon="el-icon-upload"
-                    round
-                    size="mini"
-                    type="primary"
-                    @click="uploadViews(scope.row,scope.$index)"
-                  />
-                </template>
-              </el-table-column>
-              <el-table-column
-                align="center"
-                fixed="right"
-                label="上传编辑"
-                prop="IsUpload"
-              >
-                <template slot-scope="scope">
-                  <el-button
-                    :disabled="
-                      scope.row.IsUpload == 1 &&
-                        seeStatusViewForm.RoleName !== '系统管理员'
-                    "
-                    :style="{backgroundColor:( editRowIndex2===scope.$index?'#42b983':'#ffc833')}"
-                    icon="el-icon-upload"
-                    round
-                    size="mini"
-                    type="warning"
-                    @click="editRow(scope.row,scope.$index)"
-                  />
-                </template>
-              </el-table-column>
-              <el-table-column
-                align="center"
-                fixed="right"
-                label="审核"
-              >
-                <template slot-scope="scope">
-                  <el-button
-                    :style="{backgroundColor:( ReviewIndex2===scope.$index?'#42b983':'#1890ff')}"
-                    icon="el-icon-s-check"
-                    round
-                    size="mini"
-                    type="info"
-                    @click="statusViews(scope.row,scope.$index)"
-                  />
-                </template>
-              </el-table-column>
-            </el-table>
-            <el-row>
-              <el-col :span="2">
-                <el-switch
-                  v-model="cellOverflow"
-                  style="margin: 6px 0px"
-                />
-              </el-col>
-              <el-pagination
-                :current-page="MaterialForm.pageIndex"
-                :page-size="MaterialForm.pageSize"
-                :page-sizes="[10, 20, 30, 40, 50, 80]"
-                :total="MaterialForm.total"
-                layout="total, sizes, prev, pager, next, jumper"
-                @size-change="handleSizeMaterialChange"
-                @current-change="handleCurrentMaterialChange"
-              />
-            </el-row>
-          </el-tab-pane>
-          <el-tab-pane
-            label="科室自评"
-            name="second"
-          >
-            <el-card
-              :style="{
-                height: isFullscreen ? 'calc(100vh - 150px)' : '400px',
-              }"
-            >
-              <el-form
-                ref="form1"
-                :model="MaterialReaultForm"
-                :rules="rules"
-                label-width="80px"
-                size="mini"
-              >
-                <el-form-item label="标准">
-                  <el-input
-                    v-model="MaterialReaultForm.CatalogName"
-                    disabled
-                  >
-                    <template slot="prepend">
-                      {{ MaterialReaultForm.CatalogCode }}
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <div style="display: flex">
-                  <el-form-item label="评审人">
-                    <el-input
-                      v-model="MaterialReaultForm.CreateUserName"
-                      disabled
-                    />
-                  </el-form-item>
-                  <el-form-item label="评审日期">
-                    <el-input
-                      v-model="MaterialReaultForm.RectifyStartTime"
-                      disabled
-                    />
-                  </el-form-item>
-                </div>
-                <div style="display: flex">
-                  <el-form-item
-                    v-if="CurrentStatusL === 2"
-                    label="分数"
-                  >
-                    <el-select
-                      v-model="MaterialReaultForm.Grade"
-                      allow-create
-                      clearable
-                      default-first-option
-                      filterable
-                      multiple
-                      placeholder="如无总分值和扣分原因，请在评审标准中的具体条款设置"
-                      size="mini"
-                      style="width: 400px"
-                      @change="grades"
-                      @clear="Grades = otherGrades"
-                    >
-                      <el-option
-                        v-for="item in DeductionData"
-                        :key="item.PenaltiesID"
-                        :label="item.PenaltiesContent"
-                        :value="`${item.PenaltiesContent}@@${item.PenaltiesFraction}`"
-                      />
-                    </el-select>
-                    <el-input
-                      v-model="Grades"
-                      disabled
-                      style="width: 400px"
-                    />
-                  </el-form-item>
-                  <el-form-item
-                    v-else
-                    label="自评等级"
-                  >
-                    <el-select
-                      v-model="MaterialReaultForm.Grade"
-                      clearable
-                      placeholder="自评等级"
-                      size="mini"
-                      style="width: 120px"
-                    >
-                      <el-option
-                        v-for="item in selfResult"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </el-form-item>
-
-                  <el-form-item
-                    label="是否达标"
-                  >
-                    <el-radio-group v-model="MaterialReaultForm.Standard">
-                      <el-radio :label="1">是</el-radio>
-                      <el-radio :label="0">否</el-radio>
-                    </el-radio-group>
-                  </el-form-item>
-
-                  <el-form-item
-                    label="进度"
-                    prop="Progress"
-                  >
-                    <el-select
-                      v-model="MaterialReaultForm.Progress"
-                      clearable
-                      placeholder="进度"
-                      size="mini"
-                      style="width: 120px"
-                    >
-                      <el-option
-                        v-for="item in schedule"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </el-form-item>
-                </div>
-                <el-form-item label="历史问题">
-                  <el-input
-                    v-model="Matters"
-                    autosize
-                    disabled
-                    type="textarea"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="存在问题"
-                  prop="Matter"
-                >
-                  <el-input
-                    v-model="MaterialReaultForm.Matter"
-                    autosize
-                    type="textarea"
-                  />
-                </el-form-item>
-                <el-form-item label="历史措施">
-                  <el-input
-                    v-model="Solutions"
-                    autosize
-                    disabled
-                    type="textarea"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="采取措施"
-                  prop="Solution"
-                >
-                  <el-input
-                    v-model="MaterialReaultForm.Solution"
-                    autosize
-                    type="textarea"
-                  />
-                </el-form-item>
-                <el-form-item
-                  v-if="MaterialReaultForm.SMSStatus == 1"
-                  label="短信提醒"
-                >
-                  <el-checkbox-group
-                    v-model="MaterialReaultForm.SendSmS"
-                    size="mini"
-                  >
-                    <el-checkbox
-                      :label="1"
-                      border
-                    >是
-                    </el-checkbox>
-                  </el-checkbox-group>
-                </el-form-item>
-              </el-form>
-            </el-card>
-          </el-tab-pane>
-          <el-tab-pane
-            v-if="CatalogVersion != '中医院'"
-            label="评审要点"
-            name="third"
-          >
-            <el-table
-              :data="CatalogTable"
-              :height="isFullscreen ? isFullscreenHeight - 150 : 400"
-              border
-              highlight-current-row
-              style="width: 100%"
-            >
-              <el-table-column
-                label="评审标准"
-                prop="catalogCode"
-                width="180"
-              />
-              <el-table-column
-                label="评审等级"
-                prop="pointCode"
-                width="180"
-              >
-                <template slot-scope="{ row }">{{
-                    row.pointCode + row.pointItem
-                                               }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="评审要点内容"
-                prop="pointName"
-              />
-
-              <el-table-column
-                label="是否符合"
-              >
-
-                <!--                <el-radio-group v-model="radio">-->
-                <el-radio :label="1">符合</el-radio>
-                <el-radio :label="2">不符合</el-radio>
-                <!--                  <el-radio :label="3">备选项3</el-radio>-->
-                <!--                </el-radio-group>-->
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
+              type="datetime"
+            />
+          </el-form-item>
+        </el-form>
         <div
           slot="footer"
           class="dialog-footer"
         >
           <el-button
-            size="small"
-            @click="dialogTableVisibleCatalog = false"
-          >取 消
-          </el-button>
-          <el-button
-            size="small"
+            size="mini"
             type="primary"
             @click="InsertUpdateEvaluationProblem"
-          >通过审批
+          >确定退回整改
           </el-button>
-          <!-- <el-button size="mini" type="primary" @click="innerVisibleFunction">退回整改</el-button> -->
         </div>
-        <el-dialog
-          :close-on-click-modal="false"
-          :visible.sync="innerVisible"
-          append-to-body
-          title="整改时间"
-        >
-          <el-form
-            ref="form"
-            :model="MaterialReaultForm"
-            :rules="rules"
-            label-width="80px"
-            size="mini"
-          >
-            <el-form-item
-              label="整改时间"
-              prop="RectifyEndTime"
-            >
-              <el-date-picker
-                v-model="MaterialReaultForm.RectifyEndTime"
-                placeholder="选择日期"
-                size="mini"
-                type="datetime"
-              />
-            </el-form-item>
-          </el-form>
-          <div
-            slot="footer"
-            class="dialog-footer"
-          >
-            <el-button
-              size="mini"
-              type="primary"
-              @click="InsertUpdateEvaluationProblem"
-            >确定退回整改
-            </el-button>
-          </div>
-        </el-dialog>
       </el-dialog>
+    </el-dialog>
 
-      <el-dialog
-        :close-on-click-modal="false"
-        :visible.sync="dialogFormVisibleStatusView"
-        title="查看审核"
-        width="50%"
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="dialogFormVisibleStatusView"
+      title="查看审核"
+      width="50%"
+    >
+      <el-form
+        label-width="80px"
+        size="mini"
       >
-        <el-form
-          label-width="80px"
-          size="mini"
-        >
-          <el-form-item label="条款">
-            <el-input
-              v-model="seeStatusViewForm.CatalogName"
-              disabled
-              placeholder="条款"
-            >
-              <template slot="prepend">
-                {{ seeStatusViewForm.CatalogCode }}
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item label="材料标题">
-            <el-input
-              v-model="seeStatusViewForm.Title"
-              disabled
-            />
-          </el-form-item>
-          <div
-            style="
+        <el-form-item label="条款">
+          <el-input
+            v-model="seeStatusViewForm.CatalogName"
+            disabled
+            placeholder="条款"
+          >
+            <template slot="prepend">
+              {{ seeStatusViewForm.CatalogCode }}
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="材料标题">
+          <el-input
+            v-model="seeStatusViewForm.Title"
+            disabled
+          />
+        </el-form-item>
+        <div
+          style="
               display: flex;
               flex-wrap: wrap;
               justify-content: space-between;
             "
+        >
+          <el-form-item label="上传日期">
+            <el-input v-model="seeStatusViewForm.CreatDate"/>
+          </el-form-item>
+          <el-form-item label="上传人">
+            <el-input v-model="seeStatusViewForm.AuthorName"/>
+          </el-form-item>
+          <el-form-item
+            v-if="ReviewRow.CatalogType === 1"
+            label="审核结果"
           >
-            <el-form-item label="上传日期">
-              <el-input v-model="seeStatusViewForm.CreatDate"/>
-            </el-form-item>
-            <el-form-item label="上传人">
-              <el-input v-model="seeStatusViewForm.AuthorName"/>
-            </el-form-item>
-            <el-form-item
-              v-if="ReviewRow.CatalogType === 1"
-              label="审核结果"
+            <el-select
+              v-model="seeStatusViewForm.AuditStatus"
+              clearable
+              size="mini"
+              style="width: 120px"
             >
-              <el-select
-                v-model="seeStatusViewForm.AuditStatus"
-                clearable
-                size="mini"
-                style="width: 120px"
-              >
-                <el-option
-                  v-for="item in ReviewStatusSelect"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
+              <el-option
+                v-for="item in ReviewStatusSelect"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
 
-            <el-form-item
-              v-if="ReviewRow.CatalogType === 2"
-              label="资料有无"
+          <el-form-item
+            v-if="ReviewRow.CatalogType === 2"
+            label="资料有无"
+          >
+            <el-select
+              v-model="seeStatusViewForm.AuditMaterial"
+              clearable
+              size="mini"
+              style="width: 120px"
             >
-              <el-select
-                v-model="seeStatusViewForm.AuditMaterial"
-                clearable
-                size="mini"
-                style="width: 120px"
-              >
-                <el-option
-                  v-for="item in dataFlag"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-            <!-- <el-form-item label="达标条件">
+              <el-option
+                v-for="item in dataFlag"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <!-- <el-form-item label="达标条件">
             <el-input v-model="seeStatusViewForm.CreatDate" />
           </el-form-item>-->
-            <el-form-item
-              v-if="ReviewRow.CatalogType !== 1"
-              label="是否达标"
-            >
-              <el-radio-group v-model="seeStatusViewForm.AuditCondition">
-                <el-radio :label="1">是</el-radio>
-                <el-radio :label="0">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
+          <el-form-item
+            v-if="ReviewRow.CatalogType !== 1"
+            label="是否达标"
+          >
+            <el-radio-group v-model="seeStatusViewForm.AuditCondition">
+              <el-radio :label="1">是</el-radio>
+              <el-radio :label="0">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
 
-            <!-- <el-form-item label="审核结果">
+          <!-- <el-form-item label="审核结果">
             <el-select v-model="seeStatusViewForm.AuditStatus" size="mini" clearable style="width: 120px;">
               <el-option
                 v-for="item in ReviewStatusSelect"
@@ -1177,32 +1186,32 @@
             </el-select>
           </el-form-item>-->
 
-            <el-form-item>
-              <el-button
-                icon="el-icon-search"
-                size="mini"
-                type="primary"
-                @click="dialogFormVisibleView = true"
-              >查看详情
-              </el-button>
-            </el-form-item>
-          </div>
-          <el-form-item
-            v-if="ReviewRow.CatalogType != 1"
-            label="结果描述"
-          >
-            <el-input
-              v-model="seeStatusViewForm.CataLogdescription"
-              autosize
-              clearable
-              maxlength="2000"
-              placeholder="请输入内容"
-              show-word-limit
-              type="textarea"
-            />
+          <el-form-item>
+            <el-button
+              icon="el-icon-search"
+              size="mini"
+              type="primary"
+              @click="dialogFormVisibleView = true"
+            >查看详情
+            </el-button>
           </el-form-item>
-          <el-form-item label="审核意见">
-            <!-- <el-input
+        </div>
+        <el-form-item
+          v-if="ReviewRow.CatalogType != 1"
+          label="结果描述"
+        >
+          <el-input
+            v-model="seeStatusViewForm.CataLogdescription"
+            autosize
+            clearable
+            maxlength="2000"
+            placeholder="请输入内容"
+            show-word-limit
+            type="textarea"
+          />
+        </el-form-item>
+        <el-form-item label="审核意见">
+          <!-- <el-input
               v-model="seeStatusViewForm.AuditContent"
               :disabled="
                 seeStatusViewForm.AuditStatus == 1 &&
@@ -1210,44 +1219,44 @@
               "
               type="textarea"
             /> -->
-            <el-input
-              v-model="seeStatusViewForm.AuditContent"
-              maxlength="2000"
-              show-word-limit
-              type="textarea"
-            />
-          </el-form-item>
+          <el-input
+            v-model="seeStatusViewForm.AuditContent"
+            maxlength="2000"
+            show-word-limit
+            type="textarea"
+          />
+        </el-form-item>
 
-          <el-form-item
-            label="当前级资料审核状态"
-            label-width="140px"
-          >
-            <el-input
-              v-model="seeStatusViewForm.LastAuditStatus"
-              disabled
-            />
-          </el-form-item>
-          <el-form-item
-            label="当前级审核人 "
-            label-width="140px"
-          >
-            <el-input
-              v-model="seeStatusViewForm.LastAuditUserName"
-              disabled
-              type="textarea"
-            />
-          </el-form-item>
-        </el-form>
-        <div
-          slot="footer"
-          class="dialog-footer"
+        <el-form-item
+          label="当前级资料审核状态"
+          label-width="140px"
         >
-          <el-button
-            size="mini"
-            @click="dialogFormVisibleStatusView = false"
-          >取 消
-          </el-button>
-          <!-- <el-button
+          <el-input
+            v-model="seeStatusViewForm.LastAuditStatus"
+            disabled
+          />
+        </el-form-item>
+        <el-form-item
+          label="当前级审核人 "
+          label-width="140px"
+        >
+          <el-input
+            v-model="seeStatusViewForm.LastAuditUserName"
+            disabled
+            type="textarea"
+          />
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="dialogFormVisibleStatusView = false"
+        >取 消
+        </el-button>
+        <!-- <el-button
             :disabled="
             seeStatusViewForm.AuditStatusDisabled == 1 &&
             seeStatusViewForm.RoleName !== '系统管理员'
@@ -1255,12 +1264,12 @@
             size="mini"
             @click="GetReviewArticleAudit(2)"
           >退回</el-button> -->
-          <el-button
-            size="mini"
-            @click="GetReviewArticleAudit(2)"
-          >退回
-          </el-button>
-          <!-- <el-button
+        <el-button
+          size="mini"
+          @click="GetReviewArticleAudit(2)"
+        >退回
+        </el-button>
+        <!-- <el-button
             :disabled="
             seeStatusViewForm.AuditStatusDisabled == 1 &&
             seeStatusViewForm.RoleName !== '系统管理员'
@@ -1269,298 +1278,298 @@
             type="primary"
             @click="GetReviewArticleAudit(1)"
           >通过</el-button> -->
-          <el-button
-            size="mini"
-            type="primary"
-            @click="GetReviewArticleAudit(1)"
-          >通过
-          </el-button>
-        </div>
-      </el-dialog>
-
-      <el-dialog
-        :close-on-click-modal="false"
-        :title="'查看详情:' + seeStatusViewForm.Title"
-        :visible.sync="dialogFormVisibleView"
-        :width="device === 'desktop' ? '50%' : '99%'"
-      >
-        <filePreview :preview-data="previewData"/>
-        <div
-          class="htmlPane"
-          v-html="seeStatusViewForm.Content"
-        />
-        <div
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="dialogFormVisibleView = false"
-          >知道了
-          </el-button>
-        </div>
-      </el-dialog>
-
-      <el-dialog
-        :close-on-click-modal="false"
-        :title="dialogTitle + ' : ' + CatalogCode"
-        :visible.sync="uploadDialog"
-        :width="device === 'desktop' ? '50%' : '99%'"
-        @close="uploadCancel"
-        @opened="uploadOpened"
-      >
-        <el-form
-          ref="uploadForm"
-          :inline="true"
-          :model="uploadForm"
-          :rules="rules"
-          label-width="80px"
+        <el-button
           size="mini"
-        >
-          <div style="display: flex; flex-wrap: wrap">
-            <el-form-item
-              label="资料标题"
-              prop="Title"
-            >
-              <el-input
-                v-model="uploadForm.Title"
-                style="width: 200px"
-              />
-            </el-form-item>
-            <el-form-item
-              label="资料分类"
-              prop="GroupID"
-            >
-              <articlegroup
-                :value="uploadForm.GroupID"
-                style="width: 140px"
-                @getSelectAllArticleGroupValue="getSelectAllArticleGroupValue"
-              />
-            </el-form-item>
-          </div>
-          <el-form-item label="版本号">
+          type="primary"
+          @click="GetReviewArticleAudit(1)"
+        >通过
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="'查看详情:' + seeStatusViewForm.Title"
+      :visible.sync="dialogFormVisibleView"
+      :width="device === 'desktop' ? '50%' : '99%'"
+    >
+      <filePreview :preview-data="previewData"/>
+      <div
+        class="htmlPane"
+        v-html="seeStatusViewForm.Content"
+      />
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="dialogFormVisibleView = false"
+        >知道了
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle + ' : ' + CatalogCode"
+      :visible.sync="uploadDialog"
+      :width="device === 'desktop' ? '50%' : '99%'"
+      @close="uploadCancel"
+      @opened="uploadOpened"
+    >
+      <el-form
+        ref="uploadForm"
+        :inline="true"
+        :model="uploadForm"
+        :rules="rules"
+        label-width="80px"
+        size="mini"
+      >
+        <div style="display: flex; flex-wrap: wrap">
+          <el-form-item
+            label="资料标题"
+            prop="Title"
+          >
             <el-input
-              v-model="uploadForm.VersionNumber"
+              v-model="uploadForm.Title"
               style="width: 200px"
             />
           </el-form-item>
-          <el-form-item label="附件上传">
-            <el-upload
-              :action="IP"
-              :file-list="fileList"
-              :multiple="true"
-              :on-change="handleChange"
-              :on-success="handleSuccess"
-              :show-file-list="true"
-              class="editor-slide-upload"
-            >
-              <el-button
-                size="mini"
-                type="primary"
-              >选择文件
-              </el-button>
-            </el-upload>
+          <el-form-item
+            label="资料分类"
+            prop="GroupID"
+          >
+            <articlegroup
+              :value="uploadForm.GroupID"
+              style="width: 140px"
+              @getSelectAllArticleGroupValue="getSelectAllArticleGroupValue"
+            />
           </el-form-item>
-          <filePreview
-            ref="filePreview"
-            :delete-show-file="true"
-            :preview-data="uploadForm.File_list"
-          />
-          <tinymce ref="tinymceRef"/>
-        </el-form>
-        <div
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="small"
-            @click="uploadCancel()"
-          >关闭
-          </el-button>
-          <el-button
-            :loading="uploadEnd"
-            size="small"
-            type="primary"
-            @click="
-              dialogTitle === '添加资料'
-                ? InsertArticle('uploadForm')
-                : UpdateArticle('uploadForm')
-            "
-          >提交
-          </el-button>
         </div>
-      </el-dialog>
-      <el-drawer
-        :direction="device === 'mobile' ? 'btt' : 'rtl'"
-        :visible.sync="drawer"
-        :with-header="false"
-        size="50%"
-        title="历史记录"
+        <el-form-item label="版本号">
+          <el-input
+            v-model="uploadForm.VersionNumber"
+            style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item label="附件上传">
+          <el-upload
+            :action="IP"
+            :file-list="fileList"
+            :multiple="true"
+            :on-change="handleChange"
+            :on-success="handleSuccess"
+            :show-file-list="true"
+            class="editor-slide-upload"
+          >
+            <el-button
+              size="mini"
+              type="primary"
+            >选择文件
+            </el-button>
+          </el-upload>
+        </el-form-item>
+        <filePreview
+          ref="filePreview"
+          :delete-show-file="true"
+          :preview-data="uploadForm.File_list"
+        />
+        <tinymce ref="tinymceRef"/>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
       >
-        <el-form
-          :inline="true"
-          class="drawerFrom"
-          size="mini"
+        <el-button
+          size="small"
+          @click="uploadCancel()"
+        >关闭
+        </el-button>
+        <el-button
+          :loading="uploadEnd"
+          size="small"
+          type="primary"
+          @click="
+            dialogTitle === '添加资料'
+              ? InsertArticle('uploadForm')
+              : UpdateArticle('uploadForm')
+          "
+        >提交
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-drawer
+      :direction="device === 'mobile' ? 'btt' : 'rtl'"
+      :visible.sync="drawer"
+      :with-header="false"
+      size="50%"
+      title="历史记录"
+    >
+      <el-form
+        :inline="true"
+        class="drawerFrom"
+        size="mini"
+      >
+        <div>
+          <el-form-item label="标准:">
+            {{ RecordData.CatalogCode }}
+          </el-form-item>
+          <el-form-item label="层级">
+            <el-select
+              v-model="RecordData.textStep"
+              placeholder="请选择"
+              @change="changeStep"
+            >
+              <el-option
+                label="全部"
+                value="0"
+              />
+              <el-option
+                :label="selectData.menu_one"
+                value="1"
+              />
+              <el-option
+                :label="selectData.menu_two"
+                value="2"
+              />
+              <el-option
+                :label="selectData.menu_three"
+                value="3"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              :disabled="listLoading2"
+              :loading="downloadLoading2"
+              size="mini"
+              type="success"
+              @click="handleDownload2"
+            >导出
+            </el-button>
+          </el-form-item>
+          <el-form-item label="">
+            <el-pagination
+              :total="RecordData.total"
+              layout="prev, pager, next"
+              @current-change="handleCurrentChange2"
+            />
+          </el-form-item>
+        </div>
+        <div>
+          <el-form-item>
+            <i
+              class="el-icon-close"
+              @click="handleClose"
+            />
+          </el-form-item>
+        </div>
+      </el-form>
+      <el-table
+        v-loading="drawerDataLoding"
+        :data="drawerData"
+        :height="'70vh'"
+        border
+        highlight-current-row
+        size="mini"
+      >
+        <el-table-column
+          align="center"
+          type="index"
+          width="40"
+        />
+        <el-table-column
+          label="审核人"
+          prop="UserName"
+        />
+        <el-table-column
+          align="center"
+          label="评审批次"
+          prop="StepName"
+          width="80"
+        />
+        <el-table-column
+          align="center"
+          label="自评等级"
+          prop="Grade"
+          width="80"
+        />
+        <el-table-column
+          label="存在问题"
+          prop="Matter"
+        />
+        <el-table-column
+          label="改进措施"
+          prop="Solution"
+        />
+        <el-table-column
+          align="center"
+          label="审核状态"
+          prop="isAudit"
+          width="120"
+        />
+        <el-table-column
+          :label="CatalogVersion==='广东标准'?'是否达标':'是否达标'"
+          align="center"
+          prop="Standard"
         >
-          <div>
-            <el-form-item label="标准:">
-              {{ RecordData.CatalogCode }}
-            </el-form-item>
-            <el-form-item label="层级">
-              <el-select
-                v-model="RecordData.textStep"
-                placeholder="请选择"
-                @change="changeStep"
-              >
-                <el-option
-                  label="全部"
-                  value="0"
-                />
-                <el-option
-                  :label="selectData.menu_one"
-                  value="1"
-                />
-                <el-option
-                  :label="selectData.menu_two"
-                  value="2"
-                />
-                <el-option
-                  :label="selectData.menu_three"
-                  value="3"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item>
-              <el-button
-                :disabled="listLoading2"
-                :loading="downloadLoading2"
-                size="mini"
-                type="success"
-                @click="handleDownload2"
-              >导出
-              </el-button>
-            </el-form-item>
-            <el-form-item label="">
-              <el-pagination
-                :total="RecordData.total"
-                layout="prev, pager, next"
-                @current-change="handleCurrentChange2"
-              />
-            </el-form-item>
-          </div>
-          <div>
-            <el-form-item>
-              <i
-                class="el-icon-close"
-                @click="handleClose"
-              />
-            </el-form-item>
-          </div>
-        </el-form>
-        <el-table
-          v-loading="drawerDataLoding"
-          :data="drawerData"
-          :height="'70vh'"
-          border
-          highlight-current-row
-          size="mini"
+          <template slot-scope="{ row }">
+            {{ row.Standard == 0 ? '否' : '是' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="时间"
+          prop="CreateDate"
         >
-          <el-table-column
-            align="center"
-            type="index"
-            width="40"
-          />
-          <el-table-column
-            label="审核人"
-            prop="UserName"
-          />
-          <el-table-column
-            align="center"
-            label="评审批次"
-            prop="StepName"
-            width="80"
-          />
-          <el-table-column
-            align="center"
-            label="自评等级"
-            prop="Grade"
-            width="80"
-          />
-          <el-table-column
-            label="存在问题"
-            prop="Matter"
-          />
-          <el-table-column
-            label="改进措施"
-            prop="Solution"
-          />
-          <el-table-column
-            align="center"
-            label="审核状态"
-            prop="isAudit"
-            width="120"
-          />
-          <el-table-column
-            :label="CatalogVersion==='广东标准'?'是否达标':'是否达标'"
-            align="center"
-            prop="Standard"
-          >
-            <template slot-scope="{ row }">
-              {{ row.Standard == 0 ? '否' : '是' }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            align="center"
-            label="时间"
-            prop="CreateDate"
-          >
-            <template slot-scope="{ row }">
-              {{ row.CreateDate.replace('T', ' ') }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            align="center"
-            label="操作"
-            width="50"
-          >
-            <template slot-scope="{ row }">
-              <el-button
-                circle
-                icon="el-icon-delete"
-                size="mini"
-                type="danger"
-                @click="DeleteEvaluationRecord(row)"
-              />
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-drawer>
-    </el-main>
-    <el-footer>
-      <el-row>
-        <el-col :span="3">
-          <el-switch
-            v-model="cellOverflow"
-            active-text="收起"
-            inactive-text="展开"
-            style="margin: 6px 0px"
-          />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            :current-page.sync="pagination.pageIndex"
-            :page-size="pagination.pageSize"
-            :page-sizes="pagination.pageSizes"
-            :total="pagination.total"
-            background
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-col>
-      </el-row>
-    </el-footer>
-  </el-container>
+          <template slot-scope="{ row }">
+            {{ row.CreateDate.replace('T', ' ') }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="操作"
+          width="50"
+        >
+          <template slot-scope="{ row }">
+            <el-button
+              circle
+              icon="el-icon-delete"
+              size="mini"
+              type="danger"
+              @click="DeleteEvaluationRecord(row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-drawer>
+
+    <el-row>
+      <el-col :span="3">
+        <el-switch
+          v-model="cellOverflow"
+          active-text="收起"
+          inactive-text="展开"
+          style="margin: 6px 0px"
+        />
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          :current-page.sync="pagination.pageIndex"
+          :page-size="pagination.pageSize"
+          :page-sizes="pagination.pageSizes"
+          :total="pagination.total"
+          background
+          style="margin-top: 10px"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+
+  </el-card>
 </template>
 <script>
 import { parseTime } from '@/utils';
@@ -1672,7 +1681,7 @@ export default {
         pageSize: 50,
         GroupID: '',
         UserIDs: '',
-        StepValue: 1,
+        StepValue: null, // 原先默认为1=》自评人员审核，现在改为null主要为了不一开始就显示自评人员审核
         CurrentGrade: this.$route.params.Grade || '',
         CurrentStatus: this.$route.params.CurrentStatus || '',
         UnReview: this.$route.params.UnReview || false
@@ -2694,9 +2703,6 @@ export default {
 };
 </script>
 <style lang="scss">
-//.el-table__body tr > td {
-//  background-color: red !important;
-//}
 .index_one {
   .el-loading-spinner {
     width: 30px;

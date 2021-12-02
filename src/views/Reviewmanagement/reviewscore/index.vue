@@ -1,9 +1,17 @@
 <template>
   <div class="ReviewScore">
-    <el-card>
+    <el-card
+      style="margin: 10px;
+      height: 87vh;
+      overflow: auto;
+"
+    >
       <div
-        slot="header"
-        class="clearfix"
+        style="width: 100%;
+        background-color:#f4f4f5;
+        display: inline-block;
+        height: 32px;
+        line-height: 32px;"
       >
         <el-form
           :inline="true"
@@ -120,7 +128,7 @@
           border
           style="width: 98%; padding: 0; margin-left: 10px;margin-right: 10px"
           size="medium"
-          height="calc(100vh - 200px)"
+          height="calc(100vh - 240px)"
         >
           <el-table-column
             prop="DeptName"
@@ -476,18 +484,20 @@
         <el-col :span="20">
           <el-pagination
             v-if="radio1 === '科室上传率'"
-            style="margin-top: 10px"
+            style="margin-top: 10px;"
             :current-page="formInline.pageIndex"
             :page-sizes="[10, 15, 20, 30, 40, 50, 100]"
             :page-size="formInline.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="formInline.Total"
+            background
             @size-change="handleSizeChange1"
             @current-change="handleCurrentChange1"
           />
           <el-pagination
             v-if="radio1 === '科室材料通过率'"
-            style="margin-top: 10px"
+            style="margin-top: 10px;"
+            background
             :current-page="SelectDeptPassRateVal.pageIndex"
             :page-sizes="[10, 15, 20, 30, 40, 50, 100]"
             :page-size="SelectDeptPassRateVal.pageSize"
@@ -763,7 +773,7 @@
             border
             style="width: 100%"
             size="mini"
-            height="calc(100vh - 300px)"
+            height="calc(100vh - 240px)"
             row-key="CatalogID"
             :span-method="objectSpanMethod"
           >
@@ -840,7 +850,8 @@
             </el-col>
             <el-col :span="20">
               <el-pagination
-                style="margin-top: 10px"
+                style="margin-top: 10px;"
+                background
                 :current-page="SelectDeptCatalogVal.pageIndex"
                 :page-sizes="[10, 15, 20, 30, 50, 100,500,1000,5000,10000]"
                 :page-size="SelectDeptCatalogVal.pageSize"
@@ -924,7 +935,7 @@
             border
             style="width: 100%"
             size="mini"
-            height="calc(100vh - 195px)"
+            height="calc(100vh - 240px)"
             row-key="CatalogID"
             :span-method="objectSpanMethod"
           >
@@ -1107,6 +1118,7 @@
             <el-col :span="20">
               <el-pagination
                 style="margin-top: 10px"
+                background
                 :current-page="SelectDeptCatalogVal.pageIndex"
                 :page-sizes="[10, 15, 20, 30, 50, 100]"
                 :page-size="SelectDeptCatalogVal.pageSize"

@@ -1,6 +1,15 @@
 <template>
-  <el-container class="Penalties">
-    <el-header>
+  <el-card
+    style="margin: 10px;height: 87vh;overflow: auto"
+  >
+    <div
+      style="width: 100%;
+      background-color:#f4f4f5;
+      display: inline-block;
+      height: 32px;
+      line-height: 32px;"
+    >
+
       <el-form
         :inline="true"
         :model="listQuery"
@@ -15,6 +24,7 @@
           >增加
           </el-button>
         </el-form-item>
+        <el-divider direction="vertical" />
         <el-form-item>
           <el-input
             v-model="listQuery.condition"
@@ -22,11 +32,12 @@
             style="width: 180px"
             size="mini"
             clearable
+            @keyup.native.enter="clickSelectPenalties"
           />
         </el-form-item>
         <el-form-item>
           <el-button
-            type="info"
+            type="primary"
             :loading="listLoading"
             icon="el-icon-search"
             size="mini"
@@ -35,129 +46,127 @@
           </el-button>
         </el-form-item>
       </el-form>
-    </el-header>
-    <el-main>
-      <el-table
-        v-loading="listLoading"
-        :data="tableData"
-        style="width: 100%"
-        border
-        stripe
+    </div>
+    <el-table
+      v-loading="listLoading"
+      :data="tableData"
+      style="width: 100%;margin-top: 10px"
+      border
+      stripe
+      size="mini"
+      height="calc(100vh - 240px)"
+    >
+      <el-table-column
+        type="index"
+        label="序号"
+        width="60"
+        align="center"
+      />
+      <el-table-column
+        prop="PenaltiesContent"
+        label="扣分内容"
+        :show-overflow-tooltip="cellOverflow"
+      />
+      <el-table-column
+        prop="PenaltiesFraction"
+        label="扣分分数"
+      />
+      <el-table-column
+        label="操作"
+        fixed="right"
+        align="center"
+        width="150"
+      >
+        <template slot-scope="scope">
+          <el-button
+            type="info"
+            size="mini"
+            icon="el-icon-edit"
+            @click.native.prevent="editRow(scope.row)"
+          />
+          <el-button
+            type="danger"
+            size="mini"
+            icon="el-icon-delete"
+            @click.native.prevent="deleteRow(scope.row)"
+          />
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-dialog
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible.sync="dialogFormVisible"
+      :width="device === 'desktop' ? '50%' : '90%'"
+    >
+      <el-form
+        ref="PenaltiesContent"
+        :rules="rules"
         size="mini"
-        height="calc(100vh - 180px)"
+        :model="formData"
+        label-width="80px"
       >
-        <el-table-column
-          type="index"
-          label="序号"
-          width="60"
-          align="center"
-        />
-        <el-table-column
-          prop="PenaltiesContent"
+        <el-form-item
           label="扣分内容"
-          :show-overflow-tooltip="cellOverflow"
-        />
-        <el-table-column
-          prop="PenaltiesFraction"
+          prop="PenaltiesContent"
+        >
+          <el-input
+            v-model="formData.PenaltiesContent"
+            type="textarea"
+          />
+        </el-form-item>
+        <el-form-item
           label="扣分分数"
-        />
-        <el-table-column
-          label="操作"
-          fixed="right"
-          align="center"
-          width="150"
+          prop="PenaltiesFraction"
         >
-          <template slot-scope="scope">
-            <el-button
-              type="info"
-              size="mini"
-              icon="el-icon-edit"
-              @click.native.prevent="editRow(scope.row)"
-            />
-            <el-button
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-              @click.native.prevent="deleteRow(scope.row)"
-            />
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-dialog
-        :title="dialogTitle"
-        :close-on-click-modal="false"
-        :visible.sync="dialogFormVisible"
-        :width="device === 'desktop' ? '50%' : '90%'"
+          <el-input v-model="formData.PenaltiesFraction" />
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
       >
-        <el-form
-          ref="PenaltiesContent"
-          :rules="rules"
+        <el-button
           size="mini"
-          :model="formData"
-          label-width="80px"
-        >
-          <el-form-item
-            label="扣分内容"
-            prop="PenaltiesContent"
-          >
-            <el-input
-              v-model="formData.PenaltiesContent"
-              type="textarea"
-            />
-          </el-form-item>
-          <el-form-item
-            label="扣分分数"
-            prop="PenaltiesFraction"
-          >
-            <el-input v-model="formData.PenaltiesFraction" />
-          </el-form-item>
-        </el-form>
-        <div
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="cancel"
-          >取 消
-          </el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="
-              dialogTitle === '录制扣分原因'
-                ? InsertPenalties()
-                : UpdatePenalties()
-            "
-          >确 定
-          </el-button>
-        </div>
-      </el-dialog>
-    </el-main>
-    <el-footer>
-      <el-row>
-        <el-col :span="1">
-          <el-switch
-            v-model="cellOverflow"
-            style="margin: 6px 0px"
-          />
-        </el-col>
-        <el-col :span="20">
-          <el-pagination
-            background
-            :current-page.sync="pagination.pageIndex"
-            :page-size="pagination.pageSize"
-            :page-sizes="pagination.pageSizes"
-            :total="pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </el-col>
-      </el-row>
+          @click="cancel"
+        >取 消
+        </el-button>
+        <el-button
+          size="mini"
+          type="primary"
+          @click="
+            dialogTitle === '录制扣分原因'
+              ? InsertPenalties()
+              : UpdatePenalties()
+          "
+        >确 定
+        </el-button>
+      </div>
+    </el-dialog>
 
-    </el-footer>
-  </el-container>
+    <el-row>
+      <el-col :span="1">
+        <el-switch
+          v-model="cellOverflow"
+          style="margin: 6px 0px"
+        />
+      </el-col>
+      <el-col :span="20">
+        <el-pagination
+          background
+          style="margin-top: 10px"
+          :current-page.sync="pagination.pageIndex"
+          :page-size="pagination.pageSize"
+          :page-sizes="pagination.pageSizes"
+          :total="pagination.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </el-col>
+    </el-row>
+
+  </el-card>
 </template>
 <script>
 import { DeletePenalties, InsertPenalties, SelectPenalties, UpdatePenalties } from '@/api/Penalties';
@@ -324,16 +333,5 @@ export default {
 </script>
 
 <style lang="scss">
-.Penalties {
-  .el-header,
-  .el-main,
-  .el-footer {
-    padding: 0;
-    margin: 0;
-  }
 
-  .el-header {
-    height: 30px !important;
-  }
-}
 </style>
