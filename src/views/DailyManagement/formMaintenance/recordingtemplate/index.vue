@@ -28,7 +28,7 @@
             </el-button>
           </el-form-item>
 
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-input
               v-model="listQuery.RC_TemplateName"
@@ -39,7 +39,7 @@
               @keyup.enter.native="clickSelectTemplate()"
             />
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select
               v-model="listQuery.RC_TemplateType"
@@ -49,10 +49,11 @@
             >
               <el-option label="通用表单" value="通用表单"/>
               <el-option label="科室表单" value="科室表单"/>
-              <el-option label="抽查表单" value="抽查表单"/>
+              <!--              <el-option label="抽查表单" value="抽查表单"/>-->
+              <!--              暂时先停止抽表单开发20211203-->
             </el-select>
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select
               v-model="listQuery.TemplateTypeName"
@@ -68,7 +69,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select
               v-model="listQuery.TemplateSource"
@@ -81,7 +82,7 @@
               <el-option label="自建表单" value="自建表单"/>
             </el-select>
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-select v-model="listQuery.StateType" placeholder="表单状态">
               <el-option label="全部" :value="-1"/>
@@ -89,7 +90,7 @@
               <el-option label="已禁用" :value="1"/>
             </el-select>
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-button
               :loading="listLoading"
@@ -231,17 +232,9 @@
             width="200"
           >
             <template slot-scope="scope">
+              <!--              查看-->
               <el-button
-                v-if="scope.row.RC_CreatUser===UserID"
-                type="info"
-                size="mini"
-                class="el-icon-edit"
-                :disabled="scope.row.RC_StateType === 1"
-                @click="UpdateRow(scope.row)"
-              >
-              </el-button>
-              <el-button
-                v-if="scope.row.RC_CreatUser!==UserID"
+                v-if="scope.row.RC_CreatUser!==UserID||RoleCode==='R0001'"
                 type="primary"
                 size="mini"
                 class="el-icon-view"
@@ -249,8 +242,20 @@
                 @click="UpdateRow(scope.row)"
               >
               </el-button>
+<!--              编辑-->
+              <el-button
+                v-if="scope.row.RC_CreatUser===UserID||RoleCode==='R0001'"
+                type="info"
+                size="mini"
+                class="el-icon-edit"
+                :disabled="scope.row.RC_StateType === 1"
+                @click="UpdateRow(scope.row)"
+              >
+              </el-button>
+
+<!--              另存为-->
               <el-popconfirm
-                v-if="scope.row.RC_CreatUser!==UserID"
+                v-if="scope.row.RC_CreatUser!==UserID||RoleCode==='R0001'"
                 icon-color="green"
                 :title="'确定另存为新的表单？'"
                 @confirm="CopyTemplate(scope.row)"
@@ -264,13 +269,7 @@
                 >
                 </el-button>
               </el-popconfirm>
-              <!--              <el-button-->
-              <!--                v-if="scope.row.RC_CreatUser!==UserID"-->
-              <!--                type="primary"-->
-              <!--                size="mini"-->
-              <!--                :disabled="scope.row.RC_StateType === 1"-->
-              <!--                @click="CopyTemplate(scope.row)"-->
-              <!--              >另存为</el-button>-->
+<!--              启用-->
               <el-button
                 v-if="scope.row.RC_StateType === 1"
                 type="success"
@@ -279,6 +278,7 @@
                 @click="UpdateTemplateStatus(scope.row, 0, '启用')"
               >
               </el-button>
+<!--              禁用-->
               <el-button
                 v-else
                 type="warning"
@@ -287,6 +287,7 @@
                 @click="UpdateTemplateStatus(scope.row, 1, '禁用')"
               >
               </el-button>
+<!--              删除-->
               <el-button
                 :disabled="scope.row.RC_CreatUser!==UserID&&RoleCode!=='R0001'"
                 size="mini"
@@ -355,19 +356,29 @@
         :model="formData"
         :inline="true"
       >
-<!--        <el-row>-->
-<!--          <el-col ></el-col>-->
-<!--        </el-row>-->
+        <!--        <el-row>-->
+        <!--          <el-col ></el-col>-->
+        <!--        </el-row>-->
 
         <el-form-item
           label="表单名称"
           label-width="80px"
           prop="RC_TemplateName"
         >
-          <el-input v-model="formData.RC_TemplateName" style="margin-top: -5px" clearable/>
+          <el-input
+            v-model="formData.RC_TemplateName"
+            :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
+            style="margin-top: -5px"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="表单类别" label-width="80px" prop="TemplateTypeID">
-          <el-select v-model="formData.TemplateTypeID" placeholder="请选择" style="margin-top:-5px">
+          <el-select
+            v-model="formData.TemplateTypeID"
+            :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
+            placeholder="请选择"
+            style="margin-top:-5px"
+          >
             <el-option
               v-for="item in tableTypeData"
               :key="item.TemplateTypeID"
@@ -382,6 +393,7 @@
             <el-radio
               v-model="formData.CaseJudgment"
               border
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               :label="1"
               size="mini"
             >是
@@ -389,6 +401,7 @@
             <el-radio
               v-model="formData.CaseJudgment"
               :label="0"
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               border
               size="mini"
             >否
@@ -398,11 +411,13 @@
             <el-radio
               v-model="formData.IsRequired"
               border
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               :label="1"
               size="mini"
             >是
             </el-radio>
             <el-radio
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               v-model="formData.IsRequired"
               border
               :label="0"
@@ -412,6 +427,7 @@
           </el-form-item>
           <el-form-item label="表单类型" :required="true">
             <el-radio
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               v-model="formData.RC_TemplateType"
               border
               label="通用表单"
@@ -419,23 +435,26 @@
             >通用表单
             </el-radio>
             <el-radio
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               v-model="formData.RC_TemplateType"
               border
               label="科室表单"
               size="mini"
             >科室表单
             </el-radio>
-            <el-radio
-              v-model="formData.RC_TemplateType"
-              border
-              label="抽查表单"
-              size="mini"
-            >抽查表单
-            </el-radio>
+<!--            <el-radio-->
+<!--              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')"-->
+<!--              v-model="formData.RC_TemplateType"-->
+<!--              border-->
+<!--              label="抽查表单"-->
+<!--              size="mini"-->
+<!--            >抽查表单-->
+<!--            </el-radio>-->
           </el-form-item>
           <el-form-item
             v-show="formData.IsRequired == 1"
             label="周期/天"
+            :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
             prop="Cycle"
             class="period"
           >
@@ -443,6 +462,7 @@
               v-model="formData.Cycle"
               style="margin-top: -5px"
               type="Number"
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               clearable
               placeholder="请输入天数(正整数)"
               @input="changeInput"
@@ -452,7 +472,12 @@
       </el-form>
       <el-form :inline="true" size="mini">
         <el-form-item label="注意事项" label-width="77px">
-          <el-input v-model="formData.Precautions" clearable style="margin-top: -5px"/>
+          <el-input
+            v-model="formData.Precautions"
+            :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
+            clearable
+            style="margin-top: -5px"
+          />
         </el-form-item>
       </el-form>
       <el-table
@@ -480,6 +505,8 @@
             <el-input
               v-model="scope.row.Category"
               size="mini"
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
+
               placeholder="类别"
               type="textarea"
             />
@@ -494,18 +521,23 @@
             <el-input
               v-model="scope.row.ProjectContent"
               size="mini"
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
+
               placeholder="检查项目"
               type="textarea"
             />
           </template>
         </el-table-column>
         <el-table-column
-           prop="Content"
-           label="检查内容"
-           min-width="100px">
+          prop="Content"
+          label="检查内容"
+          min-width="100px"
+        >
           <template slot-scope="scope">
             <el-input
               v-model="scope.row.Content"
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
+
               size="mini"
               placeholder="检查内容"
               type="textarea"
@@ -523,7 +555,7 @@
             <el-input
               v-model="scope.row.ScoreCriteria"
               size="mini"
-              :disabled="true"
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
             />
           </template>
         </el-table-column>
@@ -535,6 +567,7 @@
         >
           <template slot-scope="scope">
             <el-input
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               v-model="scope.row.ProjectContentRemark"
               size="mini"
               type="textarea"
@@ -551,11 +584,13 @@
         <el-table-column label="操作" align="center" width="200px">
           <template slot-scope="scope">
             <el-button
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               size="mini"
               @click="SelectContent(scope.row, scope)"
             >选择扣分原因
             </el-button>
             <el-button
+              :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               type="danger"
               size="mini"
               @click="deleteContent(scope.row.id)"
@@ -565,18 +600,18 @@
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')" size="small" @click="addNormdialog">指标库
+        <el-button v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'" size="small" @click="addNormdialog">指标库
         </el-button>
-        <el-button v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')" size="small" @click="addContent()">添加检查内容
+        <el-button v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'" size="small" @click="addContent()">添加检查内容
         </el-button>
-        <el-button size="small" @click="cancel()">取 消</el-button>
         <el-button
-          v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')"
+          v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'"
           size="small"
           type="primary"
           @click="submitTemplate"
-        >确 定
+        >确定
         </el-button>
+        <el-button size="small" @click="cancel()">关闭</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -605,7 +640,7 @@
                     />
                   </el-form-item>
                   <el-form-item label="自查科室" prop="RC_InspectionDepartment">
-                    <default-dept
+                    <default-depts
                       ref="allSelect"
                       w="100%"
                       :multiple="true"
@@ -895,7 +930,7 @@ import reasonfordeduction from '@/views/components/reasonfordeduction';
 
 export default {
   name: 'RecordingTemplate',
-  components: { defaultDept, treeFilter, defaultDepts, reasonfordeduction },
+  components: { defaultDepts, treeFilter, defaultDepts, reasonfordeduction },
   mixins: [tableHeight],
   data() {
     return {

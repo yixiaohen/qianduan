@@ -5,10 +5,10 @@
 
     <div
       style="width: 100%;
-  background-color:#f4f4f5;
-  display: inline-block;
-  height: 32px;
-  line-height: 32px;"
+      background-color:#f4f4f5;
+      display: inline-block;
+      height: 40px;
+      line-height: 40px;"
     >
       <el-form
         v-show="!ManagementFrame"
@@ -196,7 +196,7 @@
       >
         <el-form-item>
           <el-button
-            type="success"
+            type="primary"
             plain
             icon="el-icon-refresh-left"
             size="mini"
@@ -207,7 +207,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
-            type="success"
+            type="primary"
             plain
             icon="el-icon-plus"
             size="mini"
@@ -215,9 +215,27 @@
             @click="append(0)"
           >新增
           </el-button>
+          <el-button @click="collapseAll(tableDataPage)">全部折叠</el-button>
+          <el-button @click="unFoldAll(tableDataPage)">全部展开</el-button>
+          <el-input
+            v-model="filterText1"
+            size="mini"
+            clearable
+            placeholder="输入制度名称筛选"
+            style="width: 150px"
+          />
+          <el-input
+            v-model="filterText2"
+            size="mini"
+            clearable
+            placeholder="输入部门科室筛选"
+            style="width: 150px"
+          />
+
         </el-form-item>
       </el-form>
     </div>
+
 
     <transition name="el-zoom-in-center">
       <div v-show="!ManagementFrame">
@@ -260,13 +278,43 @@
           >
             <template slot-scope="{row}">
               <span>{{ row.instTitle }} </span>
-              <el-tag
-                v-if="row.instUpUser===nowUseID"
-                type="success"
-                size="mini"
+<!--              <span v-if="row.instUpUser===nowUseID">-->
+<!--                <el-tag-->
+<!--                  type="success"-->
+<!--                  size="mini"-->
+<!--                >-->
+<!--                  <span>{{ row.instUpUser === nowUseID ? '自建' : '' }}</span>-->
+<!--                </el-tag>-->
+<!--              </span>-->
+              <span
+                v-for="(instAuditUserItem, instAuditUserIndex) in row.AduitList"
+                :key="instAuditUserIndex"
               >
-                <span>{{ row.instUpUser===nowUseID? '自建':'' }}</span>
-              </el-tag>
+                <span
+                  v-if="row.instUpUser===nowUseID"
+                  style="margin: 4px"
+                >
+                  <el-tag
+                    :type="instAuditUserItem.instAuditState==='通过'?'success':instAuditUserItem.instAuditState==='退回'?'danger':'warning'"
+                    size="mini"
+                  ><span>{{ row.instUpUser === nowUseID ? '自建' : '' }}</span>
+                  </el-tag>
+                </span>
+                <span
+                  v-for="(instAuditUserItem, instAuditUserIndex) in row.AduitList"
+                  v-show="instAuditUserItem.instAuditUser*1===nowUseID"
+                  :key="instAuditUserIndex"
+                  style="margin: 4px"
+                >
+
+                  <el-tag
+
+                    :type="instAuditUserItem.instAuditState==='通过'?'success':instAuditUserItem.instAuditState==='退回'?'danger':'warning'"
+                    size="mini"
+                  > 审
+                  </el-tag>
+                </span>
+              </span>
             </template>
 
           </el-table-column>
@@ -499,24 +547,31 @@
     <div v-show="ManagementFrame">
       <div class="block">
         <el-tree
-          class="tree-line"
+          ref="selectTree"
+          v-loading="tableTypeDataLoading"
           :data="tableTypeData"
           :props="{
             children: 'children',
             label: 'instTypeName',
           }"
-          node-key="id"
+          node-key="instTypeID"
           accordion
-          default-expand-all
+          style="font-size: 14px;font-weight: bold"
+          :default-expand-all="isExpand"
           :expand-on-click-node="false"
+          :filter-node-method="filterNode"
           :default-expanded-keys="[defaultExpandedId]"
+          @node-click="showEdit"
         >
-          <span
+          <div
             slot-scope="{ node, data }"
+            style="display: inline-block"
             class="custom-tree-node"
           >
-            <span>{{ data.instTypeName }}</span>
-            <span>({{ data.DeptName }})</span>
+            <svg-icon v-if="data.children.length!==0" icon-class="file" />
+            <svg-icon v-else icon-class="file_two" />
+            <span> {{ data.instTypeName | filterInstTypeName }}</span>
+            <span> ({{ data.DeptName }})</span>
             <el-input
               v-if="data.instTypeID == beforeId && inputText == ''"
               v-model="editorText"
@@ -529,7 +584,7 @@
             <defaultDepts
               v-if="data.instTypeID == beforeId && inputText == ''"
               v-model="data.DeptID"
-              :multiple="false"
+              :multiple="true"
               w="300px"
               type="mini"
               @getDefaultDeptsValue="getDefaultDeptsValue"
@@ -549,34 +604,42 @@
               @click="beforeId = ''"
             >放弃
             </el-button>
+
             <span>
               <el-button
+                v-if="data.instTypeID===nowInstTypeID"
                 type="text"
                 size="mini"
-                icon="el-icon-plus"
-                @click="() => append(data)"
+                circle
+                icon="el-icon-circle-plus-outline"
+                @click="append(data)"
+              />
+
+              <el-button
+                v-if="data.instTypeID===nowInstTypeID"
+                type="text"
+                size="mini"
+                circle
+                icon="el-icon-edit"
+                @click="editorNode(data)"
               />
               <el-popconfirm
+                v-if="data.instTypeID===nowInstTypeID"
                 confirm-button-text="是"
                 cancel-button-text="否"
                 icon="el-icon-info"
                 icon-color="red"
                 title="确定删除吗？"
-                @confirm="() => DeleteType(node, data)"
+                @confirm="deleteType1(node, data)"
               >
                 <el-button
                   slot="reference"
+                  circle
                   icon="el-icon-delete"
                   type="text"
                   size="mini"
                 />
               </el-popconfirm>
-              <el-button
-                type="text"
-                size="mini"
-                icon="el-icon-edit"
-                @click="() => editorNode(data)"
-              />
             </span>
             <el-form ref="form">
               <el-input
@@ -591,7 +654,7 @@
               <defaultDepts
                 v-if="data.instTypeID == inputText"
                 v-model="FindDepartmentID"
-                :multiple="false"
+                :multiple="true"
                 w="300px"
                 type="mini"
                 @getDefaultDeptsValue="getDefaultDeptsValue"
@@ -623,7 +686,7 @@
                 放弃
               </el-button>
             </el-form>
-          </span>
+          </div>
         </el-tree>
       </div>
     </div>
@@ -671,11 +734,14 @@
                     label: 'instTypeName',
                     value: 'instTypeID',
                   }"
+                  @change="xx"
                 >
 
                   <template slot-scope="{ node, data }">
                     <el-tooltip class="item" effect="dark" :content="data.instTypeName" placement="top">
-                      <span>{{ data.instTypeName }}</span>
+
+                      <span v-if="dialogTitle==='制度上传'">{{ data.instTypeName }}</span>
+                      <span v-else>{{ listQuery.instTypeName }}</span>
                     </el-tooltip>
                   </template>
                 </el-cascader>
@@ -824,17 +890,18 @@
         slot="footer"
         class="dialog-footer"
       >
-        <el-button
-          size="small"
-          @click="dialogForm"
-        >关闭
-        </el-button>
+
         <el-button
           type="primary"
           size="small"
           :loading="uploadEnd"
           @click="upload()"
         >提交
+        </el-button>
+        <el-button
+          size="small"
+          @click="dialogForm"
+        >关闭
         </el-button>
       </div>
     </el-dialog>
@@ -1204,7 +1271,7 @@
           background
           style="margin-top: 10px"
           :current-page="pagination.pageIndex"
-          :page-sizes="[15, 20, 30, 40]"
+          :page-sizes="[15, 30, 50, 100,200,500]"
           :page-size="pagination.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.total"
@@ -1244,7 +1311,7 @@ import {
 import standardCatalog from '@/views/components/standardCatalog2';
 import articlegroup from '@/views/components/articlegroup';
 import defaultDepts from '@/views/components/defaultDepts';
-import { DeleteTopic } from '@/api/KS_Topic'; // 科室部门
+
 export default {
   name: 'Institution',
   components: {
@@ -1256,10 +1323,28 @@ export default {
     articlegroup,
     defaultDepts
   },
+  filters: {
+    // 对树节点过长进行过滤
+    filterInstTypeName(instTypeName) {
+      let newInstTypeName;
+      const instTypeNameLength = instTypeName.length;
+      if (instTypeNameLength > 50) {
+        newInstTypeName = instTypeName.substr(0, 50) + '...';
+      } else {
+        newInstTypeName = instTypeName;
+      }
+      return newInstTypeName;
+    }
+  },
   data() {
     return {
+      tableTypeDataLoading: false, // 制度类别树等待圈
+      filterText1: '', // 过滤字制度
+      filterText2: '', // 过滤字部门科室
+      isExpand: true, // 是否默认展开，是
       nowUseID: window.userInfo[0].UserID, // 当前人员id，用于识别自建表单
       nowTopicID: [], // 现在所选择的批量删除制度id数据集
+      nowInstTypeID: null, // 现在所点击的树形控件节点id
       nowFileList: [], // 现在附件的内容
       FileStatus: [
         {
@@ -1360,7 +1445,8 @@ export default {
         instUpUser: '', // 上传人ID
         File_dto: [],
         UserID: window.userInfo[0].UserID,
-        NoRecord: false
+        NoRecord: false,
+        instTypeName: ''
       },
       seeStatusViewForm: {
         AuditID: 0,
@@ -1447,6 +1533,16 @@ export default {
   computed: {
     ...mapGetters(['device'])
   },
+  watch: {
+    // 监听过滤筛选的制度类别
+    filterText1(val) {
+      this.$refs.selectTree.filter(val);
+    },
+    // 监听过滤筛选的科室部门
+    filterText2(val) {
+      this.$refs.selectTree.filter(val);
+    }
+  },
   created() {
     this.getTreeData();
     this.selectDataType();
@@ -1455,18 +1551,61 @@ export default {
     this.SelectinstHome();
   },
   methods: {
+    xx(val) {
+      console.log(val);
+    },
+    // 对树节点进行筛选过滤操作
+    filterNode(value, data) {
+      console.log('value', value);
+      console.log('data', data);
+      // 如果不输入，不操作
+      if (!value) return true;
+      // 如果筛选制度名称
+      if (this.filterText1) {
+        return data.instTypeName.indexOf(value) !== -1;
+      }
+      // 如果筛选科室部门
+      if (this.filterText2) {
+        return data.DeptName.indexOf(value) !== -1;
+      }
+    },
+    // 获取当前点击树形控件的节点id
+    showEdit(node) {
+      this.nowInstTypeID = node.instTypeID;
+    },
+
+    /* 制度类别树形控件展开折叠开始 */
+
+    // 设置全部展开和折叠。state参数为bool值
+    setAllExpand(state) {
+      var nodes = this.$refs.selectTree.store.nodesMap;
+      for (var i in nodes) {
+        nodes[i].expanded = state;
+      }
+    },
+    // 全部展开
+    unFoldAll(data) {
+      this.setAllExpand(true);
+    },
+    // 全部折叠
+    collapseAll(data) {
+      this.setAllExpand(false);
+    },
+    /* 制度类别树形控件展开折叠结束 */
+
     // 获取选中的制度id
     handleSelectionChange(val) {
+      console.log('选中了', val);
       this.nowTopicID = [];
       val.map((item) => {
-        this.nowTopicID.push(item.topicID);
+        this.nowTopicID.push(item.instID);
       });
       this.nowTopicID = this.nowTopicID.toString();
     },
     // 点击行触发，选中或不选中复选框
-    // handleRowClick(row, column, event) {
-    //   this.$refs.multipleTable.toggleRowSelection(row);
-    // },
+    handleRowClick(row, column, event) {
+      this.$refs.multipleTable.toggleRowSelection(row);
+    },
     // 确定批量删除
     moreDel() {
       this.$confirm('确定批量删除所选制度, 是否继续?', '提示', {
@@ -1477,7 +1616,7 @@ export default {
         if (this.nowTopicID.length === 0) {
           this.$message.warning('请至少勾选一条制度');
         } else {
-          const { code, msg } = await DeleteTopic({ topicId: this.nowTopicID });
+          const { code, msg } = await Deleteinst({ instIds: this.nowTopicID });
           if (code === 200) {
             this.$message({
               type: 'success',
@@ -1504,7 +1643,7 @@ export default {
     },
     // 获取科室id
     getDefaultDeptsValue(value) {
-      this.FindDepartmentID = value || 0;
+      this.FindDepartmentID = value.toString() || '';
     },
     // 获取科室名字
     getDefaultDeptsName(value) {
@@ -1773,10 +1912,13 @@ export default {
     async selectType() {
       this.stateS = 2; // 调为制度前面不加科室
       this.ManagementFrame = true;
+      this.tableTypeDataLoading = true; // 开启制度类别树加载条
       try {
         const { data } = await SelectinstType();
         this.tableTypeData = data;
+        this.tableTypeDataLoading = false; // 关闭制度类别树加载条
       } catch (error) {
+        this.tableTypeDataLoading = false; // 关闭制度类别树加载条
         console.log(error);
       }
     },
@@ -1801,6 +1943,7 @@ export default {
           ? this.$message.success('更新成功')
           : this.$message.error(Updateinst.msg);
         this.beforeId = -1;
+        this.isExpand = true;
       } else {
         if (!this.addText) {
           this.$message('制度类型不能为空');
@@ -1834,6 +1977,8 @@ export default {
           instTypeName: ''
         });
         this.inputText = '';
+
+        this.collapseAll(this.tableDataPage); // 全部折叠
       } else {
         this.inputText = data.instTypeID;
         this.addText = '';
@@ -1853,7 +1998,7 @@ export default {
       this.currentEdit = 0;
     },
     // 删除制度指定的类别
-    async DeleteType(node, data) {
+    async deleteType1(node, data) {
       try {
         const val = await DeleteinstType({
           instTypeID: data.instTypeID
@@ -2065,7 +2210,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          Deleteinst({ instID: row.instID })
+          Deleteinst({ instIds: row.instID })
             .then(res => {
               if (res.code === 200) {
                 this.SelectinstHome();
@@ -2123,10 +2268,21 @@ export default {
           this.$message.warning('您没有权限修改该制度');
           return;
         }
+        // while (row.children.length!==0) {
+        //   this.tableTypeData.map((item)=>{
+        //     let arry1 = [];
+        //     if (row.instTypeName===item.instTypeName){
+        //       arry1
+        //       break;
+        //     }
+        //
+        //   });
+        // }
         this.listQuery.Title = row.instTitle;
         this.listQuery.VersionNumber = row.instVesion;
         this.listQuery.instID = [row.instTypeID];
         this.listQuery.instID2 = row.instID; // 制度ID
+        this.listQuery.instTypeName = row.instTypeName;
         this.listQuery.Content = row.instContent == '' ? '' : row.instContent;
         this.listQuery.instAuditUserID = row.AduitList.map(item => {
           return item.instAuditUser;
@@ -2267,6 +2423,13 @@ export default {
 };
 </script>
 <style lang="scss">
+@import "src/styles/loading.scss";
+
+.block {
+  height: calc(100vh - 200px);
+  overflow: auto;
+}
+
 .el-cascader-menu {
   width: 250px;
 }

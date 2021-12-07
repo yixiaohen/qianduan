@@ -60,11 +60,6 @@ export default {
     this.contat4();
   },
   methods: {
-    /** ************************************************************
-     *字符串解密
-     *   str：需要解密的字符串
-     ****************************************************************/
-
     contat1() {
       var chartDom = this.$refs.main1_;
       var myChart = echarts.init(chartDom);

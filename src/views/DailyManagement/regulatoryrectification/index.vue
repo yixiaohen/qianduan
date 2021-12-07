@@ -176,923 +176,960 @@
         </el-form>
       </div>
 
-        <el-table
-          v-loading="listLoading"
-          :data="tableData"
-          style="width: 100%;margin-top: 10px"
-          border
-          highlight-current-row
-          size="mini"
-          height="calc(100vh - 270px)"
-          stripe
-          @cell-click="cellClick"
+      <el-table
+        v-loading="listLoading"
+        :data="tableData"
+        style="width: 100%;margin-top: 10px"
+        border
+        highlight-current-row
+        size="mini"
+        height="calc(100vh - 270px)"
+        stripe
+        @cell-click="cellClick"
+      >
+        <el-table-column
+          label="序号"
+          type="index"
+          width="60"
+          align="center"
+        />
+        <el-table-column
+          label="项目名称"
+          prop="RC_ProjectName"
+          min-width="300"
+          :show-overflow-tooltip="cellOverflow"
+        />
+        <el-table-column
+          v-if="CatalogVersion =='综合医院' ? true: false"
+          prop="StatusName"
+          label="状态"
+          width="130"
+          align="center"
+          :show-overflow-tooltip="cellOverflow"
         >
-          <el-table-column
-            label="序号"
-            type="index"
-            width="60"
-            align="center"
-          />
-          <el-table-column
-            label="项目名称"
-            prop="RC_ProjectName"
-            min-width="300"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            label="主管部门"
-            width="160"
-            align="center"
-            prop="RC_FunctionalDepartmentName"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            label="被查科室"
-            width="160"
-            align="center"
-            prop="RC_InspectionDepartmentName"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            label="必填表单"
-            width="120"
-            align="center"
-            prop="IsRequired"
-          >
-            <template slot-scope="{ row }">
-              {{ row.IsRequired == 0 ? '否' : '是' }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="自查得分"
-            prop="Score"
-            width="80"
-            align="center"
-          />
-          <el-table-column
-            label="督查得分"
-            prop="ZCScore"
-            width="80"
-            align="center"
-          />
-          <!--        <el-table-column-->
-          <!--          label="督导得分"-->
-          <!--          prop="ZgCScore"-->
-          <!--          width="80"-->
-          <!--          align="center"-->
-          <!--        />-->
-          <el-table-column
-            v-if="CatalogVersion =='综合医院' ? true: false"
-            prop="StatusName"
-            label="状态"
-            width="130"
-            align="center"
-            :show-overflow-tooltip="cellOverflow"
-          >
-            <template slot-scope="{ row }">
+          <template slot-scope="{ row }">
+            <p
+              :style="{
+                color:
+                  row.StatusName == '已提交'
+                    ? 'green'
+                    : row.StatusName == '质管审核退回'
+                      ? 'red'
+                      : row.StatusName == '主管审核退回'
+                        ? 'red'
+                        : row.StatusName == '未执行'
+                          ? 'blue'
+                          : 'black',
+                margin: '0px',
+              }"
+            >
               {{ row.StatusName == '质管审核退回' ? '医务审核退回' : row.StatusName }}
-            </template>
-          </el-table-column>
+            </p>
+          </template>
+        </el-table-column>
 
-          <el-table-column
-            v-else
-            prop="StatusName"
-            label="状态"
-            width="130"
-            align="center"
-            :show-overflow-tooltip="cellOverflow"
-          />
-
-          <el-table-column
-            prop="RC_AllAuditOpinion"
-            label="总审核意见"
-            width="150"
-            align="center"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            label="检查时间"
-            width="135"
-            align="center"
-            prop="RC_InspectionTimeStat"
-          >
-            <template slot-scope="scope">
-              {{
-                scope.row.RC_InspectionTimeStat
-                  ? scope.row.RC_InspectionTimeStat.replace('T', ' ')
-                  : ''
-              }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="自查存在的问题"
-            prop="RC_DeductedPoints"
-            width="200"
-            :show-overflow-tooltip="cellOverflow"
-          />
-          <el-table-column
-            label="查看"
-            fixed="right"
-            align="center"
-            width="60"
-          >
-            <template slot-scope="scope">
-              <el-button
-                type="primary"
-                size="mini"
-                class="el-icon-view"
-                @click="userTemplateButton(scope.row,1)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="审核"
-            fixed="right"
-            align="center"
-            width="60"
-          >
-            <template slot-scope="scope">
-              <el-button
-                :disabled="scope.row.Status < 3"
-                size="mini"
-                class="iconfont al-icon-shenhe3"
-                @click="userTemplateButton(scope.row)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="归档"
-            align="center"
-            fixed="right"
-            width="60"
-          >
-            <template slot-scope="scope">
-              <el-button
-                :disabled="scope.row.Status < 3"
-                size="mini"
-                class="iconfont al-icon-guidang2"
-                @click="Archive(scope.row)"
-              />
-            </template>
-          </el-table-column>
-        </el-table>
-        <!-- 查看 弹窗 -->
-        <el-dialog
-          title="查看"
-          :visible.sync="isShowSeeDia"
-          :width="device === 'desktop' ? '50%' : '90%'"
-          height="calc(100vh - 230px)"
-          @resize="resize"
+        <el-table-column
+          v-else
+          prop="StatusName"
+          label="状态"
+          width="130"
+          align="center"
+          :show-overflow-tooltip="cellOverflow"
         >
-          <el-header :style="{ height: isFullscreen ? '130px' : '230px' }">
-            <el-form
-              ref="addFormData"
-              size="mini"
-              label-width="96px"
-              :model="addFormData"
-              label-position="right"
-              :inline="true"
-              class="seeAddFormData"
+          <template slot-scope="{ row }">
+            <p
+              :style="{
+                color:
+                  row.StatusName == '已提交'
+                    ? 'green'
+                    : row.StatusName == '质管审核退回'
+                      ? 'red'
+                      : row.StatusName == '主管审核退回'
+                        ? 'red'
+                        : row.StatusName == '未执行'
+                          ? 'blue'
+                          : 'black',
+                margin: '0px',
+              }"
             >
-              <el-row>
-                <el-col :span="8"><span>项目名称：{{ addFormData.RC_ProjectName }}</span></el-col>
-                <el-col :span="8"><span>自查科室：{{ addFormData.RC_InspectionDepartmentName }}</span></el-col>
-                <el-col :span="8"><span>检查日期：{{ addFormData.RC_InspectionTimeStat?addFormData.RC_InspectionTimeStat.replace('T',' '):'' }} </span></el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8"><span>自查月份：{{ addFormData.CheckMonth }}</span></el-col>
-                <el-col :span="8"><span>主检查者：{{ addFormData.RC_Inspector }}</span></el-col>
-                <el-col :span="8"><span>协同检查者：{{ addFormData.RC_InspectorOther }} </span></el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="12"><span>项目备注：{{ addFormData.RC_Remarks }}</span></el-col>
-                <el-col :span="12"><span>模板名称：{{ addFormData.RC_TemplateName }}</span></el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="12"><span>总审核意见：{{ addFormData.RC_AllAuditOpinion }}</span></el-col>
-                <el-col :span="12"><span>注意事项：{{ addFormData.Precautions }}</span></el-col>
-              </el-row>
-            </el-form>
-          </el-header>
+              {{ row.StatusName }}
+            </p>
+          </template>
+        </el-table-column>
 
-          <div style="flex: 1">
-            <el-table
-              v-if="addFormData.CaseJudgment == 1"
-              v-loading="ZGCheckLoading"
-              ref="multipleTable"
-              :data="addFormData.Rc_CaseDetail"
-              border
-              style="margin-top: 30px"
-              size="mini"
-              height="200"
-            >
-              <el-table-column
-                type="index"
-                align="center"
-              />
-              <el-table-column
-                label="
-              住院号"
-                prop="HospitalNumber"
-              />
-              <el-table-column
-                label="患者姓名"
-                prop="PatientName"
-              />
-              <el-table-column
-                label="医疗组名称"
-                prop="MedicalGroupName"
-              />
-            </el-table>
-            <el-table
-              v-loading="ZGCheckLoading"
-              :data="TemplateTableData"
-              style="width:100%;margin-top: 30px"
-              :height="
-                addFormData.CaseJudgment == 1
-                  ? 'calc(100vh - 400px)'
-                  : 'calc(100vh - 250px)'
-              "
-              border
-              size="mini"
-              :span-method="objectSpanMethod"
-              stripe
-            >
-              <el-table-column
-                type="index"
-                label="序号"
-                width="60"
-                align="center"
-              />
-              <el-table-column
-                label="类别"
-                prop="Category"
-                width="80px"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="检查项目"
-                prop="ProjectContent"
-                width="80px"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="检查内容"
-                prop="Content"
-                min-width="180px"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="预览资料"
-                width="150"
-                align="center"
-                prop="FileList_dto"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="{ row }">
-                  <el-tag
-                    v-for="(itemHref, indexHref) in row.FileList_dto"
-                    :key="itemHref.FileName"
-                    style="margin: 10px"
-                    :disable-transitions="false"
-                  >
-                    <el-link
-                      :key="indexHref"
-                      target="_blank"
-                      @click="PreviewFile(itemHref.FileUrl)"
-                    >
-                      {{ itemHref.FileName }}
-                    </el-link>
-
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="下载资料"
-                width="150"
-                align="center"
-                prop="FileList_dto"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="{ row }">
-                  <el-tag
-                    v-for="(itemHref) in row.FileList_dto"
-                    :key="itemHref.FileName"
-                    style="margin: 10px"
-                  >
-                    <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
-
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="总分"
-                width="60"
-                align="center"
-                prop="ScoreCriteria"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="自查得分"
-                width="60"
-                align="center"
-                prop="RC_Score"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="自查扣分选项"
-                prop="RC_DeductedPoints"
-                min-width="100"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <el-tag v-for="item in scope.row.RC_DeductedPoints " style="margin: 4px">
-                    {{ item || '无扣分选项' }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="科室整改措施"
-                align="center"
-                prop="RC_RectificationMeasures"
-                min-width="100"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.RC_RectificationMeasures }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="效果评价"
-                align="center"
-                prop="RC_Opinion"
-                min-width="100"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.RC_Opinion }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="自查备注"
-                align="center"
-                prop="RC_DeductedPointsRemarks"
-                min-width="120"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.RC_DeductedPointsRemarks }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="督查得分"
-                width="100"
-                align="center"
-                prop="ZCScore"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <span>{{scope.row.ZCScore}}</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="督查意见"
-                prop="ZCErro"
-                width="100"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <span>{{scope.row.ZCErro}}</span>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                label="主管部门整改措施"
-                prop="ZgCErro"
-                width="150"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <span>{{scope.row.ZgCErro}}</span>
-                </template>
-              </el-table-column>
-
-
-              <el-table-column
-                label="审核意见"
-                align="center"
-                prop="RC_AuditOpinion"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <span>{{scope.row.RC_AuditOpinion}}</span>
-
-                </template>
-              </el-table-column>
-            </el-table>
-            <el-switch
-              v-model="cellOverflow"
-              active-text="收起"
-              inactive-text="展开"
-              style="margin: 6px 0px"
-            />
-          </div>
-          <span slot="footer" class="dialog-footer">
-            <el-button
-              type="info"
-              size="small"
-              @click="isShowSeeDia=false"
-            >
-              关闭
-            </el-button>
-
-          </span>
-        </el-dialog>
-        <!-- 审核 弹窗 -->
-        <el-dialog
-          :title="useTemplateDialogTitle"
-          :visible.sync="dialogUseTemplate"
-          :width="device === 'desktop' ? '50%' : '90%'"
-          :before-close="cancle"
-          height="calc(100vh - 330px)"
-          @resize="resize"
+        <el-table-column
+          label="主管部门"
+          width="160"
+          align="center"
+          prop="RC_FunctionalDepartmentName"
+          :show-overflow-tooltip="cellOverflow"
+        />
+        <el-table-column
+          label="被查科室"
+          width="160"
+          align="center"
+          prop="RC_InspectionDepartmentName"
+          :show-overflow-tooltip="cellOverflow"
+        />
+        <el-table-column
+          label="必填表单"
+          width="120"
+          align="center"
+          prop="IsRequired"
         >
-          <el-header :style="{ height: isFullscreen ? '130px' : '230px' }">
-            <el-form
-              ref="addFormData"
-              size="mini"
-              label-width="96px"
-              :model="addFormData"
-              label-position="right"
-              :inline="true"
-            >
-              <el-form-item
-                label="项目名称"
-                prop="RC_ProjectName"
-              >
-                <el-input
-                  v-model="addFormData.RC_ProjectName"
-                  :disabled="true"
-                  clearable
-                />
-              </el-form-item>
-              <el-form-item label="自查科室">
-                <el-input
-                  v-model="addFormData.RC_InspectionDepartmentName"
-                  :disabled="true"
-                  @focus="focus"
-                />
-              </el-form-item>
-              <el-form-item
-                label="检查日期"
-                prop="RC_InspectionTimeStat"
-              >
-                <el-date-picker
-                  v-model="addFormData.RC_InspectionTimeStat"
-                  :disabled="true"
-                  type="datetime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  style="width: 100%"
-                  placeholder="选择日期"
-                  clearable
-                />
-              </el-form-item>
-              <el-form-item label="自查月份">
-                <el-date-picker
-                  v-model="addFormData.CheckMonth"
-                  :disabled="true"
-                  type="month"
-                  value-format="yyyy-MM"
-                  placeholder="选择月"
-                />
-              </el-form-item>
-              <el-form-item
-                label="主检查者"
-                prop="RC_Inspector"
-              >
-                <el-input
-                  v-model="addFormData.RC_Inspector"
-                  :disabled="true"
-                  clearable
-                />
-              </el-form-item>
-              <el-form-item
-                label="协同检查者"
-                prop="RC_InspectorOther"
-              >
-                <el-input
-                  v-model="addFormData.RC_InspectorOther"
-                  :disabled="true"
-                  clearable
-                />
-              </el-form-item>
-              <el-form-item label="项目备注">
-                <el-input
-                  v-model="addFormData.RC_Remarks"
-                  :disabled="true"
-                  clearable
-                />
-              </el-form-item>
-              <el-form-item
-                label="模板名称"
-                prop="RC_TemplateName"
-              >
-                <el-input
-                  v-model="addFormData.RC_TemplateName"
-                  :disabled="true"
-                />
-              </el-form-item>
-              <el-form-item label="注意事项">
-                <el-input
-                  v-model="addFormData.Precautions"
-                  :disabled="true"
-                />
-              </el-form-item>
-              <el-form-item
-                label="总审核意见"
-                prop="RC_AllAuditOpinion"
-              >
-                <el-input v-model="addFormData.RC_AllAuditOpinion" />
-              </el-form-item>
-            </el-form>
-          </el-header>
-          <el-main height="calc(100vh - 200px)">
-            <el-table
-              v-if="addFormData.CaseJudgment == 1"
-              v-loading="ZGCheckLoading"
-              ref="multipleTable"
-              :data="addFormData.Rc_CaseDetail"
-              border
-              highlight-current-row
-              style="margin-top: 30px"
-              size="mini"
-              height="200"
-            >
-              <el-table-column
-                type="index"
-                align="center"
-              />
-              <el-table-column
-                label="
-              住院号"
-                prop="HospitalNumber"
-              />
-              <el-table-column
-                label="患者姓名"
-                prop="PatientName"
-              />
-              <el-table-column
-                label="医疗组名称"
-                prop="MedicalGroupName"
-              />
-            </el-table>
-            <el-table
-              :data="TemplateTableData"
-              v-loading="ZGCheckLoading"
-              highlight-current-row
-              style="width:100%;margin-top: 30px"
-              :height="
-                addFormData.CaseJudgment == 1
-                  ? 'calc(100vh - 400px)'
-                  : 'calc(100vh - 250px)'
-              "
-              border
-              size="mini"
-              :span-method="objectSpanMethod"
-              stripe
-            >
-              <el-table-column
-                type="index"
-                label="序号"
-                width="60"
-                align="center"
-              />
-              <el-table-column
-                label="类别"
-                prop="Category"
-                width="80px"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="检查项目"
-                prop="ProjectContent"
-                width="80px"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="检查内容"
-                prop="Content"
-                min-width="180px"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="预览资料"
-                width="150"
-                align="center"
-                prop="FileList_dto"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="{ row }">
-                  <el-tag
-                    v-for="(itemHref) in row.FileList_dto"
-                    :key="itemHref.FileName"
-                    style="margin: 10px"
-                  >
-                    <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
+          <template slot-scope="{ row }">
+            {{ row.IsRequired == 0 ? '否' : '是' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="自查得分"
+          prop="Score"
+          width="80"
+          align="center"
+        />
+        <el-table-column
+          label="督查得分"
+          prop="ZCScore"
+          width="80"
+          align="center"
+        />
+        <!--        <el-table-column-->
+        <!--          label="督导得分"-->
+        <!--          prop="ZgCScore"-->
+        <!--          width="80"-->
+        <!--          align="center"-->
+        <!--        />-->
 
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="下载资料"
-                width="150"
-                align="center"
-                prop="FileList_dto"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="{ row }">
-                  <el-tag
-                    v-for="(itemHref) in row.FileList_dto"
-                    :key="itemHref.FileName"
-                    style="margin: 10px"
-                  >
-                    <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
-
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="总分"
-                width="60"
-                align="center"
-                prop="ScoreCriteria"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="自查得分"
-                width="60"
-                align="center"
-                prop="RC_Score"
-                :show-overflow-tooltip="cellOverflow"
-              />
-              <el-table-column
-                label="自查扣分选项"
-                prop="RC_DeductedPoints"
-                min-width="100"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <el-tag v-for="item in scope.row.RC_DeductedPoints " style="margin: 4px">
-                    {{ item || '无扣分选项' }}
-                  </el-tag>
-                  <!--                <el-select-->
-                  <!--                  v-model="scope.row.RC_DeductedPoints"-->
-                  <!--                  multiple-->
-                  <!--                  collapse-tags-->
-                  <!--                  size="mini"-->
-                  <!--                  placeholder="请选择扣分原因"-->
-                  <!--                  clearable-->
-                  <!--                  :style="{ width: '100%' }"-->
-                  <!--                  @change="-->
-                  <!--                    DeductedPoints(scope.row.RC_DeductedPoints, scope.row)-->
-                  <!--                  "-->
-                  <!--                >-->
-                  <!--                  <el-option-->
-                  <!--                    v-for="(item, indexCheck) in scope.row.Check"-->
-                  <!--                    :key="indexCheck"-->
-                  <!--                    :label="item.ErrorContent"-->
-                  <!--                    :value="item.ErrorContent"-->
-                  <!--                  />-->
-                  <!--                </el-select>-->
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="科室整改措施"
-                align="center"
-                prop="RC_RectificationMeasures"
-                min-width="100"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.RC_RectificationMeasures }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="效果评价"
-                align="center"
-                prop="RC_Opinion"
-                min-width="100"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.RC_Opinion }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="自查备注"
-                align="center"
-                prop="RC_DeductedPointsRemarks"
-                min-width="120"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.RC_DeductedPointsRemarks }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="督查得分"
-                width="100"
-                align="center"
-                prop="ZCScore"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <el-input
-                    v-model="scope.row.ZCScore"
-                    size="mini"
-                    width="50"
-                  />
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="督查意见"
-                prop="ZCErro"
-                width="100"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <el-input
-                    v-model="scope.row.ZCErro"
-                    size="mini"
-                    type="textarea"
-                    width="200"
-                  />
-                </template>
-              </el-table-column>
-
-
-              <!--            <el-table-column-->
-              <!--              label="督导得分"-->
-              <!--              width="60"-->
-              <!--              align="center"-->
-              <!--              prop="ZCScore"-->
-              <!--            >-->
-              <!--              <template slot-scope="scope">-->
-              <!--                <el-input-->
-              <!--                  v-model="scope.row.ZCScore"-->
-              <!--                  size="mini"-->
-              <!--                  width="50"-->
-              <!--                />-->
-              <!--              </template>-->
-              <!--            </el-table-column>-->
-
-              <el-table-column
-                label="主管部门整改措施"
-                prop="ZgCErro"
-                width="150"
-                align="center"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-
-                  <el-input
-                    v-model="scope.row.ZgCErro"
-                    size="mini"
-                    type="textarea"
-                    width="200"
-                  />
-                </template>
-              </el-table-column>
-
-
-              <el-table-column
-                label="审核意见"
-                align="center"
-                prop="RC_AuditOpinion"
-                :show-overflow-tooltip="cellOverflow"
-              >
-                <template slot-scope="scope">
-                  <el-input
-                    v-model="scope.row.RC_AuditOpinion"
-                    type="textarea"
-                    size="mini"
-                    clearable
-                  />
-                </template>
-              </el-table-column>
-            </el-table>
-            <el-switch
-              v-model="cellOverflow"
-              active-text="收起"
-              inactive-text="展开"
-              style="margin: 6px 0px"
-            />
-          </el-main>
-          <span
-            slot="footer"
-            class="dialog-footer"
-          >
-            <el-button
-              size="small"
-              @click="cancle()"
-            >取 消</el-button>
+        <el-table-column
+          prop="RC_AllAuditOpinion"
+          label="总审核意见"
+          width="150"
+          align="center"
+          :show-overflow-tooltip="cellOverflow"
+        />
+        <el-table-column
+          label="检查时间"
+          width="135"
+          align="center"
+          prop="RC_InspectionTimeStat"
+        >
+          <template slot-scope="scope">
+            {{
+              scope.row.RC_InspectionTimeStat
+                ? scope.row.RC_InspectionTimeStat.replace('T', ' ')
+                : ''
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="自查存在的问题"
+          prop="RC_DeductedPoints"
+          width="200"
+          :show-overflow-tooltip="cellOverflow"
+        />
+        <el-table-column
+          label="查看"
+          fixed="right"
+          align="center"
+          width="60"
+        >
+          <template slot-scope="scope">
             <el-button
               type="primary"
-              size="small"
-              @click="submitTemplate(6)"
-            >通过</el-button>
-            <el-button
-              type="primary"
-              size="small"
-              @click="submitTemplate(7)"
-            >退回</el-button>
-          </span>
-        </el-dialog>
-        <!-- 归档 -->
-        <el-dialog
-          :title="title"
-          :visible.sync="dialogVisible"
-          :close-on-click-modal="false"
-          :width="device === 'desktop' ? '40%' : '95%'"
-          height="400px"
+              size="mini"
+              class="el-icon-view"
+              @click="userTemplateButton(scope.row,1)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="审核"
+          fixed="right"
+          align="center"
+          width="60"
         >
-          <el-row>
-            <el-col
-              :span="7"
-              :xs="12"
-              :sm="12"
+          <template slot-scope="scope">
+            <el-button
+              :disabled="scope.row.Status < 3"
+              size="mini"
+              class="iconfont al-icon-shenhe3"
+              @click="userTemplateButton(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="归档"
+          align="center"
+          fixed="right"
+          width="60"
+        >
+          <template slot-scope="scope">
+            <el-button
+              :disabled="scope.row.Status < 3"
+              size="mini"
+              class="iconfont al-icon-guidang2"
+              @click="Archive(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 查看 弹窗 -->
+      <el-dialog
+        title="查看"
+        :visible.sync="isShowSeeDia"
+        :width="device === 'desktop' ? '50%' : '90%'"
+        height="calc(100vh - 230px)"
+        @resize="resize"
+      >
+        <el-header :style="{ height: isFullscreen ? '130px' : '230px' }">
+          <el-form
+            ref="addFormData"
+            size="mini"
+            label-width="96px"
+            :model="addFormData"
+            label-position="right"
+            :inline="true"
+            class="seeAddFormData"
+          >
+            <el-row>
+              <el-col :span="8"><span>项目名称：{{ addFormData.RC_ProjectName }}</span></el-col>
+              <el-col :span="8"><span>自查科室：{{ addFormData.RC_InspectionDepartmentName }}</span></el-col>
+              <el-col :span="8"><span>检查日期：{{ addFormData.RC_InspectionTimeStat?addFormData.RC_InspectionTimeStat.replace('T',' '):'' }} </span></el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8"><span>自查月份：{{ addFormData.CheckMonth }}</span></el-col>
+              <el-col :span="8"><span>主检查者：{{ addFormData.RC_Inspector }}</span></el-col>
+              <el-col :span="8"><span>协同检查者：{{ addFormData.RC_InspectorOther }} </span></el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12"><span>项目备注：{{ addFormData.RC_Remarks }}</span></el-col>
+              <el-col :span="12"><span>模板名称：{{ addFormData.RC_TemplateName }}</span></el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12"><span>总审核意见：{{ addFormData.RC_AllAuditOpinion }}</span></el-col>
+              <el-col :span="12"><span>注意事项：{{ addFormData.Precautions }}</span></el-col>
+            </el-row>
+          </el-form>
+        </el-header>
+
+        <div style="flex: 1">
+          <el-table
+            v-if="addFormData.CaseJudgment == 1"
+            ref="multipleTable"
+            v-loading="ZGCheckLoading"
+            :data="addFormData.Rc_CaseDetail"
+            border
+            style="margin-top: 30px"
+            size="mini"
+            height="200"
+          >
+            <el-table-column
+              type="index"
+              align="center"
+            />
+            <el-table-column
+              label="
+              住院号"
+              prop="HospitalNumber"
+            />
+            <el-table-column
+              label="患者姓名"
+              prop="PatientName"
+            />
+            <el-table-column
+              label="医疗组名称"
+              prop="MedicalGroupName"
+            />
+          </el-table>
+          <el-table
+            v-loading="ZGCheckLoading"
+            :data="TemplateTableData"
+            style="width:100%;margin-top: 30px"
+            :height="
+              addFormData.CaseJudgment == 1
+                ? 'calc(100vh - 400px)'
+                : 'calc(100vh - 250px)'
+            "
+            border
+            size="mini"
+            :span-method="objectSpanMethod"
+            stripe
+          >
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              align="center"
+            />
+            <el-table-column
+              label="类别"
+              prop="Category"
+              width="80px"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="检查项目"
+              prop="ProjectContent"
+              width="80px"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="检查内容"
+              prop="Content"
+              min-width="180px"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="预览资料"
+              width="150"
+              align="center"
+              prop="FileList_dto"
+              :show-overflow-tooltip="cellOverflow"
             >
-              <standardCatalog
-                maxheight="500px"
-                @nodeClickCatalog="nodeClickCatalog"
-              />
-            </el-col>
-            <!-- <div style="width: 290px"> -->
-            <el-col
-              :span="8"
-              :xs="12"
-              :sm="12"
+              <template slot-scope="{ row }">
+                <el-tag
+                  v-for="(itemHref, indexHref) in row.FileList_dto"
+                  :key="itemHref.FileName"
+                  style="margin: 10px"
+                  :disable-transitions="false"
+                >
+                  <el-link
+                    :key="indexHref"
+                    target="_blank"
+                    @click="PreviewFile(itemHref.FileUrl)"
+                  >
+                    {{ itemHref.FileName }}
+                  </el-link>
+
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="下载资料"
+              width="150"
+              align="center"
+              prop="FileList_dto"
+              :show-overflow-tooltip="cellOverflow"
             >
-              <articlegroup
-                style="width: 140px"
-                @getSelectAllArticleGroupValue="getSelectAllArticleGroupValue"
-              />
+              <template slot-scope="{ row }">
+                <el-tag
+                  v-for="(itemHref) in row.FileList_dto"
+                  :key="itemHref.FileName"
+                  style="margin: 10px"
+                >
+                  <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
+
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="总分"
+              width="60"
+              align="center"
+              prop="ScoreCriteria"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="自查得分"
+              width="60"
+              align="center"
+              prop="RC_Score"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="自查扣分选项"
+              prop="RC_DeductedPoints"
+              min-width="100"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <el-tag v-for="item in scope.row.RC_DeductedPoints " style="margin: 4px">
+                  {{ item || '无扣分选项' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="科室整改措施"
+              align="center"
+              prop="RC_RectificationMeasures"
+              min-width="100"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                {{ scope.row.RC_RectificationMeasures }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="效果评价"
+              align="center"
+              prop="RC_Opinion"
+              min-width="100"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                {{ scope.row.RC_Opinion }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="自查备注"
+              align="center"
+              prop="RC_DeductedPointsRemarks"
+              min-width="120"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                {{ scope.row.RC_DeductedPointsRemarks }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="督查得分"
+              width="100"
+              align="center"
+              prop="ZCScore"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.ZCScore }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="督查意见"
+              prop="ZCErro"
+              width="100"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.ZCErro }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              label="主管部门整改措施"
+              prop="ZgCErro"
+              width="150"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.ZgCErro }}</span>
+              </template>
+            </el-table-column>
+
+
+            <el-table-column
+              label="审核意见"
+              align="center"
+              prop="RC_AuditOpinion"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.RC_AuditOpinion }}</span>
+
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-switch
+            v-model="cellOverflow"
+            active-text="收起"
+            inactive-text="展开"
+            style="margin: 6px 0px"
+          />
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button
+            type="info"
+            size="small"
+            @click="isShowSeeDia=false"
+          >
+            关闭
+          </el-button>
+
+        </span>
+      </el-dialog>
+      <!-- 审核 弹窗 -->
+      <el-dialog
+        :title="useTemplateDialogTitle"
+        :visible.sync="dialogUseTemplate"
+        :width="device === 'desktop' ? '50%' : '90%'"
+        :before-close="cancle"
+        height="calc(100vh - 330px)"
+        @resize="resize"
+      >
+        <el-header :style="{ height: isFullscreen ? '130px' : '230px' }">
+          <el-form
+            ref="addFormData"
+            size="mini"
+            label-width="96px"
+            :model="addFormData"
+            label-position="right"
+            :inline="true"
+          >
+            <el-form-item
+              label="项目名称"
+              prop="RC_ProjectName"
+            >
               <el-input
-                v-model="catalogName"
-                type="textarea"
-                placeholder="条款要点"
-                disabled
-                :rows="12"
-                style="margin-top: 5px"
+                v-model="addFormData.RC_ProjectName"
+                :disabled="true"
+                clearable
               />
-            </el-col>
-          </el-row>
-          <span
-            slot="footer"
-            class="dialog-footer"
+            </el-form-item>
+            <el-form-item label="自查科室">
+              <el-input
+                v-model="addFormData.RC_InspectionDepartmentName"
+                :disabled="true"
+                @focus="focus"
+              />
+            </el-form-item>
+            <el-form-item
+              label="检查日期"
+              prop="RC_InspectionTimeStat"
+            >
+              <el-date-picker
+                v-model="addFormData.RC_InspectionTimeStat"
+                :disabled="true"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                style="width: 100%"
+                placeholder="选择日期"
+                clearable
+              />
+            </el-form-item>
+            <el-form-item label="自查月份">
+              <el-date-picker
+                v-model="addFormData.CheckMonth"
+                :disabled="true"
+                type="month"
+                value-format="yyyy-MM"
+                placeholder="选择月"
+              />
+            </el-form-item>
+            <el-form-item
+              label="主检查者"
+              prop="RC_Inspector"
+            >
+              <el-input
+                v-model="addFormData.RC_Inspector"
+                :disabled="true"
+                clearable
+              />
+            </el-form-item>
+            <el-form-item
+              label="协同检查者"
+              prop="RC_InspectorOther"
+            >
+              <el-input
+                v-model="addFormData.RC_InspectorOther"
+                :disabled="true"
+                clearable
+              />
+            </el-form-item>
+            <el-form-item label="项目备注">
+              <el-input
+                v-model="addFormData.RC_Remarks"
+                :disabled="true"
+                clearable
+              />
+            </el-form-item>
+            <el-form-item
+              label="模板名称"
+              prop="RC_TemplateName"
+            >
+              <el-input
+                v-model="addFormData.RC_TemplateName"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item label="注意事项">
+              <el-input
+                v-model="addFormData.Precautions"
+                :disabled="true"
+              />
+            </el-form-item>
+            <el-form-item
+              label="总审核意见"
+              prop="RC_AllAuditOpinion"
+            >
+              <el-input v-model="addFormData.RC_AllAuditOpinion" />
+            </el-form-item>
+          </el-form>
+        </el-header>
+        <el-main height="calc(100vh - 200px)">
+          <el-table
+            v-if="addFormData.CaseJudgment == 1"
+            ref="multipleTable"
+            v-loading="ZGCheckLoading"
+            :data="addFormData.Rc_CaseDetail"
+            border
+            highlight-current-row
+            style="margin-top: 30px"
+            size="mini"
+            height="200"
           >
-            <el-button
-              size="mini"
-              @click="cancel"
-            >取 消</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              @click="InsertArticle"
-            >确 定</el-button>
-          </span>
-        </el-dialog>
+            <el-table-column
+              type="index"
+              align="center"
+            />
+            <el-table-column
+              label="
+              住院号"
+              prop="HospitalNumber"
+            />
+            <el-table-column
+              label="患者姓名"
+              prop="PatientName"
+            />
+            <el-table-column
+              label="医疗组名称"
+              prop="MedicalGroupName"
+            />
+          </el-table>
+          <el-table
+            v-loading="ZGCheckLoading"
+            :data="TemplateTableData"
+            highlight-current-row
+            style="width:100%;margin-top: 30px"
+            :height="
+              addFormData.CaseJudgment == 1
+                ? 'calc(100vh - 400px)'
+                : 'calc(100vh - 250px)'
+            "
+            border
+            size="mini"
+            :span-method="objectSpanMethod"
+            stripe
+          >
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+              align="center"
+            />
+            <el-table-column
+              label="类别"
+              prop="Category"
+              width="80px"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="检查项目"
+              prop="ProjectContent"
+              width="80px"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="检查内容"
+              prop="Content"
+              min-width="180px"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="预览资料"
+              width="150"
+              align="center"
+              prop="FileList_dto"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="{ row }">
+                <el-tag
+                  v-for="(itemHref) in row.FileList_dto"
+                  :key="itemHref.FileName"
+                  style="margin: 10px"
+                >
+                  <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
 
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="下载资料"
+              width="150"
+              align="center"
+              prop="FileList_dto"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="{ row }">
+                <el-tag
+                  v-for="(itemHref) in row.FileList_dto"
+                  :key="itemHref.FileName"
+                  style="margin: 10px"
+                >
+                  <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
+
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="总分"
+              width="60"
+              align="center"
+              prop="ScoreCriteria"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="自查得分"
+              width="60"
+              align="center"
+              prop="RC_Score"
+              :show-overflow-tooltip="cellOverflow"
+            />
+            <el-table-column
+              label="自查扣分选项"
+              prop="RC_DeductedPoints"
+              min-width="100"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <el-tag v-for="item in scope.row.RC_DeductedPoints " style="margin: 4px">
+                  {{ item || '无扣分选项' }}
+                </el-tag>
+                <!--                <el-select-->
+                <!--                  v-model="scope.row.RC_DeductedPoints"-->
+                <!--                  multiple-->
+                <!--                  collapse-tags-->
+                <!--                  size="mini"-->
+                <!--                  placeholder="请选择扣分原因"-->
+                <!--                  clearable-->
+                <!--                  :style="{ width: '100%' }"-->
+                <!--                  @change="-->
+                <!--                    DeductedPoints(scope.row.RC_DeductedPoints, scope.row)-->
+                <!--                  "-->
+                <!--                >-->
+                <!--                  <el-option-->
+                <!--                    v-for="(item, indexCheck) in scope.row.Check"-->
+                <!--                    :key="indexCheck"-->
+                <!--                    :label="item.ErrorContent"-->
+                <!--                    :value="item.ErrorContent"-->
+                <!--                  />-->
+                <!--                </el-select>-->
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="科室整改措施"
+              align="center"
+              prop="RC_RectificationMeasures"
+              min-width="100"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                {{ scope.row.RC_RectificationMeasures }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="效果评价"
+              align="center"
+              prop="RC_Opinion"
+              min-width="100"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                {{ scope.row.RC_Opinion }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="自查备注"
+              align="center"
+              prop="RC_DeductedPointsRemarks"
+              min-width="120"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                {{ scope.row.RC_DeductedPointsRemarks }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="督查得分"
+              width="100"
+              align="center"
+              prop="ZCScore"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <el-input
+                  v-model="scope.row.ZCScore"
+                  size="mini"
+                  width="50"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="督查意见"
+              prop="ZCErro"
+              width="100"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <el-input
+                  v-model="scope.row.ZCErro"
+                  size="mini"
+                  type="textarea"
+                  width="200"
+                />
+              </template>
+            </el-table-column>
+
+
+            <!--            <el-table-column-->
+            <!--              label="督导得分"-->
+            <!--              width="60"-->
+            <!--              align="center"-->
+            <!--              prop="ZCScore"-->
+            <!--            >-->
+            <!--              <template slot-scope="scope">-->
+            <!--                <el-input-->
+            <!--                  v-model="scope.row.ZCScore"-->
+            <!--                  size="mini"-->
+            <!--                  width="50"-->
+            <!--                />-->
+            <!--              </template>-->
+            <!--            </el-table-column>-->
+
+            <el-table-column
+              label="主管部门整改措施"
+              prop="ZgCErro"
+              width="150"
+              align="center"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+
+                <el-input
+                  v-model="scope.row.ZgCErro"
+                  size="mini"
+                  type="textarea"
+                  width="200"
+                />
+              </template>
+            </el-table-column>
+
+
+            <el-table-column
+              label="审核意见"
+              align="center"
+              prop="RC_AuditOpinion"
+              :show-overflow-tooltip="cellOverflow"
+            >
+              <template slot-scope="scope">
+                <el-input
+                  v-model="scope.row.RC_AuditOpinion"
+                  type="textarea"
+                  size="mini"
+                  clearable
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-switch
+            v-model="cellOverflow"
+            active-text="收起"
+            inactive-text="展开"
+            style="margin: 6px 0px"
+          />
+        </el-main>
+        <span
+          slot="footer"
+          class="dialog-footer"
+        >
+          <el-button
+            size="small"
+            @click="cancle()"
+          >取 消</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="submitTemplate(6)"
+          >通过</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="submitTemplate(7)"
+          >退回</el-button>
+        </span>
+      </el-dialog>
+      <!-- 归档 -->
+      <el-dialog
+        :title="title"
+        :visible.sync="dialogVisible"
+        :close-on-click-modal="false"
+        :width="device === 'desktop' ? '40%' : '95%'"
+        height="400px"
+      >
         <el-row>
-          <el-col :span="1">
-            <el-switch
-              v-model="cellOverflow"
-              style="margin: 10px 4px 0 0"
+          <el-col
+            :span="7"
+            :xs="12"
+            :sm="12"
+          >
+            <standardCatalog
+              maxheight="500px"
+              @nodeClickCatalog="nodeClickCatalog"
             />
           </el-col>
-          <el-col :span="20">
-            <el-pagination
-              style="margin-top: 10px"
-              background
-              :current-page="listQuery.pageIndex"
-              :page-sizes="[15, 20, 30, 40, 50]"
-              :page-size="listQuery.pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="listQuery.total"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
+          <!-- <div style="width: 290px"> -->
+          <el-col
+            :span="8"
+            :xs="12"
+            :sm="12"
+          >
+            <articlegroup
+              style="width: 140px"
+              @getSelectAllArticleGroupValue="getSelectAllArticleGroupValue"
+            />
+            <el-input
+              v-model="catalogName"
+              type="textarea"
+              placeholder="条款要点"
+              disabled
+              :rows="12"
+              style="margin-top: 5px"
             />
           </el-col>
         </el-row>
+        <span
+          slot="footer"
+          class="dialog-footer"
+        >
+          <el-button
+            size="mini"
+            @click="cancel"
+          >取 消</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="InsertArticle"
+          >确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <el-row>
+        <el-col :span="1">
+          <el-switch
+            v-model="cellOverflow"
+            style="margin: 10px 4px 0 0"
+          />
+        </el-col>
+        <el-col :span="20">
+          <el-pagination
+            style="margin-top: 10px"
+            background
+            :current-page="listQuery.pageIndex"
+            :page-sizes="[15, 20, 30, 40, 50]"
+            :page-size="listQuery.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="listQuery.total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </el-col>
+      </el-row>
 
     </el-card>
   </el-container>

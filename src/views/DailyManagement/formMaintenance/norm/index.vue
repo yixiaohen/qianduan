@@ -12,10 +12,11 @@
           <el-button
             type="primary"
             icon="el-icon-circle-plus"
-            @click="add"
-          >新增</el-button>
+            @click="add1"
+          >新增
+          </el-button>
         </el-form-item>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-input
             v-model="form.Category"
@@ -23,7 +24,7 @@
             @keyup.enter.native="SelectNorm('搜索')"
           />
         </el-form-item>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-input
             v-model="form.ProjectContent"
@@ -31,7 +32,7 @@
             @keyup.enter.native="SelectNorm('搜索')"
           />
         </el-form-item>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-input
             v-model="form.Content"
@@ -39,13 +40,14 @@
             @keyup.enter.native="SelectNorm('搜索')"
           />
         </el-form-item>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-button
             icon="el-icon-search"
             type="primary"
             @click="SelectNorm('搜索')"
-          >搜索</el-button>
+          >搜索
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -97,7 +99,7 @@
         :show-overflow-tooltip="cellOverflow"
       >
         <template slot-scope="{ row }">
-          <div v-html="row.ErrorContent" />
+          <div v-html="row.ErrorContent"/>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="250">
@@ -107,13 +109,15 @@
             type="success"
             size="mini"
             @click="InsertNorm(scope.row)"
-          >完成</el-button>
+          >完成
+          </el-button>
           <el-button
             v-if="currentEdit === scope.$index"
             type="warning"
             size="mini"
-            @click="currentEdit = -1"
-          >放弃</el-button>
+            @click="giveUp"
+          >放弃
+          </el-button>
 
           <el-button
             v-else
@@ -123,12 +127,14 @@
             @click="EditClick(scope)"
           ></el-button>
           <el-button
+            v-if="currentEdit !== scope.$index"
             type="success"
             size="mini"
             class="el-icon-thumb"
             @click="SelectContent(scope)"
           ></el-button>
           <el-button
+            v-if="currentEdit !== scope.$index"
             type="danger"
             size="mini"
             class="el-icon-delete"
@@ -139,7 +145,7 @@
     </el-table>
     <el-row>
       <el-col :span="1">
-        <el-switch v-model="cellOverflow" style="margin: 6px 0px" />
+        <el-switch v-model="cellOverflow" style="margin: 6px 0px"/>
       </el-col>
       <el-col :span="20">
         <el-pagination
@@ -251,21 +257,28 @@ export default {
         const { data } = await SelectNorm(this.form);
         this.tableData = data.DataList;
         this.form.total = data.Total;
-      } catch (error) {}
+      } catch (error) {
+      }
       this.Loading = false;
     },
     handleSizeChange(val) {
       this.form.pageSize = val;
+      this.currentEdit = -1; // 换页要把input隐藏
       this.SelectNorm();
     },
     handleCurrentChange(val) {
       this.form.pageIndex = val;
+      this.currentEdit = -1; // 换页要把input隐藏
       this.SelectNorm();
     },
-
-    add() {
-      if (this.tableData.length === 0) {
-        this.tableData.push({
+    // 新增指标
+    add1() {
+      // 防止多次点击新增按钮
+      if (this.currentEdit === 0 && this.static === '新增') {
+        this.$message.warning('已处于编辑状态');
+      } else {
+        // 在第一条增加空的一条
+        this.tableData.unshift({
           Category: '',
           ProjectContent: '',
           Content: '',
@@ -273,21 +286,12 @@ export default {
           NormID: ''
         });
         this.currentEdit = 0;
-        return;
+        console.log('我点击了');
+        this.static = '新增';
       }
-      if (!this.tableData[0].ProjectContent) {
-        return;
-      }
-      this.tableData.unshift({
-        Category: '',
-        ProjectContent: '',
-        Content: '',
-        ErrorIDs: [],
-        NormID: ''
-      });
-      this.currentEdit = 0;
-      this.static === '新增';
+
     },
+    // 完成按钮
     async InsertNorm(row) {
       try {
         const val = {
@@ -305,12 +309,24 @@ export default {
             : this.$message.error('修改失败');
         } else {
           const { data, code } = await InsertNorm(val);
-          code === 200
-            ? (this.currentEdit = -1)
-            : this.$message.error('新增失败');
+          if (code === 200) {
+            this.currentEdit = -1;
+          } else {
+            this.$message.error('新增失败');
+            this.currentEdit = -1;
+          }
         }
-      } catch (error) {}
-      this.SelectNorm();
+      } catch (error) {
+        this.currentEdit = -1;
+      }
+      await this.SelectNorm();
+    },
+    // 放弃按钮
+    giveUp() {
+      if (this.static === '新增') {
+        this.tableData.shift();
+      }
+      this.currentEdit = -1;
     },
     DeleteNorm(row) {
       this.$confirm('此操作将永久删除该条数据, 是否继续?', '提示', {
@@ -330,7 +346,8 @@ export default {
               this.$message.error('删除失败');
             });
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     EditClick(scope) {
       this.EditClickError.ErrorIDArray =
@@ -384,17 +401,22 @@ export default {
 };
 </script>
 <style lang="scss">
+@import "src/styles/loading.scss";
+
 .norm {
   .el-header {
     padding: 3px 0px;
     height: 40px !important;
   }
+
   .el-main {
     padding: 0px 0px;
+
     .main {
       height: calc(100vh - 180px) !important;
     }
   }
+
   .el-table__body-wrapper {
     overflow: auto !important;
     position: relative;
@@ -411,21 +433,22 @@ export default {
     position: relative;
     left: -40px;
   }
+
   @-webkit-keyframes typing {
     0% {
       background-color: rgba(247, 111, 73, 1);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     25% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     75% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 1);
+      80px 0px 0px 0px rgba(247, 111, 73, 1);
     }
   }
 
@@ -433,36 +456,37 @@ export default {
     0% {
       background-color: rgba(247, 111, 73, 1);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     25% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     75% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 1);
+      80px 0px 0px 0px rgba(247, 111, 73, 1);
     }
   }
   @keyframes typing {
     0% {
       background-color: rgba(247, 111, 73, 1);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 0.2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     25% {
       background-color: rgba(247, 111, 73, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(247, 111, 73, 2),
-        80px 0px 0px 0px rgba(247, 111, 73, 0.2);
+      80px 0px 0px 0px rgba(247, 111, 73, 0.2);
     }
     75% {
       background-color: rgba(0, 184, 220, 0.4);
       box-shadow: 40px 0px 0px 0px rgba(249, 54, 0, 0.2),
-        80px 0px 0px 0px rgb(2, 243, 130);
+      80px 0px 0px 0px rgb(2, 243, 130);
     }
   }
+
   .el-loading-spinner .circular {
     display: none; //隐藏之前element-ui默认的loading动画
   }

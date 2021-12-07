@@ -112,8 +112,8 @@ export function SelectUpDeptList(data) {
 export function Deleteinst(data) {
   return request({
     url: '/inst/Deleteinst',
-    method: 'post',
-    data
+    method: 'get',
+    params: data
   });
 }
 

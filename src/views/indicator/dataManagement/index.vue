@@ -157,7 +157,7 @@
                         />
                         <el-table-column
                           prop="number"
-                          label="最终指标值"
+                          label="指标值"
                           align="center"
                           width="120px"
                           :show-overflow-tooltip="cellOverflow"

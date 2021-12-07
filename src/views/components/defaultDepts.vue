@@ -7,7 +7,6 @@
     size="mini"
     @change="selectText"
 
-
     @clear="clear"
   >
     <!--至少写一个el-option，否则无法显示tree  -->

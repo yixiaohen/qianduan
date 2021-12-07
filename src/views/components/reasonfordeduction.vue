@@ -273,14 +273,20 @@ export default {
           ? this.$message.success('新增成功')
           : this.$message.error('新增失败');
         this.currentEdit = -1;
-        this.SelectRC_Error();
+        this.$nextTick(async() => {
+          await this.SelectRC_Error();
+        });
+
       } else {
         const { code } = await UpdateRC_Error(scope.row);
         code === 200
           ? this.$message.success('修改成功')
           : this.$message.error('修改失败');
         this.currentEdit = -1;
-        this.SelectRC_Error();
+        this.$nextTick(async() => {
+          await this.SelectRC_Error();
+        });
+
       }
     },
     cancelRC_Error() {

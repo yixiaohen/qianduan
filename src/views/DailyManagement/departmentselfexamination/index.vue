@@ -115,6 +115,40 @@
           >
             <template slot-scope="{ row }">
               {{ row.RC_ProjectName }}
+              <el-tag
+                v-if="row.Status===1"
+                type="success"
+                size="mini"
+              >
+                <span>新</span>
+              </el-tag>
+
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="StatusName"
+            label="状态"
+            width="130"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <p
+                :style="{
+                  color:
+                    scope.row.StatusName == '已提交'
+                      ? 'green'
+                      : scope.row.StatusName == '质管审核退回'
+                        ? 'red'
+                        : scope.row.StatusName == '主管审核退回'
+                          ? 'red'
+                          : scope.row.StatusName == '未执行'
+                          ? 'blue'
+                          : 'black',
+                  margin: '0px',
+                }"
+              >
+                {{ scope.row.StatusName }}
+              </p>
             </template>
           </el-table-column>
           <!--  抽查表单不应出现在科室自查，先隐藏-->
@@ -166,30 +200,7 @@
           <!--          width="80"-->
           <!--          align="center"-->
           <!--        />-->
-          <el-table-column
-            prop="StatusName"
-            label="状态"
-            width="130"
-            align="center"
-          >
-            <template slot-scope="scope">
-              <p
-                :style="{
-                  color:
-                    scope.row.StatusName == '已提交'
-                      ? 'green'
-                      : scope.row.StatusName == '质管审核退回'
-                        ? 'red'
-                        : scope.row.StatusName == '主管审核退回'
-                          ? 'red'
-                          : 'black',
-                  margin: '0px',
-                }"
-              >
-                {{ scope.row.StatusName }}
-              </p>
-            </template>
-          </el-table-column>
+
           <el-table-column
             prop="RC_AllAuditOpinion"
             label="总审核意见"
@@ -391,11 +402,15 @@
               </el-row>
             </el-form>
           </div>
+<!--          查看时的病例数据-->
           <div style="flex: 1">
             <h4    v-if="addFormData.CaseJudgment == 1">病例数据</h4>
             <el-table
               v-if="addFormData.CaseJudgment == 1"
               ref="multipleTable"
+              stripe
+              highlight-current-row
+              border
               :data="addFormData.Rc_CaseDetail"
               size="mini"
               height="130"
@@ -407,12 +422,35 @@
 
                 </template>
               </el-table-column>
+              <el-table-column label="档案号" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.HospitalNumber }}</span>
+
+                </template>
+              </el-table-column>
+              <el-table-column label="床号" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.HospitalNumber }}</span>
+
+                </template>
+              </el-table-column>
               <el-table-column label="患者姓名" align="center">
                 <template slot-scope="scope">
                   <span>{{ scope.row.PatientName }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="医疗组名称" align="center">
+              <el-table-column label="性别" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.PatientName }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="医疗组名称" align="center" width="100">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.MedicalGroupName }}</span>
+
+                </template>
+              </el-table-column>
+              <el-table-column label="主管医生" align="center">
                 <template slot-scope="scope">
                   <span>{{ scope.row.MedicalGroupName }}</span>
 
@@ -754,10 +792,13 @@
               ref="multipleTable"
               :data="addFormData.Rc_CaseDetail"
               size="mini"
+              stripe
+              highlight-current-row
+              border
               height="130"
             >
               <el-table-column type="index" align="center"/>
-              <el-table-column label="住院号">
+              <el-table-column label="住院号" align="center">
                 <template slot-scope="scope">
                   <el-input
                     v-model="scope.row.HospitalNumber"
@@ -766,7 +807,25 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="患者姓名">
+              <el-table-column label="档案号" align="center">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.HospitalNumber"
+                    size="mini"
+                    placeholder="必填"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="床号" align="center">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.HospitalNumber"
+                    size="mini"
+                    placeholder="必填"
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="患者姓名" align="center">
                 <template slot-scope="scope">
                   <el-input
                     v-model="scope.row.PatientName"
@@ -775,7 +834,25 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="医疗组名称">
+              <el-table-column label="性别" align="center">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.PatientName"
+                    size="mini"
+                    placeholder=""
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="医疗组名称" align="center" width="100">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.MedicalGroupName"
+                    size="mini"
+                    placeholder=""
+                  />
+                </template>
+              </el-table-column>
+              <el-table-column label="主管医生">
                 <template slot-scope="scope">
                   <el-input
                     v-model="scope.row.MedicalGroupName"
@@ -983,21 +1060,13 @@
               >
                 <template slot-scope="{ row }">
                   <el-tag
-                    v-for="(itemHref, indexHref) in row.FileList_dto"
+                    v-for="(itemHref) in row.FileList_dto"
                     :key="itemHref.FileName"
                     style="margin: 10px"
-                    :disable-transitions="false"
                   >
-                    <el-link
-                      :key="indexHref"
-                      target="_blank"
-                      @click="PreviewFile(itemHref.FileUrl)"
-                    >
-                      {{ itemHref.FileName }}
-                    </el-link>
+                    <a :href="itemHref.FileUrl" :download="itemHref.FileName">{{ itemHref.FileName }}</a>
 
                   </el-tag>
-
                 </template>
               </el-table-column>
 
@@ -1105,7 +1174,7 @@
                       : true
             "
             @click="submitTemplate"
-          >确定提交
+          >确定保存
           </el-button>
           <el-button
             v-if="useTemplateDialogTitle == '制作表单'"
@@ -1134,7 +1203,7 @@
             type="primary"
             size="small"
             @click="submitUseTemp"
-          >确定提交
+          >确定保存
           </el-button>
           <el-button
             v-if="useTemplateDialogTitle === '编辑草稿:'"
@@ -1297,9 +1366,10 @@ export default {
         RC_InspectionDepartmentName: [
           { required: true, message: '请选择科室', trigger: 'blur' }
         ],
-        RC_InspectorOther: [
-          { required: true, message: '请填写协同检查者', trigger: 'blur' }
-        ]
+        // 协同检查者不需要强制填写
+        // RC_InspectorOther: [
+        //   { required: true, message: '请填写协同检查者', trigger: 'blur' }
+        // ]
       },
       innerDisabled: false,
       spanOneArr: [],

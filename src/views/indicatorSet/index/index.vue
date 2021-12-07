@@ -7,29 +7,55 @@
       class="box-card-view"
     >
       <split-pane
-        :min-percent="10"
+        :min-percent="15"
         :default-percent="24"
         split="vertical"
       >
         <template slot="paneL">
-          <div class="letf-box-card">
-            <div style="display: flex; justify-content: space-between">
+          <div style="display: flex; justify-content: space-between;">
+            <el-button
+              type="success"
+              size="mini"
+              icon="el-icon-plus"
+              @click="addIndexDia(node=0)"
+            >添加指标
+            </el-button>
+            <!--              <icon class="el-icon-caret-right"></icon>-->
+            <!--              <icon class="el-icon-caret-bottom"></icon>-->
+            <div style="display: inline-block">
               <el-button
-                type="success"
                 size="mini"
-                icon="el-icon-plus"
-                @click="addIndexDia(node=0)"
-              >添加指标
-              </el-button>
+                class="el-icon-caret-right"
+                @click="collapseAll(treeData)"
+              />
               <el-button
-                :loading="importStandardLoading"
-                type="warning"
                 size="mini"
-                icon="el-icon-plus"
-                @click="importStandard"
-              >导入评审标准
-              </el-button>
+                class="el-icon-caret-bottom"
+                @click="unFoldAll(treeData)"
+              />
             </div>
+            <el-input
+              size="mini"
+              v-model="filterText"
+              clearable
+              placeholder="输入关键字过滤"
+              style="width: 150px"
+            >
+
+
+            </el-input>
+            <el-button
+              :loading="importStandardLoading"
+              type="warning"
+              size="mini"
+              icon="el-icon-plus"
+              @click="importStandard"
+            >导入
+            </el-button>
+
+          </div>
+          <div class="letf-box-card">
+
             <el-tree
               ref="dirTree"
               v-loading="treeLoading"
@@ -40,6 +66,7 @@
               :default-expand-all="isExpandAll"
               :default-expanded-key="defaultKey"
               highlight-current
+              :filter-node-method="filterNode"
               @node-click="handleNodeClick"
             >
               <span
@@ -102,6 +129,7 @@
                 </span>
               </span>
             </el-tree>
+
           </div>
         </template>
         <template slot="paneR">
@@ -180,7 +208,9 @@
                         :value="item.conn_id"
                       >
                         <span style="float: left">{{ item.type }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.remarks.slice(0, 12) }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 13px">{{
+                          item.remarks.slice(0, 12)
+                        }}</span>
                       </el-option>
                     </el-select>
 
@@ -331,12 +361,13 @@
                         v-show="items.Cycleid===item.cycle_id&&sqlCurrentEdit!==index"
                         type="warning"
                       >
-                        {{ items.Cycleid===item.cycle_id?
-                          items.Starway === 0 ? items.Type+' | '+'结束日期往前' +' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 10 ?
-                            items.Type+' | '+ '今年' +' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 11 ?
-                              items.Type+' | '+''+'当季' +' | ' + items.Cycle + ' | ' + items.Num: items.Starway === 12 ?
-                                items.Type+' | '+'当月' +' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 20 ?
-                                  items.Type+' | '+'去年' +' | ' + items.Cycle + ' | ' + items.Num:'':''
+                        {{
+                          items.Cycleid === item.cycle_id ?
+                            items.Starway === 0 ? items.Type + ' | ' + '结束日期往前' + ' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 10 ?
+                              items.Type + ' | ' + '今年' + ' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 11 ?
+                                items.Type + ' | ' + '' + '当季' + ' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 12 ?
+                                  items.Type + ' | ' + '当月' + ' | ' + items.Cycle + ' | ' + items.Num : items.Starway === 20 ?
+                                    items.Type + ' | ' + '去年' + ' | ' + items.Cycle + ' | ' + items.Num : '' : ''
                         }}
                       </el-tag>
                       <el-select
@@ -379,13 +410,13 @@
                           <span
                             style="float: right; color: #8492a6; font-size: 13px"
                           >{{
-                            item2.Starway === 0 ? '结束日期往前' : item2.Starway === 10 ? '今年' : item2.Starway === 11 ? '当季' : item2.Starway === 12 ? '当月' : item2.Starway === 20 ? '去年': item2.Starway
+                            item2.Starway === 0 ? '结束日期往前' : item2.Starway === 10 ? '今年' : item2.Starway === 11 ? '当季' : item2.Starway === 12 ? '当月' : item2.Starway === 20 ? '去年' : item2.Starway
                           }}{{ ' | ' + item2.Cycle + ' | ' + item2.Num }}</span></el-option>
                       </el-select>
                       <br>
                       <span>sql语句: </span>
                       <el-tag v-if="sqlCurrentEdit!==index" type="success">
-                        {{ item.sqlsen || '暂无'}}
+                        {{ item.sqlsen || '暂无' }}
                       </el-tag>
                       <el-input
                         v-else
@@ -398,7 +429,7 @@
                       <br>
                       <span>描述说明：</span>
                       <el-tag v-if="sqlCurrentEdit!==index">
-                        {{ item.remarks || '暂无'}}
+                        {{ item.remarks || '暂无' }}
                       </el-tag>
                       <el-input
                         v-else
@@ -738,6 +769,7 @@ export default {
   components: { splitPane },
   data() {
     return {
+      filterText: '', // 过滤字
       importStandardLoading: false, // 导入评审标准按钮等待
       isShowinfo: false, // 是否展示计算指标后的提示信息
       indexInfo: '', // 指标计算后的提示信息
@@ -853,6 +885,12 @@ export default {
   computed: {
     ...mapGetters(['device'])
   },
+  watch: {
+    // 监听过滤筛选的制度类别
+    filterText(val) {
+      this.$refs.dirTree.filter(val);
+    }
+  },
   created() {
     this.SelectIndex(); // 指标导航树数据
     this.SelectConn(); // 开始获取数据源数据
@@ -863,6 +901,29 @@ export default {
     this.$refs['dirTree'].setCurrentKey(3); // 默认打开的时候，选中一个根node
   },
   methods: {
+    // 对树节点进行筛选过滤操作
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
+    },
+    /* 指标类别树形控件展开折叠开始 */
+
+    // 设置全部展开和折叠。state参数为bool值
+    setAllExpand(state) {
+      var nodes = this.$refs.dirTree.store.nodesMap;
+      for (var i in nodes) {
+        nodes[i].expanded = state;
+      }
+    },
+    // 全部展开
+    unFoldAll(data) {
+      this.setAllExpand(true);
+    },
+    // 全部折叠
+    collapseAll(data) {
+      this.setAllExpand(false);
+    },
+    /* 制度类别树形控件展开折叠结束 */
 
     /* 指标开始 */
     // 单击指标导航树
@@ -1366,13 +1427,13 @@ export default {
 
 /* 改变被点击节点背景颜色，字体颜色 */
 .el-tree-node:focus > .el-tree-node__content {
-  background-color: #1890ff !important;
+  background-color: #84C1FF !important;
   color: #fff !important;
 }
 
 /*节点失焦时的背景颜色*/
 .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-  background-color: #1890ff !important;
+  background-color: #84C1FF !important;
   color: #fff !important;
 }
 </style>

@@ -12,7 +12,7 @@
           <el-button
             type="primary"
             icon="el-icon-circle-plus"
-            @click="add"
+            @click="add1"
           >新增</el-button>
         </el-form-item>
         <el-divider direction="vertical" />
@@ -263,7 +263,7 @@ export default {
       this.SelectNorm();
     },
 
-    add() {
+    add1() {
       if (this.tableData.length === 0) {
         this.tableData.push({
           Category: '',
@@ -285,8 +285,9 @@ export default {
         ErrorIDs: [],
         NormID: ''
       });
+      console.log('点击了');
       this.currentEdit = 0;
-      this.static === '新增';
+      this.static = '新增';
     },
     async InsertNorm(row) {
       try {

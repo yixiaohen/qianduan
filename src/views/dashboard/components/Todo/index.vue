@@ -318,7 +318,19 @@ export default {
           name: 'briefingCompletion',
           params: { ExamineState: '1', State: 1 }
         });
-      } else {
+      } else if (row.ItemName === '表单待提交') {
+        console.log('ok');
+        this.$router.push({
+          name: 'DepartmentSelfExamination',
+          // params: { ExamineState: '1', State: 1 }
+        });
+      } else if (row.ItemName === '制度待审核') {
+        console.log('ok');
+        this.$router.push({
+          name: 'institution',
+          // params: { ExamineState: '1', State: 1 }
+        });
+      }else {
         const routeInfo = this.routerMeta.filter(item => {
           if (item.name === row.ItemName) {
             return item;
