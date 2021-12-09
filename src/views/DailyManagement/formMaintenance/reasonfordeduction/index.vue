@@ -20,16 +20,18 @@
             type="primary"
             size="mini"
             @click="insetRC_ErrorData()"
-          >新增</el-button>
+          >新增
+          </el-button>
         </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
             size="mini"
             @click="TypeError"
-          >扣分原因类型</el-button>
+          >扣分原因类型
+          </el-button>
         </el-form-item>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-input
             v-model="ErrorQuery.ErrorContent"
@@ -43,7 +45,7 @@
             class="el-input__icon el-icon-search"
           /></el-input>
         </el-form-item>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-input
             v-model="ErrorQuery.TypeName"
@@ -57,14 +59,15 @@
             class="el-input__icon el-icon-search"
           /></el-input>
         </el-form-item>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
         <el-form-item>
           <el-button
             type="primary"
             icon="el-icon-search"
             size="mini"
             @click="clickSelectRC_Error()"
-          >搜索</el-button>
+          >搜索
+          </el-button>
         </el-form-item>
 
       </el-form>
@@ -90,6 +93,25 @@
         align="center"
         fixed="left"
       />
+      <el-table-column
+        prop="DeptName"
+        label="所属科室"
+        align="left"
+        class="tableType"
+        :show-overflow-tooltip="cellOverflow"
+      >
+        <template slot-scope="{ row ,$index}">
+          <span v-if="currentEdit !== $index">{{ row.DeptName }}</span>
+          <default-depts
+            v-if="currentEdit === $index"
+            ref="allSelect"
+            w="100%"
+            :multiple="false"
+            :value="row.DeptID"
+            @getDefaultDeptsValue="getDefaultDeptValues"
+          />
+        </template>
+      </el-table-column>
       <el-table-column
         v-for="(itemType, indexType) in tableRC_ErrorTitle"
         :key="indexType"
@@ -146,7 +168,9 @@
             type="success"
             size="mini"
             @click="finishEditClick(scope)"
-          >完成</el-button>
+          >完成
+          </el-button>
+          <!--          编辑-->
           <el-button
             v-else
             type="info"
@@ -159,7 +183,8 @@
             type="warning"
             size="mini"
             @click="cancelRC_Error(scope)"
-          >放弃</el-button>
+          >放弃
+          </el-button>
           <el-button
             v-else
             type="danger"
@@ -221,14 +246,16 @@
             icon="el-icon-search"
             size="mini"
             @click="SelectRC_ErrorType()"
-          >搜索</el-button>
+          >搜索
+          </el-button>
         </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
             size="mini"
             @click="insetRC_ErrorTypeData()"
-          >新增</el-button>
+          >新增
+          </el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -276,7 +303,8 @@
               type="success"
               size="mini"
               @click="finishEditClickType(scope)"
-            >完成</el-button>
+            >完成
+            </el-button>
             <el-button
               v-else
               class="el-icon-edit"
@@ -289,7 +317,8 @@
               type="warning"
               size="mini"
               @click="cancelRC_ErrorType(scope)"
-            >放弃</el-button>
+            >放弃
+            </el-button>
             <el-popconfirm
               v-else
               confirm-button-text="是"
@@ -335,13 +364,20 @@ import {
   UpdateRC_Error
 } from '@/api/RC_Error';
 import { mapGetters } from 'vuex';
+import defaultDepts from '@/views/components/defaultDepts';
 
 export default {
+  components: {
+    defaultDepts
+  },
   data() {
     return {
+      RoleCode: window.userInfo[0].RoleCode, // 管理员
+      nowDeptId: '',// 当前编辑的部门id
       errorLoading: '',
       RC_ErrorData: [],
       ErrorQuery: {
+        userId: window.userInfo[0].UserID,
         total: 0,
         pageSize: 20,
         pageIndex: 1,
@@ -397,13 +433,18 @@ export default {
     this.SelectRC_ErrorType();
   },
   methods: {
+    getDefaultDeptValues(v) {
+      this.nowDeptId = v;
+    },
+
     async SelectRC_Error() {
       try {
         this.errorLoading = true;
         const { data } = await SelectRC_Error(this.ErrorQuery);
         this.ErrorQuery.total = data.Total;
         this.RC_ErrorData = data.DataList;
-      } catch { }
+      } catch {
+      }
       this.errorLoading = false;
     },
     async clickSelectRC_Error() {
@@ -424,12 +465,18 @@ export default {
               this.SelectRC_Error();
             });
           })
-          .catch(() => { });
+          .catch(() => {
+          });
       } else {
         this.$message.error('您不是管理员,没有权限删除');
       }
     },
     EditClick(scope) {
+      // 如果点击了新增按钮，进入了编辑状态，然后又再次点击另外一条，就把刚刚正在编辑新增的条目删除
+      // if (this.static==='新增'){
+      //   this.RC_ErrorData.shift();
+      // }
+      this.nowDeptId = scope.row.DeptID; // 点了编辑，就把当前条的部门id存起来新增和修改要用
       this.currentEdit = scope.$index;
       this.currentRow = JSON.stringify(scope.row);
       this.static = '修改';
@@ -440,52 +487,87 @@ export default {
           this.$message.warning('分数不能为空!');
           return;
         }
+
         if (this.static == '修改') {
+          scope.row.DeptID = this.nowDeptId;
           const val = {
             CreateUser: window.userInfo[0].UserName,
             ErrorContent: scope.row.ErrorContent,
             Grade: scope.row.Grade,
             ErrorID: scope.row.ErrorID,
-            TypeID: scope.row.TypeID
+            TypeID: scope.row.TypeID,
+            deptId: scope.row.DeptID
           };
           const data = await UpdateRC_Error(val);
           if (data.code == 200) {
-            this.currentEdit = -1;
-            this.$message.success('修改成功');
+            if (scope.row.DeptID * 1 !== window.userInfo[0].DeptID && this.RoleCode !== 'R0001') {
+              this.currentEdit = -1;
+              this.$message.success('修改成功,但修改后不属于本科室，所以扣分原因无法显示');
+              await this.SelectRC_Error();
+            } else {
+              this.currentEdit = -1;
+              this.$message.success('修改成功');
+              await this.SelectRC_Error();
+            }
+
           }
         } else {
+          scope.row.DeptID = this.nowDeptId;
           const val = {
             CreateUser: window.userInfo[0].UserName,
             ErrorContent: scope.row.ErrorContent,
             Grade: scope.row.Grade,
-            TypeID: scope.row.TypeID
+            TypeID: scope.row.TypeID,
+            deptId: scope.row.DeptID
           };
           const data = await InsertRC_Error(val);
           this.currentEdit = -1;
           if (data.code == 200) {
-            this.$message.success('新增成功');
-            this.RC_ErrorData = [];
-            this.ErrorQuery.pageIndex = 1;
-            this.SelectRC_Error();
+            if (scope.row.DeptID * 1 !== window.userInfo[0].DeptID && this.RoleCode !== 'R0001') {
+              this.RC_ErrorData = [];
+              this.ErrorQuery.pageIndex = 1;
+              this.$message.success('新增成功，但新增的不属于本科室，所以扣分原因无法显示');
+              this.static = ''; // 改变编辑状态为空
+              this.$nextTick(async() => {
+                await this.SelectRC_Error();
+              });
+
+            } else {
+              this.RC_ErrorData = [];
+              this.ErrorQuery.pageIndex = 1;
+              this.$message.success('新增成功');
+              this.static = ''; // 改变编辑状态为空
+              this.$nextTick(async() => {
+                await this.SelectRC_Error();
+              });
+
+            }
           }
         }
         this.SelectRC_Error();
-      } catch (error) { }
+      } catch (error) {
+      }
     },
     insetRC_ErrorData() {
-      if (this.RC_ErrorData.length > 0 && !this.RC_ErrorData[0].ErrorID) {
-        return;
+      // if (this.RC_ErrorData.length > 0 && !this.RC_ErrorData[0].ErrorID) {
+      //   return;
+      // }
+      if (this.static === '新增') {
+        this.$message.warning('已处于编辑状态');
+      } else {
+        this.RC_ErrorData.unshift({
+          CreateUser: window.userInfo[0].UserName,
+          ErrorContent: '',
+          Grade: 0,
+          CreateTime: ''
+        });
+        this.currentEdit = 0;
+        this.static = '新增';
       }
-      this.RC_ErrorData.unshift({
-        CreateUser: window.userInfo[0].UserName,
-        ErrorContent: '',
-        Grade: 0,
-        CreateTime: ''
-      });
+
       // 编辑当前行
       // this.currentEdit = this.RC_ErrorData.length - 1;
-      this.currentEdit = 0;
-      this.static = '新增';
+
     },
     cancelRC_Error(scope) {
       this.currentEdit = -1;
@@ -494,7 +576,9 @@ export default {
           const obj = JSON.parse(this.currentRow);
           scope.row.Grade = obj.Grade;
           scope.row.ErrorContent = obj.ErrorContent;
-        } else this.RC_ErrorData.shift();
+        } else {
+          this.RC_ErrorData.shift();
+        }
       });
     },
     DeleteRC_Error(scope) {
@@ -509,16 +593,20 @@ export default {
               this.$message.success('删除成功!');
               this.SelectRC_Error();
             })
-            .catch(() => { });
+            .catch(() => {
+            });
         })
-        .catch(() => { });
+        .catch(() => {
+        });
     },
     handleSizeChange(val) {
       this.ErrorQuery.pageSize = val;
+      this.currentEdit = -1;
       this.SelectRC_Error();
     },
     handleCurrentChange(val) {
       this.ErrorQuery.pageIndex = val;
+      this.currentEdit = -1;
       this.SelectRC_Error();
     },
 

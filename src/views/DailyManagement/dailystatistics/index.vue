@@ -603,7 +603,7 @@ export default {
           },
         legend: {
           orient: 'vertical',
-          right: 10,
+          right: 60,
           data: [
             '未执行',
             '待提交',

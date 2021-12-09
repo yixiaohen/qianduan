@@ -67,7 +67,7 @@
         class="infinite-list"
         @selection-change="handleSelectionChange"
         @select-all="handleSelectionChangeAll"
-        @select="selectRow"
+
       >
         <el-table-column
           type="selection"
@@ -218,7 +218,8 @@ export default {
         ErrorIDs: [],
         pageIndex: 1,
         pageSize: 50,
-        Total: 0
+        Total: 0,
+        userId: window.userInfo[0].UserID
       },
       selectRC_ErrorTypeVal: {
         pageIndex: 1,

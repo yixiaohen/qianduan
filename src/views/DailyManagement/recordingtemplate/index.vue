@@ -321,7 +321,7 @@
     </el-card>
     <el-dialog
       title="选择扣分原因"
-      :width="device === 'desktop' ? '50%' : '99%'"
+      :width="device === 'desktop' ? '70%' : '99%'"
       :close-on-click-modal="false"
       destroy-on-close
       :visible.sync="dialogError"
@@ -340,8 +340,9 @@
         </el-button>
       </div>
     </el-dialog>
+    <!--    添加和修改-->
     <el-dialog
-      :width="device === 'desktop' ? '60%' : '90%'"
+      :width="device === 'desktop' ? '70%' : '90%'"
       :title="dialogTitle"
       :close-on-click-modal="false"
       :visible.sync="dialogFormVisible"
@@ -574,11 +575,18 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="ErrorContent" label="扣分原因" min-width="100px">
+        <el-table-column label="扣分原因" min-width="100px">
           <template slot-scope="{ row }">
-            <div v-html="row.ErrorContent">
-              {{ row.ErrorContent }}
-            </div>
+            <span
+              style="margin: 6px"
+              v-for="content in row.ErrorList"
+            >
+              <el-tag>{{ content.ErrorContent }}</el-tag>
+
+            </span>
+            <!--            <div v-html="row.ErrorContent">-->
+            <!--              {{ row.ErrorContent }}-->
+            <!--            </div>-->
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="200px">
@@ -593,16 +601,22 @@
               :disabled="(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')&&RoleCode!=='R0001'"
               type="danger"
               size="mini"
-              @click="deleteContent(scope.row.id)"
+              @click="deleteContent(scope.$index)"
             >移除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'" size="small" @click="addNormdialog">指标库
+        <el-button
+          v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'" size="small"
+          @click="addNormdialog"
+        >指标库
         </el-button>
-        <el-button v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'" size="small" @click="addContent()">添加检查内容
+        <el-button
+          v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'" size="small"
+          @click="addContent()"
+        >添加检查内容
         </el-button>
         <el-button
           v-show="!(RC_CreatUser!==UserID&&dialogTitle === '编辑表单')||RoleCode==='R0001'"
@@ -615,7 +629,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      :width="device === 'desktop' ? '50%' : '90%'"
+      :width="device === 'desktop' ? '70%' : '90%'"
       title="表单分配"
       :close-on-click-modal="false"
       :visible.sync="dialogAllot"
@@ -735,7 +749,10 @@
                         v-for="(item, indexCheck) in scope.row.Check"
                         :key="indexCheck"
                       >
-                        {{ item.ErrorContent }}
+                        <el-tag>
+                          {{ item.ErrorContent }}
+                        </el-tag>
+
                       </p>
                     </template>
                   </el-table-column>
@@ -826,7 +843,7 @@
     <el-dialog
       title="类别管理"
       :visible.sync="typeDialog"
-      :width="device === 'desktop' ? '50%' : '99%'"
+      :width="device === 'desktop' ? '70%' : '99%'"
     >
       <el-table
         v-loading="TypeDataLoading"
@@ -905,7 +922,6 @@
   </div>
 </template>
 <script>
-import defaultDept from '@/views/components/defaultDept';
 import defaultDepts from '@/views/components/defaultDepts';
 import { SelectNorm } from '@/api/norm';
 import tableHeight from '@/views/mixin/tableHeight';
@@ -958,10 +974,11 @@ export default {
           ProjectContentRemark: '',
           Content: '',
           ScoreCriteria: 0,
-          RC_ErrorID: '',
+          RC_ErrorID: [],
           CheckID: 0,
           Type: 0,
           NormID: 0,
+          ErrorList: [],
           id: Number(
             Math.random()
               .toString()
@@ -1219,9 +1236,21 @@ export default {
         const { data } = await SelectTemplateByID({
           TemplateID: row.TemplateID
         });
-        this.ContentData = this.dataFiltter2(data.DataList);
+        // this.ContentData = this.dataFiltter2(data);
+        this.ContentData = data;
+        console.log('this.ContentData', this.ContentData);
         this.ContentData.map(item => {
+          item['RC_ErrorID'] = [];
           item.ErrorContent = [...new Set(item.ErrorContent)].join('<br />');
+          if (item.CheckID) {
+            item.ErrorList.map((item2) => {
+              item.RC_ErrorID.push(item2.ErrorID);
+            });
+
+          } else {
+            item.RC_ErrorID = [];
+          }
+          console.log('ContentData', this.ContentData);
           item.RC_ErrorID = this.isNull(item.CheckID) ? '' : item.RC_ErrorID;
           item.RC_ErrorIDs = this.isNull(item.CheckID) ? '' : item.RC_ErrorID;
           item.CheckID = this.isNull(item.CheckID) ? 0 : item.CheckID;
@@ -1234,38 +1263,39 @@ export default {
           item.ProjectContentRemark = item.ProjectContentRemark;
           item.Category = item.Category;
         });
+
         this.ContentDataLoading = false; // 关闭打开内容等待加载条
       } catch (error) {
         this.ContentDataLoading = false; // 关闭打开内容等待加载条
         console.log(error);
       }
     },
-    dataFiltter2(arr) {
-      const map = {};
-      const result = [];
-      for (var i = 0; i < arr.length; i++) {
-        var item = arr[i];
-
-        result.push({
-          Content: item.Content,
-          RC_ErrorID: [item.ErrorID],
-          ErrorContent: [item.ErrorContent],
-          CheckID: item.CheckID,
-          ScoreCriteria: item.ScoreCriteria,
-          Type: item.Type,
-          id: Number(
-            Math.random()
-              .toString()
-              .substr(3, 3) + Date.now()
-          ).toString(36),
-          ProjectContent: item.ProjectContent,
-          ProjectContentRemark: item.ProjectContentRemark,
-          Category: item.Category
-        });
-        map[item.Content] = item;
-      }
-      return result;
-    },
+    // dataFiltter2(arr) {
+    //   const map = {};
+    //   const result = [];
+    //   for (var i = 0; i < arr.length; i++) {
+    //     var item = arr[i];
+    //
+    //     result.push({
+    //       Content: item.Content,
+    //       RC_ErrorID: [item.ErrorID],
+    //       ErrorContent: [item.ErrorContent],
+    //       CheckID: item.CheckID,
+    //       ScoreCriteria: item.ScoreCriteria,
+    //       Type: item.Type,
+    //       id: Number(
+    //         Math.random()
+    //           .toString()
+    //           .substr(3, 3) + Date.now()
+    //       ).toString(36),
+    //       ProjectContent: item.ProjectContent,
+    //       ProjectContentRemark: item.ProjectContentRemark,
+    //       Category: item.Category
+    //     });
+    //     map[item.Content] = item;
+    //   }
+    //   return result;
+    // },
     submitTemplate() {
       if (!this.formData.Cycle && this.formData.IsRequired == 1) {
         this.$message.warning('请填写周期/天');
@@ -1322,6 +1352,8 @@ export default {
     },
 
     handleSelectionChange(value) {
+      console.log('value值', value);
+      this.ContentData[this.ContentDataIndex].ErrorList = value;
       this.$nextTick(() => {
         this.ContentData[this.ContentDataIndex].ScoreCriteria = 0;
         this.ContentData[this.ContentDataIndex].ErrorContent = [];
@@ -1334,11 +1366,17 @@ export default {
           this.ContentData[this.ContentDataIndex].ScoreCriteria += parseFloat(
             item.Grade
           );
+          // this.ContentData[this.ContentDataIndex].ErrorList.push({
+          //   ErrorContent: item.ErrorContent});
+          //
+
         });
+        console.log('this.ContentData[this.ContentDataIndex].RC_ErrorID', this.ContentData[this.ContentDataIndex].RC_ErrorID);
         this.ContentData[this.ContentDataIndex].ErrorContent = this.ContentData[
           this.ContentDataIndex
           ].ErrorContent.join('<br />');
       });
+      console.log('ContentData', this.ContentData);
     },
     handleSelectionChangeRow(selection, row) {
       if (this.SelectRC_ErrorData.num != 0) {
@@ -1402,24 +1440,40 @@ export default {
       });
     },
     async SelectContent(row, scope) {
+      console.log('此时的row', row);
+      console.log('现在的', scope.$index);
       this.SelectRC_ErrorData.RC_ErrorID = [];
-      this.SelectRC_ErrorData.RC_ErrorID = row.RC_ErrorID;
-      this.SelectRC_ErrorData.RC_ErrorIDs = row.RC_ErrorIDs;
-      this.ErrorQuery.ErrorIDs = row.RC_ErrorID.toString();
+      console.log('row.ErrorList', row.ErrorList);
+      if (row.ErrorList) {
+        row.ErrorList.map((item) => {
+          this.SelectRC_ErrorData.RC_ErrorID.push(item.ErrorID);
+        });
+      } else {
+        console.log('哈哈');
+      }
+      // this.SelectRC_ErrorData.RC_ErrorID = row.RC_ErrorID;
+      // this.SelectRC_ErrorData.RC_ErrorIDs = row.RC_ErrorIDs;
+      this.SelectRC_ErrorData.RC_ErrorIDs = this.SelectRC_ErrorData.RC_ErrorID;
+      console.log('这时候的', this.SelectRC_ErrorData.RC_ErrorID);
+      this.ErrorQuery.ErrorIDs = this.SelectRC_ErrorData.RC_ErrorID.toString();
       this.ContentData_id = row.id;
       this.ContentDataIndex = scope.$index;
+
       this.dialogError = true;
       this.$nextTick(() => {
         /* 传默认勾选的值给组件 */
         this.$refs.reasonfordeduction.getSelected(
-          row.RC_ErrorIDs ? row.RC_ErrorIDs.join(',') : [],
+          this.SelectRC_ErrorData.RC_ErrorID ? this.SelectRC_ErrorData.RC_ErrorID.join(',') : [],
           true
         );
       });
     },
     deleteContent(v) {
+      console.log(this.ContentData);
+      console.log(v);
+
       this.ContentData.forEach((e, i) => {
-        if (e.id === v) {
+        if (i === v) {
           this.ContentData.splice(i, 1);
         }
       });
@@ -1453,6 +1507,8 @@ export default {
         Category: a,
         Content: '',
         ProjectContent: b,
+        ProjectContentRemark: '',
+        content: '',
         ScoreCriteria: 0,
         ErrorContent: '',
         RC_ErrorID: '',
@@ -1495,6 +1551,7 @@ export default {
       } catch (error) {
       }
     },
+    // 制作表单
     addRow() {
       // this.RC_CreatUser = ''; // 只要点击的表单制作按钮就把判断是否是本账号创建的标识去掉
       this.SelectTemplateType();
@@ -1503,6 +1560,8 @@ export default {
       this.formData.RC_TemplateType = '通用表单';
       this.formData.CaseJudgment = 0;
       this.formData.IsRequired = 0;
+      this.Rc_checkcontent = []; // 再次初始化检查项
+      this.formData.RC_TemplateName = '';  // 初始化表单名称
     },
     handleCurrentChange(index) {
       this.listLoading = true;
@@ -1573,7 +1632,7 @@ export default {
         const { data } = await SelectTemplateByID({
           TemplateID: row.TemplateID
         });
-        this.TemplateTableData = this.dataFiltter(data.DataList);
+        this.TemplateTableData = this.dataFiltter(data);
       } catch (error) {
       }
     },

@@ -18,7 +18,7 @@
             >使用表单
             </el-button>
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-input
               v-model="listQuery.RC_ProjectName"
@@ -29,7 +29,7 @@
               @keyup.enter.native="clickSelectUseTemp()"
             />
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <default-depts
               v-if="!addFormData.RC_InspectionDepartmentID"
@@ -43,7 +43,7 @@
               @focus="focus"
             />
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item prop="CheckMonth">
             <el-date-picker
               v-model="listQuery.CheckMonth"
@@ -52,7 +52,7 @@
               placeholder="选择自查月份"
             />
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-button
               type="primary"
@@ -63,7 +63,7 @@
             >搜索
             </el-button>
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item>
             <el-checkbox
               v-model="checked"
@@ -71,7 +71,7 @@
             >只看草稿
             </el-checkbox>
           </el-form-item>
-          <el-divider direction="vertical" />
+          <el-divider direction="vertical"/>
           <el-form-item style="width: 150px">
             <el-select v-model="downloadValue" placeholder="请选择要导出数据">
               <el-option label="前一百条" :value="100"/>
@@ -101,6 +101,7 @@
           :data="tableData"
           style="width: 100%;margin-top: 10px"
           border
+          highlight-current-row
           size="mini"
           height="calc(100vh - 240px)"
           stripe
@@ -348,7 +349,7 @@
       <el-dialog
         :title="useTemplateDialogTitle"
         :visible.sync="dialogUseTemplateView"
-        :width="device === 'desktop' ? '50%' : '90%'"
+        :width="device === 'desktop' ? '70%' : '90%'"
         :top="device === 'desktop' ? '0' : '1rem'"
         style="overflow: auto"
         @resize="resize"
@@ -402,9 +403,9 @@
               </el-row>
             </el-form>
           </div>
-<!--          查看时的病例数据-->
+          <!--          查看时的病例数据-->
           <div style="flex: 1">
-            <h4    v-if="addFormData.CaseJudgment == 1">病例数据</h4>
+            <h4 v-if="addFormData.CaseJudgment == 1">病例数据</h4>
             <el-table
               v-if="addFormData.CaseJudgment == 1"
               ref="multipleTable"
@@ -424,13 +425,13 @@
               </el-table-column>
               <el-table-column label="档案号" align="center">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.HospitalNumber }}</span>
+                  <span>{{ scope.row.FileNo }}</span>
 
                 </template>
               </el-table-column>
               <el-table-column label="床号" align="center">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.HospitalNumber }}</span>
+                  <span>{{ scope.row.BedNo }}</span>
 
                 </template>
               </el-table-column>
@@ -441,7 +442,7 @@
               </el-table-column>
               <el-table-column label="性别" align="center">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.PatientName }}</span>
+                  <span>{{ scope.row.Sex }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="医疗组名称" align="center" width="100">
@@ -452,7 +453,7 @@
               </el-table-column>
               <el-table-column label="主管医生" align="center">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.MedicalGroupName }}</span>
+                  <span>{{ scope.row.DoctorName }}</span>
 
                 </template>
               </el-table-column>
@@ -651,7 +652,7 @@
       <el-dialog
         :title="useTemplateDialogTitle"
         :visible.sync="dialogUseTemplate"
-        :width="device === 'desktop' ? '50%' : '90%'"
+        :width="device === 'desktop' ? '70%' : '90%'"
         :before-close="cancle"
         :top="device === 'desktop' ? '0' : '1rem'"
         style="overflow: auto"
@@ -786,7 +787,7 @@
             </el-form>
           </div>
           <div style="flex: 1">
-            <h3    v-if="addFormData.CaseJudgment == 1">病例数据</h3>
+            <h3 v-if="addFormData.CaseJudgment == 1">病例数据</h3>
             <el-table
               v-if="addFormData.CaseJudgment == 1"
               ref="multipleTable"
@@ -810,7 +811,7 @@
               <el-table-column label="档案号" align="center">
                 <template slot-scope="scope">
                   <el-input
-                    v-model="scope.row.HospitalNumber"
+                    v-model="scope.row.FileNo"
                     size="mini"
                     placeholder="必填"
                   />
@@ -819,7 +820,7 @@
               <el-table-column label="床号" align="center">
                 <template slot-scope="scope">
                   <el-input
-                    v-model="scope.row.HospitalNumber"
+                    v-model="scope.row.BedNo"
                     size="mini"
                     placeholder="必填"
                   />
@@ -834,13 +835,24 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="性别" align="center">
+              <el-table-column label="性别" align="center" width="100">
                 <template slot-scope="scope">
-                  <el-input
-                    v-model="scope.row.PatientName"
+                  <el-select
+                    v-model="scope.row.Sex"
                     size="mini"
-                    placeholder=""
-                  />
+                  >
+                    <el-option
+                      v-for="sex in ['男','女'] "
+                      :value="sex"
+                    >
+
+                    </el-option>
+                  </el-select>
+<!--                  <el-input-->
+<!--                    v-model="scope.row.Sex"-->
+<!--                    size="mini"-->
+<!--                    placeholder=""-->
+<!--                  />-->
                 </template>
               </el-table-column>
               <el-table-column label="医疗组名称" align="center" width="100">
@@ -852,10 +864,10 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="主管医生">
+              <el-table-column label="主管医生" align="center">
                 <template slot-scope="scope">
                   <el-input
-                    v-model="scope.row.MedicalGroupName"
+                    v-model="scope.row.DoctorName"
                     size="mini"
                     placeholder=""
                   />
@@ -871,7 +883,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-form    v-if="addFormData.CaseJudgment == 1">
+            <el-form v-if="addFormData.CaseJudgment == 1">
               <el-form-item style="margin-bottom: 0">
                 <el-button
                   icon="el-icon-plus"
@@ -1230,7 +1242,7 @@
       </el-dialog>
       <el-dialog
         title="选择扣分原因"
-        :width="device === 'desktop' ? '50%' : '99%'"
+        :width="device === 'desktop' ? '70%' : '99%'"
         :close-on-click-modal="false"
         :visible.sync="dialogError"
       >
@@ -1365,7 +1377,7 @@ export default {
         ],
         RC_InspectionDepartmentName: [
           { required: true, message: '请选择科室', trigger: 'blur' }
-        ],
+        ]
         // 协同检查者不需要强制填写
         // RC_InspectorOther: [
         //   { required: true, message: '请填写协同检查者', trigger: 'blur' }
@@ -1852,18 +1864,18 @@ export default {
               return;
             }
             this.tableBtnLoading = true; // 开启提交按钮等待圈
-            const { msg} =
+            const { msg } =
               this.useTemplateDialogTitle === '制作表单'
                 ? await InsertUseTemp(this.addFormData)
                 : await UpdateUseTempDetail(this.addFormData);
             this.$message.success(msg);
             this.dialogUseTemplate = false;
-            this.$nextTick(()=>{
+            this.$nextTick(() => {
               this.tableBtnLoading = false; // 关闭提交按钮等待圈
             });
 
           } else {
-            this.$nextTick(()=>{
+            this.$nextTick(() => {
               this.tableBtnLoading = false; // 关闭提交按钮等待圈
             });
             return false;
@@ -2082,7 +2094,7 @@ export default {
         const { data } = await SelectUseTemp(this.listQuery);
         this.tableData = data.DataList;
         this.pagination.total = data.Total;
-        this.tableData.map((item,index) => {
+        this.tableData.map((item, index) => {
           item.RC_DeductedPoints = [
             ...new Set(item.RC_DeductedPoints.split('$'))
           ].join('\n');
@@ -2255,7 +2267,12 @@ export default {
       this.addFormData.Rc_CaseDetail.push({
         HospitalNumber: '',
         PatientName: '',
-        MedicalGroupName: ''
+        MedicalGroupName: '',
+        FileNo: '', // 档案号
+        BedNo: '', // 床号
+        Sex: '', // 性别
+        DoctorName: '' // 主管医生
+
       });
     },
     deleteCase(index) {
